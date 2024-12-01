@@ -52,7 +52,7 @@ const ProductCard = () => {
                 <FontAwesomeIcon
                   icon={["fas", "cart-shopping"]}
                   size="lg"
-                  className="cursor-pointer hover:text-purple-700 dark:text-lightText"
+                  className="cursor-pointer dark:text-lightText"
                 />
               </span>
               Add to Cart

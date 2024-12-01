@@ -12,6 +12,9 @@ module.exports = {
         primary: "#A855F7",
         darkGray: "#828282",
       },
+      screens: {
+        "5xl": "1800px",
+      },
     },
   },
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
