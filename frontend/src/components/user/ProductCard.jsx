@@ -11,7 +11,7 @@ const ProductCard = () => {
             <span className="absolute top-3 right-4 text-xl cursor-pointer flex justify-center rounded-3xl w-10 h-10 items-center bg-darkText dark:bg-darkBackground">
               <FontAwesomeIcon
                 icon={["far", "heart"]}
-                size="md"
+                size="sm"
                 className="cursor-pointer text-lightText"
               />
             </span>

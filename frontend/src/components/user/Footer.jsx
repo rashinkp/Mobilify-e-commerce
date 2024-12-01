@@ -8,8 +8,8 @@ const Footer = () => {
   const theme = useSelector((state) => state.theme.theme);
 
   return (
-    <footer className=" dark:bg-darkBackground py-10">
-      <div className="container mx-auto px-6 lg:">
+    <footer className="w-full dark:bg-darkBackground py-10">
+      <div className="container mx-auto px-6 lg:flex lg:flex-col lg:items-center lg:justify-center">
         <div className="flex flex-col lg:flex-row gap-10 justify-between items-start">
           {/* Logo and Description */}
           <div className="flex-1 mb-8 lg:mb-0">

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/slices/themeSlice";
-
+import { Link } from "react-router";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -62,15 +62,24 @@ const Navbar = () => {
         {/* Middle Section - Hidden on smaller screens */}
         <div className="hidden lg:flex items-center justify-center flex-grow gap-8 lg:gap-12">
           <ul className="flex gap-8 lg:gap-12">
-            <li className="cursor-pointer text-darkText font-bold hover:text-primary dark:text-lightText dark:font-bold dark:hover:text-primary">
-              HOME
-            </li>
+            <Link to='/user'>
+              <li className="cursor-pointer text-darkText font-bold hover:text-primary dark:text-lightText dark:font-bold dark:hover:text-primary">
+                HOME
+              </li>
+            </Link>
+            <Link to='/user/products'>
+              
             <li className="cursor-pointer text-secondary hover:text-primary dark:text-secondary dark:hover:text-primary">
               PRODUCTS
             </li>
+            </Link>
+
+            <Link to='/user/contact'>   
             <li className="cursor-pointer text-secondary hover:text-primary dark:text-secondary dark:hover:text-primary">
               CONTACT
             </li>
+            </Link>
+
             <li className="cursor-pointer text-secondary hover:text-primary dark:text-secondary dark:hover:text-primary">
               ABOUT US
             </li>
