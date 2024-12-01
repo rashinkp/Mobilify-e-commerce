@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import IconMain from "../../assets/Icon_Main.svg";
+import IconMainWhite from "../../assets/Icon_Main_white.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [isLogged, setIsLogged] = useState(true);
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.theme);
@@ -50,7 +52,11 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-8 py-4 lg:px-16 lg:py-5 font-medium relative dark:bg-darkBackground ">
         {/* Left Section */}
         <div className="flex items-center gap-4">
-          <img src={IconMain} alt="Logo" className="text-lightBackground" />
+          <img
+            src={theme === "light" ? IconMain : IconMainWhite}
+            alt="Logo"
+            className=""
+          />
         </div>
 
         {/* Middle Section - Hidden on smaller screens */}
@@ -72,65 +78,88 @@ const Navbar = () => {
         </div>
 
         {/* Right Section */}
-        <div className="hidden lg:flex items-center gap-4 lg:gap-6">
-          {/* Updated icons to prevent errors and ensure they appear */}
-          <FontAwesomeIcon
-            icon={["far", "heart"]}
-            size="xl"
-            className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
-          />
-          <FontAwesomeIcon
-            icon={["fas", "cart-shopping"]}
-            size="xl"
-            className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
-          />
-          <div className="flex items-center gap-2 cursor-pointer relative">
-            <div className="w-8 h-8 bg-lightBackground rounded-full overflow-hidden">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {isLogged ? (
+          <div className="hidden lg:flex items-center gap-4 lg:gap-6">
+            {/* Updated icons to prevent errors and ensure they appear */}
             <FontAwesomeIcon
-              onClick={() => setDropdownOpen(true)}
-              icon={faChevronDown}
-              size="sm"
-              className="text-darkText dark:text-lightText"
+              icon={["far", "heart"]}
+              size="xl"
+              className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
             />
-            {/* Dropdown Menu for Profile */}
-            {dropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="absolute top-full right-0 mt-2 bg-lightBackground shadow-lg shadow-darkBackground dark:border dark:border-lightBackground dark:bg-darkBackground dark:text-lightText rounded-md w-52 flex justify-center py-4 z-50 "
-              >
-                <ul className="flex flex-col gap-2 px-4">
-                  <li className="cursor-pointer hover:text-purple-700">
-                    Profile
-                  </li>
-                  <li className="cursor-pointer hover:text-purple-700">
-                    Orders
-                  </li>
-                  <li className="cursor-pointer hover:text-purple-700">
-                    Favorite
-                  </li>
-                  <li className="cursor-pointer hover:text-purple-700">
-                    Wallet
-                  </li>
-                  <li
-                    className="cursor-pointer hover:text-purple-700"
-                    onClick={() => dispatch(toggleTheme())}
-                  >
-                    {theme === "light" ? "swithch to dark" : "switch to light"}
-                  </li>
-                  <li className="cursor-pointer text-red-700 hover:text-red-800">
-                    Logout
-                  </li>
-                </ul>
+            <FontAwesomeIcon
+              icon={["fas", "cart-shopping"]}
+              size="xl"
+              className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
+            />
+            <FontAwesomeIcon
+              size="xl"
+              onClick={() => dispatch(toggleTheme())}
+              icon="fa-solid fa-moon"
+              className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
+            />
+
+            <div className="flex items-center gap-2 cursor-pointer relative">
+              <div className="w-8 h-8 bg-lightBackground rounded-full overflow-hidden">
+                <img
+                  src="https://via.placeholder.com/150"
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </div>
-            )}
+              <FontAwesomeIcon
+                onClick={() => setDropdownOpen(true)}
+                icon={faChevronDown}
+                size="sm"
+                className="text-darkText dark:text-lightText"
+              />
+              {/* Dropdown Menu for Profile */}
+              {dropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute top-full right-0 mt-2 bg-lightBackground shadow-lg shadow-darkBackground dark:border dark:border-lightBackground dark:bg-darkBackground dark:text-lightText rounded-md w-52 flex justify-center py-4 z-50 "
+                >
+                  <ul className="flex flex-col gap-4 px-4 py-3">
+                    <li className="cursor-pointer hover:text-purple-700">
+                      Profile
+                    </li>
+                    <li className="cursor-pointer hover:text-purple-700">
+                      Orders
+                    </li>
+                    <li className="cursor-pointer hover:text-purple-700">
+                      Favorite
+                    </li>
+                    <li className="cursor-pointer hover:text-purple-700">
+                      Wallet
+                    </li>
+                    <li className="cursor-pointer text-red-700 hover:text-red-800">
+                      Logout
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            <ul className="flex flex-row gap-7 items-center px-4 dark:text-lightText">
+              <li className="cursor-pointer hover:text-purple-700">
+                <FontAwesomeIcon
+                  size="xl"
+                  onClick={() => dispatch(toggleTheme())}
+                  icon="fa-solid fa-moon"
+                  className="cursor-pointer hover:text-primary  dark:hover:text-primary"
+                />
+              </li>
+              <li className="cursor-pointer hover:text-purple-700 ">LOGIN</li>
+              <li className="cursor-pointer hover:text-purple-700 ">
+                <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+                  <button className="">SIGN UP</button>
+                  <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                </div>
+              </li>
+            </ul>
+          </div>
+        )}
 
         {/* Menu Icon for Small Screens */}
         <div className="block lg:hidden">
@@ -161,6 +190,12 @@ const Navbar = () => {
                   icon={["fas", "cart-shopping"]}
                   size="xl"
                   className="cursor-pointer hover:text-primary"
+                />
+                <FontAwesomeIcon
+                  size="xl"
+                  onClick={() => dispatch(toggleTheme())}
+                  icon="fa-solid fa-moon"
+                  className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
                 />
                 <div className="flex items-center gap-2 cursor-pointer">
                   <div className="w-6 h-6 bg-secondary rounded-full overflow-hidden">
