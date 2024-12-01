@@ -1,16 +1,26 @@
-import React from 'react'
-import { Route, Router, Routes } from 'react-router'
-import HomePage from './pages/user/HomePage'
-import Products from './pages/user/Products';
-import AboutUs from './pages/user/AboutUs';
-import Cart from './pages/user/Cart';
-import Login from './pages/user/Login';
-import Orders from './pages/user/Orders';
-import Product from './pages/user/Product';
-import Checkout from './pages/user/Checkout';
-import Navbar from './components/user/Navbar';
+import React, { useEffect } from "react";
+import { Route, Router, Routes } from "react-router";
+import HomePage from "./pages/user/HomePage";
+import Products from "./pages/user/Products";
+import AboutUs from "./pages/user/AboutUs";
+import Cart from "./pages/user/Cart";
+import Login from "./pages/user/Login";
+import Orders from "./pages/user/Orders";
+import Product from "./pages/user/Product";
+import Checkout from "./pages/user/Checkout";
+import Navbar from "./components/user/Navbar";
+import { useSelector } from "react-redux";
 
 const App = () => {
+  const theme = useSelector((state) => state.theme.theme);
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove('dark');
+    }
+  });
   return (
     <div className="px-4">
       <Navbar />
@@ -26,6 +36,6 @@ const App = () => {
       </Routes>
     </div>
   );
-}
+};
 
-export default App
+export default App;

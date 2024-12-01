@@ -4,35 +4,37 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const ProductCard = () => {
   return (
     <>
-      <div>
-        <div className="border rounded-lg shadow-lg overflow-hidden w-96 bg-white h-96 px-4 pt-3">
+      <div className="cursor-pointer">
+        <div className="border rounded-lg shadow-lg overflow-hidden w-80 bg-lightBackground h-72 flex justify-center items-center dark:bg-darkBackground">
           {/* Upper part: Love icon and product image */}
-          <div className="p-4">
-            <div className="flex justify-end mb-2">
-              <span className="text-xl cursor-pointer flex justify-center  rounded-3xl w-12 h-12 items-center bg-black">
-                <FontAwesomeIcon
-                  icon={["far", "heart"]}
-                  size="lg"
-                  className="cursor-pointer text-white"
-                />
-              </span>
-            </div>
+          <div className="relative px-2">
+            <span className="absolute top-3 right-4 text-xl cursor-pointer flex justify-center rounded-3xl w-10 h-10 items-center bg-darkText dark:bg-darkBackground">
+              <FontAwesomeIcon
+                icon={["far", "heart"]}
+                size="md"
+                className="cursor-pointer text-lightText"
+              />
+            </span>
             <img
-              className="w-full h-64 object-cover rounded-md"
+              className=" w-64 h-60 object-cover rounded-md"
               src="https://via.placeholder.com/300"
               alt="Product"
             />
           </div>
         </div>
 
-        <div className="overflow-hidden w-96">
+        <div className="overflow-hidden w-80">
           {/* Lower part: Name, price, description, and rating */}
           <div className="p-4">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">Iphone 16 Pro Max</h3>
-              <span className="text-black font-extrabold text-lg">$175</span>
+              <h3 className="text-lg font-semibold dark:text-lightText">
+                Iphone 16 Pro Max
+              </h3>
+              <span className="text-darkText font-extrabold text-lg dark:text-lightText">
+                $175
+              </span>
             </div>
-            <p className="text-gray-600 mb-2">
+            <p className="text-darkGray mb-2">
               Description of the product goes here.
             </p>
             <div className="flex items-center mb-4">
@@ -43,14 +45,14 @@ const ProductCard = () => {
                 <FontAwesomeIcon icon="fa-solid fa-star" />
                 <FontAwesomeIcon icon="fa-solid fa-star" />
               </span>
-              <span className="text-gray-500 ml-2">(156)</span>
+              <span className="text-darkGray ml-2">(156)</span>
             </div>
-            <button className="flex items-center justify-center border border-black rounded-full py-2 px-4 w-full text-black hover:border-purple-700">
+            <button className="flex items-center justify-center border border-darkText rounded-full py-2 px-4 w-full text-darkText dark:text-lightText dark:border-lightText hover:border-primary dark:hover:border-primary">
               <span className="mr-2">
                 <FontAwesomeIcon
                   icon={["fas", "cart-shopping"]}
                   size="lg"
-                  className="cursor-pointer hover:text-purple-700"
+                  className="cursor-pointer hover:text-purple-700 dark:text-lightText"
                 />
               </span>
               Add to Cart
