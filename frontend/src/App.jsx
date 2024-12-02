@@ -11,6 +11,7 @@ import Checkout from "./pages/user/Checkout";
 import Navbar from "./components/user/Navbar";
 import { useSelector } from "react-redux";
 import ContactUs from "./pages/user/ContactUs";
+import SignUp from "./pages/user/SignUp";
 
 const App = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -24,7 +25,9 @@ const App = () => {
   });
   return (
     <div className="">
-      <Navbar />
+      <div className="mb-28">
+        <Navbar />
+      </div>
       <Routes>
         <Route path="/user" element={<HomePage />} />
         <Route path="/user/products" element={<Products />} />
@@ -35,6 +38,7 @@ const App = () => {
         <Route path="/user/product" element={<Product />} />
         <Route path="/user/checkout" element={<Checkout />} />
         <Route path="/user/contact" element={<ContactUs />} />
+        <Route path="/user/signup" element={<SignUp />} />
       </Routes>
     </div>
   );

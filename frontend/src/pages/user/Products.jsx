@@ -7,7 +7,7 @@ import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 
 const Products = () => {
   return (
-    <div className="pt-28 flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <div className="mb-8 w-full flex justify-center max-w-7xl px-4">
         <SearchBar />
       </div>

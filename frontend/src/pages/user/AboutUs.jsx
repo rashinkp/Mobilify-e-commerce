@@ -3,7 +3,7 @@ import Footer from "../../components/user/Footer";
 
 const AboutUs = () => {
   return (
-    <div className="pt-28 bg-lightBackground dark:bg-darkBackground min-h-screen">
+    <div className="bg-lightBackground dark:bg-darkBackground min-h-screen">
       {/* Header Section */}
       <div className="text-center mb-16 px-6">
         <p className="font-extrabold text-4xl dark:text-lightText mb-4">

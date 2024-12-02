@@ -4,7 +4,7 @@ import ContactForm from "../../components/user/ContactForm";
 
 const ContactUs = () => {
   return (
-    <div className="pt-28">
+    <div className="">
       <div className="flex flex-wrap justify-between items-center">
         {/* Left section: Text */}
         <div className="w-full md:w-1/2 text-center md:text-center mb-10 md:mb-0">

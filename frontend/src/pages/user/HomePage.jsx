@@ -5,7 +5,7 @@ import ProductCard from "../../components/user/ProductCard";
 import Footer from "../../components/user/Footer";
 const HomePage = () => {
   return (
-    <div className="mt-28">
+    <div className="">
       <img src={Banner1} className="w-full mb-20 object-fill" alt="" />
       <div className="px-16">
         <p className="font-extrabold text-4xl dark:text-lightText">

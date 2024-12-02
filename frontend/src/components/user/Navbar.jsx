@@ -49,7 +49,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="fixed z-10 top-0 left-0 right-0 flex items-center justify-between px-8 py-4 lg:px-16 lg:py-5 font-medium bg-lightBackground dark:bg-darkBackground ">
+      <div className="fixed z-10 top-0 left-0 right-0 flex items-center justify-between px-8 py-4 lg:px-16 lg:py-5 font-medium bg-lightBackground dark:bg-darkBackground">
         {/* Left Section */}
         <div className="flex items-center gap-4">
           <img
