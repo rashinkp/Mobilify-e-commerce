@@ -27,3 +27,12 @@ export const loginValidationSchema = Yup.object().shape({
   password: passwordValidation,
 });
 
+
+
+export const otpValidationSchema = Yup.object().shape({
+  otp: Yup.string()
+    .matches(/^[0-9]+$/, "Only numbers are allowed")
+    .required("OTP is required")
+    .min(4, "OTP must be at least 4 characters"),
+});
+

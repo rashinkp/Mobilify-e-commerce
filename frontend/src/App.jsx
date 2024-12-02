@@ -12,6 +12,7 @@ import Navbar from "./components/user/Navbar";
 import { useSelector } from "react-redux";
 import ContactUs from "./pages/user/ContactUs";
 import SignUp from "./pages/user/SignUp";
+import VerifyOtp from "./pages/user/VerifyOtp";
 
 const App = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/user/checkout" element={<Checkout />} />
         <Route path="/user/contact" element={<ContactUs />} />
         <Route path="/user/signup" element={<SignUp />} />
+        <Route path="/user/verify-otp" element={<VerifyOtp />} />
       </Routes>
     </div>
   );

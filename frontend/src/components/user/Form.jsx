@@ -26,7 +26,7 @@ const Form = ({
   const onFormSubmit = (data) => {
     onSubmit(data);
   };
-
+  
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
