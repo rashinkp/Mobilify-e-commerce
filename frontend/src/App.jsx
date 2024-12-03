@@ -6,13 +6,13 @@ import AboutUs from "./pages/user/AboutUs";
 import Cart from "./pages/user/Cart";
 import Login from "./pages/user/Login";
 import Orders from "./pages/user/Orders";
-import Product from "./pages/user/Product";
 import Checkout from "./pages/user/Checkout";
 import Navbar from "./components/user/Navbar";
 import { useSelector } from "react-redux";
 import ContactUs from "./pages/user/ContactUs";
 import SignUp from "./pages/user/SignUp";
 import VerifyOtp from "./pages/user/VerifyOtp";
+import ProductDetails from "./pages/user/ProductDetails";
 
 const App = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -36,7 +36,7 @@ const App = () => {
         <Route path="/user/cart" element={<Cart />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/orders" element={<Orders />} />
-        <Route path="/user/product" element={<Product />} />
+        <Route path="/user/product" element={<ProductDetails />} />
         <Route path="/user/checkout" element={<Checkout />} />
         <Route path="/user/contact" element={<ContactUs />} />
         <Route path="/user/signup" element={<SignUp />} />

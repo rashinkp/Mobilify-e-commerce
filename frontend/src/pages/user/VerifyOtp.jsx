@@ -24,14 +24,16 @@ const VerifyOtp = () => {
     console.log('Otp : ', data)
   } 
   return (
-    <Form
-      title="Verilfy OTP"
-      fields={formFields}
-      onSubmit={handleSubmit}
-      extraLinks={extraLinks}
-      buttonText='Submit'
-      validationRules={otpValidationSchema}
-    />
+    <div className='mt-56'>
+      <Form
+        title="Verilfy OTP"
+        fields={formFields}
+        onSubmit={handleSubmit}
+        extraLinks={extraLinks}
+        buttonText="Submit"
+        validationRules={otpValidationSchema}
+      />
+    </div>
   );
 }
 

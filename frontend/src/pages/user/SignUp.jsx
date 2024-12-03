@@ -1,6 +1,7 @@
 import React from "react";
 import Form from "../../components/user/Form";
 import { signUpValidationSchema } from "../../validationSchemas";
+import SignGoogle from "../../components/user/SignGoogle";
 const SignUp = () => {
   const formFields = [
     {
@@ -48,14 +49,19 @@ const SignUp = () => {
   }
 
   return (
-    <Form
-      title="Sign up"
-      fields={formFields}
-      onSubmit={handleSignup}
-      buttonText="Next"
-      extraLinks={extraLinks}
-      validationRules={signUpValidationSchema}
-    />
+    <div className="h-screen">
+      <Form
+        title="Sign up"
+        fields={formFields}
+        onSubmit={handleSignup}
+        buttonText="Next"
+        extraLinks={extraLinks}
+        validationRules={signUpValidationSchema}
+      />
+      <div className="mt-5">
+        <SignGoogle />
+      </div>
+    </div>
   );
 };
 

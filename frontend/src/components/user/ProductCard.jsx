@@ -1,5 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AddCartButton from "./AddCartButton";
 
 const ProductCard = () => {
   return (
@@ -47,16 +48,7 @@ const ProductCard = () => {
               </span>
               <span className="text-darkGray ml-2">(156)</span>
             </div>
-            <button className="flex items-center justify-center border border-darkText rounded-full py-2 px-4 w-full text-darkText dark:text-lightText dark:border-lightText hover:border-primary dark:hover:border-primary">
-              <span className="mr-2">
-                <FontAwesomeIcon
-                  icon={["fas", "cart-shopping"]}
-                  size="lg"
-                  className="cursor-pointer dark:text-lightText"
-                />
-              </span>
-              Add to Cart
-            </button>
+            <AddCartButton />
           </div>
         </div>
       </div>

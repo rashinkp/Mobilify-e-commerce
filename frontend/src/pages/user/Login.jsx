@@ -1,6 +1,7 @@
-import React from 'react'
-import Form from '../../components/user/Form'
-import { loginValidationSchema } from '../../validationSchemas';
+import React from "react";
+import Form from "../../components/user/Form";
+import { loginValidationSchema } from "../../validationSchemas";
+import SignGoogle from "../../components/user/SignGoogle";
 
 const Login = () => {
   const loginFields = [
@@ -33,10 +34,11 @@ const Login = () => {
   ];
 
   const handleLogin = (data) => {
-    console.log('Login Data:', data)
-  }
+    console.log("Login Data:", data);
+  };
+
   return (
-    <div className='pt-24 px-5'>
+    <div className="pt-18 px-5">
       <Form
         title="Login"
         fields={loginFields}
@@ -45,8 +47,11 @@ const Login = () => {
         extraLinks={extraLinks}
         validationRules={loginValidationSchema}
       />
+      <div className="mt-5">
+        <SignGoogle />
+      </div>
     </div>
   );
-}
+};
 
-export default Login
+export default Login;

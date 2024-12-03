@@ -13,7 +13,7 @@ export const passwordValidation = Yup.string()
 
 
 export const signUpValidationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
+  name: Yup.string().required("Name is required").min(6,"Minimum 6 character required"),
   email: emailValidation,
   password: passwordValidation,
   confirmPassword: Yup.string()
