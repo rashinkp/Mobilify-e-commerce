@@ -11,8 +11,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [isLogged, setIsLogged] = useState(true);
-  const use = useLocation();
-  console.log(use.pathname)
+  const location = useLocation();
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.theme);
@@ -67,7 +66,7 @@ const Navbar = () => {
             <Link to="/user">
               <li
                 className={`cursor-pointer  hover:text-primary ${
-                  use.pathname === "/user"
+                  location.pathname === "/user"
                     ? "text-darkText font-bold dark:text-lightText dark:font-bold"
                     : "text-secondary dark:text-secondary"
                 }   dark:hover:text-primary`}
@@ -78,7 +77,7 @@ const Navbar = () => {
             <Link to="/user/products">
               <li
                 className={`cursor-pointer  hover:text-primary ${
-                  use.pathname === "/user/products"
+                  location.pathname === "/user/products"
                     ? "text-darkText font-bold dark:text-lightText dark:font-bold"
                     : "text-secondary dark:text-secondary"
                 }   dark:hover:text-primary`}
@@ -90,7 +89,7 @@ const Navbar = () => {
             <Link to="/user/contact">
               <li
                 className={`cursor-pointer  hover:text-primary ${
-                  use.pathname === "/user/contact"
+                  location.pathname === "/user/contact"
                     ? "text-darkText font-bold dark:text-lightText dark:font-bold"
                     : "text-secondary dark:text-secondary"
                 }   dark:hover:text-primary`}
@@ -102,7 +101,7 @@ const Navbar = () => {
             <Link to="/user/about">
               <li
                 className={`cursor-pointer  hover:text-primary ${
-                  use.pathname === "/user/about"
+                  location.pathname === "/user/about"
                     ? "text-darkText font-bold dark:text-lightText dark:font-bold"
                     : "text-secondary dark:text-secondary"
                 }   dark:hover:text-primary`}
