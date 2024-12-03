@@ -1,18 +1,9 @@
 import React, { useEffect } from "react";
 import { Route, Router, Routes } from "react-router";
-import HomePage from "./pages/user/HomePage";
-import Products from "./pages/user/Products";
-import AboutUs from "./pages/user/AboutUs";
-import Cart from "./pages/user/Cart";
-import Login from "./pages/user/Login";
-import Orders from "./pages/user/Orders";
-import Checkout from "./pages/user/Checkout";
-import Navbar from "./components/user/Navbar";
+import Navbar from "./components/Navbar.jsx";
 import { useSelector } from "react-redux";
-import ContactUs from "./pages/user/ContactUs";
-import SignUp from "./pages/user/SignUp";
-import VerifyOtp from "./pages/user/VerifyOtp";
-import ProductDetails from "./pages/user/ProductDetails";
+import UserRoutes from "./routes/UserRoutes";
+import AdminRoutes from "./routes/AdminRoutes";
 
 const App = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -25,24 +16,10 @@ const App = () => {
     }
   });
   return (
-    <div className="">
-      <div className="mb-28">
-        <Navbar />
-      </div>
       <Routes>
-        <Route path="/user" element={<HomePage />} />
-        <Route path="/user/products" element={<Products />} />
-        <Route path="/user/about" element={<AboutUs />} />
-        <Route path="/user/cart" element={<Cart />} />
-        <Route path="/user/login" element={<Login />} />
-        <Route path="/user/orders" element={<Orders />} />
-        <Route path="/user/product" element={<ProductDetails />} />
-        <Route path="/user/checkout" element={<Checkout />} />
-        <Route path="/user/contact" element={<ContactUs />} />
-        <Route path="/user/signup" element={<SignUp />} />
-        <Route path="/user/verify-otp" element={<VerifyOtp />} />
+        <Route path="/user/*" element={<UserRoutes />} />
+        <Route path="/admin/*" element={<AdminRoutes />} />
       </Routes>
-    </div>
   );
 };
 

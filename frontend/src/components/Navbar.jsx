@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import IconMain from "../../assets/Icon_Main.svg";
-import IconMainWhite from "../../assets/Icon_Main_white.svg";
+import IconMain from "../assets/Icon_Main.svg";
+import IconMainWhite from "../assets/Icon_Main_white.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleTheme } from "../../redux/slices/themeSlice";
+import { toggleTheme } from "../redux/slices/themeSlice.js";
 import { Link, useLocation } from "react-router";
-const Navbar = () => {
+const Navbar = ({
+  icons,
+  links,
+  rightSection,
+  profile,
+  isLogged,
+  role,
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const [isLogged, setIsLogged] = useState(true);
   const location = useLocation();
 
   const dispatch = useDispatch();
@@ -54,7 +60,7 @@ const Navbar = () => {
         {/* Left Section */}
         <div className="flex items-center gap-4">
           <img
-            src={theme === "light" ? IconMain : IconMainWhite}
+            src={theme === "light" ? icons.light : icons.dark}
             alt="Logo"
             className=""
           />
@@ -63,52 +69,19 @@ const Navbar = () => {
         {/* Middle Section - Hidden on smaller screens */}
         <div className="hidden lg:flex items-center justify-center flex-grow gap-8 lg:gap-12">
           <ul className="flex gap-8 lg:gap-12">
-            <Link to="/user">
-              <li
-                className={`cursor-pointer  hover:text-primary ${
-                  location.pathname === "/user"
-                    ? "text-darkText font-bold dark:text-lightText dark:font-bold"
-                    : "text-secondary dark:text-secondary"
-                }   dark:hover:text-primary`}
-              >
-                HOME
-              </li>
-            </Link>
-            <Link to="/user/products">
-              <li
-                className={`cursor-pointer  hover:text-primary ${
-                  location.pathname === "/user/products"
-                    ? "text-darkText font-bold dark:text-lightText dark:font-bold"
-                    : "text-secondary dark:text-secondary"
-                }   dark:hover:text-primary`}
-              >
-                PRODUCTS
-              </li>
-            </Link>
-
-            <Link to="/user/contact">
-              <li
-                className={`cursor-pointer  hover:text-primary ${
-                  location.pathname === "/user/contact"
-                    ? "text-darkText font-bold dark:text-lightText dark:font-bold"
-                    : "text-secondary dark:text-secondary"
-                }   dark:hover:text-primary`}
-              >
-                CONTACT
-              </li>
-            </Link>
-
-            <Link to="/user/about">
-              <li
-                className={`cursor-pointer  hover:text-primary ${
-                  location.pathname === "/user/about"
-                    ? "text-darkText font-bold dark:text-lightText dark:font-bold"
-                    : "text-secondary dark:text-secondary"
-                }   dark:hover:text-primary`}
-              >
-                ABOUT US
-              </li>
-            </Link>
+            {links.map((link, i) => (
+              <Link key={i} to={link.path}>
+                <li
+                  className={`cursor-pointer  hover:text-primary ${
+                    location.pathname === link.path
+                      ? "text-darkText font-bold dark:text-lightText dark:font-bold"
+                      : "text-secondary dark:text-secondary"
+                  }   dark:hover:text-primary`}
+                >
+                  {link.text.toUpperCase()}
+                </li>
+              </Link>
+            ))}
           </ul>
         </div>
 
@@ -116,27 +89,16 @@ const Navbar = () => {
         {isLogged ? (
           <div className="hidden lg:flex items-center gap-4 lg:gap-6">
             {/* Updated icons to prevent errors and ensure they appear */}
-            <FontAwesomeIcon
-              icon={["far", "heart"]}
-              size="xl"
-              className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
-            />
-            <FontAwesomeIcon
-              icon={["fas", "cart-shopping"]}
-              size="xl"
-              className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
-            />
-            <FontAwesomeIcon
-              size="xl"
-              onClick={() => dispatch(toggleTheme())}
-              icon="fa-solid fa-moon"
-              className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
-            />
+            {rightSection && rightSection.map((link, index) => (
+              <Link key={index} to={link.path}>
+                {link.icon}
+              </Link>
+            ))}
 
             <div className="flex items-center gap-2 cursor-pointer relative">
               <div className="w-8 h-8 bg-lightBackground rounded-full overflow-hidden">
                 <img
-                  src="https://via.placeholder.com/150"
+                  src={profile.img}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -154,21 +116,17 @@ const Navbar = () => {
                   className="absolute top-full right-0 mt-2 bg-lightBackground shadow-lg shadow-darkBackground dark:border dark:border-lightBackground dark:bg-darkBackground dark:text-lightText rounded-md w-52 flex justify-center py-4 z-50 "
                 >
                   <ul className="flex flex-col gap-4 px-4 py-3">
-                    <li className="cursor-pointer hover:text-purple-700">
-                      Profile
-                    </li>
-                    <li className="cursor-pointer hover:text-purple-700">
-                      Orders
-                    </li>
-                    <li className="cursor-pointer hover:text-purple-700">
-                      Favorite
-                    </li>
-                    <li className="cursor-pointer hover:text-purple-700">
-                      Wallet
-                    </li>
-                    <li className="cursor-pointer text-red-700 hover:text-red-800">
-                      Logout
-                    </li>
+                    {profile.list.map((item, index) => (
+                      <Link key={index} to={item.path}>
+                        <li
+                          className={`cursor-pointer ${
+                            item.text === "Logout" && "text-red-600"
+                          } hover:text-primary`}
+                        >
+                          {item.text.toUpperCase()}
+                        </li>
+                      </Link>
+                    ))}
                   </ul>
                 </div>
               )}
@@ -186,12 +144,14 @@ const Navbar = () => {
                 />
               </li>
               <li className="cursor-pointer hover:text-purple-700 ">LOGIN</li>
-              <li className="cursor-pointer hover:text-purple-700 ">
-                <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
-                  <button className="">SIGN UP</button>
-                  <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
-                </div>
-              </li>
+              {role === "user" && (
+                <li className="cursor-pointer hover:text-purple-700 ">
+                  <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+                    <button className="">SIGN UP</button>
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                  </div>
+                </li>
+              )}
             </ul>
           </div>
         )}
@@ -210,28 +170,21 @@ const Navbar = () => {
         {menuOpen && (
           <div className="absolute flex top-full right-0 bg-lightBackground shadow-lg rounded-md w-full py-7 z-50 justify-center dark:bg-darkBackground dark:border dark:border-lightText dark:text-lightText">
             <ul className="flex flex-col gap-6 px-4">
-              <li className="cursor-pointer hover:text-primary">HOME</li>
-              <li className="cursor-pointer hover:text-primary">PRODUCTS</li>
-              <li className="cursor-pointer hover:text-primary">CONTACT</li>
-              <li className="cursor-pointer hover:text-primary">ABOUT US</li>
+              {links.map((link, i) => (
+                <Link key={i} to={link.path}>
+                  <li className="cursor-pointer hover:text-primary">
+                    {link.text.toUpperCase()}
+                  </li>
+                </Link>
+              ))}
               <div className="flex items-center gap-3 mt-2">
                 {/* Updated icons to prevent errors and ensure they appear */}
-                <FontAwesomeIcon
-                  icon={["far", "heart"]}
-                  size="xl"
-                  className="cursor-pointer hover:text-primary"
-                />
-                <FontAwesomeIcon
-                  icon={["fas", "cart-shopping"]}
-                  size="xl"
-                  className="cursor-pointer hover:text-primary"
-                />
-                <FontAwesomeIcon
-                  size="xl"
-                  onClick={() => dispatch(toggleTheme())}
-                  icon="fa-solid fa-moon"
-                  className="cursor-pointer hover:text-primary dark:text-lightText dark:hover:text-primary"
-                />
+
+                {rightSection.map((link, index) => (
+                  <Link to={link.path}>
+                    <li>{link.icon}</li>
+                  </Link>
+                ))}
                 <div className="flex items-center gap-2 cursor-pointer">
                   <div className="w-6 h-6 bg-secondary rounded-full overflow-hidden">
                     <img

@@ -1,5 +1,5 @@
 import React from "react";
-import Form from "../../components/user/Form";
+import Form from "../../components/Form.jsx";
 import { signUpValidationSchema } from "../../validationSchemas";
 import SignGoogle from "../../components/user/SignGoogle";
 const SignUp = () => {
