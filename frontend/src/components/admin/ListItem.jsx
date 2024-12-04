@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const ListItem = ({ title, items, columns, icon, textColor, actions }) => {
   return (
     <div
-      className={`rounded-lg shadow-md bg-gray-100 dark:bg-black p-10 ${
-        textColor || "text-gray-800"
+      className={`rounded-lg  shadow-md bg-gray-100 dark:bg-black p-2 sm:p-10 ${
+        textColor || "text-gray-800 "
       }`}
     >
       {/* Header */}
@@ -23,39 +23,48 @@ const ListItem = ({ title, items, columns, icon, textColor, actions }) => {
         {items.map((item, index) => (
           <li
             key={index}
-            className="flex justify-between items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
+            className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
           >
-            {/* Render each column */}
-            {columns.map((column) => (
-              <div
-                key={column.key}
-                className={`flex flex-col text-center ${
-                  column.className || ""
-                }`}
-              >
-                <span>{column.label && column.label}</span>
-                <span className="font-bold">
-                  {column.render
-                    ? column.render(item[column.key])
-                    : item[column.key] || "N/A"}
-                </span>
+            <div className="flex flex-col sm:flex-row justify-center items-start sm:items-center space-y-4 sm:space-y-0">
+              {/* Render each column */}
+              <div className="flex mx-auto flex-col md:flex-row sm:items-center sm:space-x-8 flex-grow">
+                {columns.map((column) => (
+                  <div
+                    key={column.key}
+                    className={`flex flex-col text-center sm:text-left ${
+                      column.className || ""
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-gray-500">
+                      {column.label && column.label}
+                    </span>
+                    <span className="font-bold text-lg">
+                      {column.render
+                        ? column.render(item[column.key])
+                        : item[column.key] || "N/A"}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
 
-            {/* Action Buttons */}
-            <div className="flex space-x-2">
-              {item.controls.map((control, index) => (
-                <button
-                  key={index}
-                  onClick={control.action}
-                  className={`${control.style} text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-transform transform hover:scale-105`}
-                >
-                  {control.icon && (
-                    <FontAwesomeIcon icon={control.icon} className="text-md" />
-                  )}
-                  <span>{control.text}</span>
-                </button>
-              ))}
+              {/* Action Buttons */}
+              <div className="flex flex-wrap justify-start sm:justify-end space-x-2 sm:space-x-4 space-y-2 sm:space-y-0 mx-auto items-center ">
+                {item.controls.map((control, index) => (
+                  <button
+                    key={index}
+                    onClick={control.action}
+                    className={`${control.style} text-white justify-center  w-24 h-10 rounded-lg flex items-center space-x-2 transition-transform transform hover:scale-105 my-1 `}
+                  >
+                    {control.icon && (
+                      <FontAwesomeIcon
+                        icon={control.icon}
+                        className="text-md"
+                      />
+                    )}
+                    <span>{control.text}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </li>
         ))}

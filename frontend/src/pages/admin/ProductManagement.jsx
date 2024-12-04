@@ -67,7 +67,7 @@ const ProductManagement = () => {
   ];
 
   return (
-    <div className="pt-14">
+    <div className="pt-14 me-2 sm:me-5 ">
       <div className="flex justify-center">
         <SearchBar />
       </div>
