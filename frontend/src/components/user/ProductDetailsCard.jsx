@@ -167,7 +167,7 @@ const ProductDetails = () => {
                   onClick={() => setSelectedCapacity(capacity.id)}
                   className={`p-3 rounded-lg border-2 text-left transition-all ${
                     selectedCapacity === capacity.id
-                      ? "bg-blue text-white border-blue-600"
+                      ? "bg-skyBlue text-white border-blue-600"
                       : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                   }`}
                 >
@@ -194,7 +194,7 @@ const ProductDetails = () => {
                   onClick={() => setSelectedVariant(color)}
                   className={`p-2 rounded-lg border-2 ${
                     selectedVariant === color
-                      ? "border-blue bg-blue dark:bg-blue text-lightText"
+                      ? "border-skyBlue bg-skyBlue dark:bg-skyBlue text-lightText"
                       : "border-gray-200 dark:border-gray-700 dark:text-lightText hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
                 >
@@ -218,10 +218,6 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
-
-
-
-
 
       <div className="grid md:grid-cols-2 gap-5 mt-16">
         {/* Product Specifications */}

@@ -11,7 +11,7 @@ module.exports = {
         secondary: "#a6a6a6",
         primary: "#A855F7",
         darkGray: "#828282",
-        blue:'#0867d2'
+        skyBlue:'#0867d2'
       },
       screens: {
         "5xl": "1800px",
