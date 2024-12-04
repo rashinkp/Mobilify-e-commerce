@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import AddCartButton from "./AddCartButton";
+import ArchiveButton from "../ui/ArchiveButton";
+import SoftDeleteButton from "../ui/SoftDeleteButton";
+import DeleteButton from "../ui/DeleteButton";
+import EditButton from "../ui/EditButton";
 
 const ProductDetails = () => {
   const [mainImage, setMainImage] = useState("/images/product1.jpg");
-  const [selectedVariant, setSelectedVariant] = useState("Black");
-
 
   const thumbnails = [
     "/images/product1.jpg",
@@ -70,16 +71,13 @@ const ProductDetails = () => {
     stock: "In Stock",
   };
 
-    const [selectedCapacity, setSelectedCapacity] = useState(product.capacities[0].id);
+  const [selectedCapacity, setSelectedCapacity] = useState(
+    product.capacities[0].id
+  );
 
   const selectedCapacityDetails = selectedCapacity
     ? product.capacities.find((cap) => cap.id === selectedCapacity)
     : product.capacities[0];
-  
-  
-  
-  
-  
 
   return (
     <div className="max-w-6xl mx-auto p-5 bg-white dark:bg-black shadow-lg rounded-xl">
@@ -155,56 +153,6 @@ const ProductDetails = () => {
             {product.description}
           </p>
 
-          {/* Capacity Selection */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
-              Select Storage & RAM:
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {product.capacities.map((capacity) => (
-                <button
-                  key={capacity.id}
-                  onClick={() => setSelectedCapacity(capacity.id)}
-                  className={`p-3 rounded-lg border-2 text-left transition-all ${
-                    selectedCapacity === capacity.id
-                      ? "bg-skyBlue text-white border-blue-600"
-                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <div className="font-bold">
-                    {capacity.storage}GB / {capacity.ram}GB RAM
-                  </div>
-                  <div className="text-sm">
-                    ₹{capacity.price.toLocaleString()}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Color Selection */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
-              Select Color:
-            </h3>
-            <div className="grid sm:grid-cols-4  gap-3">
-              {product.color.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedVariant(color)}
-                  className={`p-2 rounded-lg border-2 ${
-                    selectedVariant === color
-                      ? "border-skyBlue bg-skyBlue dark:bg-skyBlue text-lightText"
-                      : "border-gray-200 dark:border-gray-700 dark:text-lightText hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  {color}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Price and Cart */}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -214,7 +162,19 @@ const ProductDetails = () => {
                 {product.offer} Applied
               </p>
             </div>
-            <AddCartButton />
+          </div>
+          <div className="flex flex-wrap  gap-3 p-4">
+            {/* Edit Button */}
+            <EditButton />
+
+            {/* Archive Button */}
+            <ArchiveButton />
+
+            {/* Soft Delete Button */}
+            <SoftDeleteButton />
+
+            {/* Delete Permanently Button */}
+            <DeleteButton />
           </div>
         </div>
       </div>
@@ -296,18 +256,7 @@ const ProductDetails = () => {
               {product.returnPolicy}
             </p>
           </div>
-          <div>
-            <p className="text-gray-600 dark:text-gray-400 mb-1">
-              Stock Status
-            </p>
-            <p
-              className={`font-semibold ${
-                product.stock === "In Stock" ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {product.stock}
-            </p>
-          </div>
+          
 
           <div>
             <p className="flex gap-10 items-center">

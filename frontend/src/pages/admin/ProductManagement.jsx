@@ -71,7 +71,7 @@ const ProductManagement = () => {
       <div className="flex justify-center">
         <SearchBar />
       </div>
-      <div className="max-w-7xl mt-10 mx-auto">
+      <div className="max-w-7xl mt-10 ms-10 me-4 sm:me-10">
         <div className="flex justify-end mb-5">
           <button className="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105">
             <FontAwesomeIcon icon="fa-solid fa-plus" /> Add Product

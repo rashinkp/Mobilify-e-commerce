@@ -107,9 +107,8 @@ const SalesManagement = () => {
 
   return (
     <div className="pt-14">
-      <div className="flex justify-center">
-      </div>
-      <div className="max-w-7xl mt-10 mx-auto">
+      <div className="flex justify-center"></div>
+      <div className="max-w-7xl mt-10 ms-10 me-4 sm:me-10">
         <ListItem
           title="Order List"
           items={orders}

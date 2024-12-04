@@ -9,16 +9,18 @@ import Sidebar from '../components/admin/SideBar';
 import CouponManagement from '../pages/admin/CouponManagement.jsx'
 import SalesManagement from '../pages/admin/SalesManagement.jsx'
 import AdminProfile from '../pages/admin/AdminProfile.jsx'
+import ProductDetail from '../pages/admin/ProductDetail.jsx';
 const AdminRoutes = () => {
   
   return (
     <>
       <Sidebar />
-      <div className='ms-10 sm:ms-20'>
+      <div className="ms-10 sm:ms-20">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/manage-users" element={<UserManagment />} />
           <Route path="/manage-products" element={<ProductManagement />} />
+          <Route path="/manage-product" element={<ProductDetail />} />
           <Route path="/manage-orders" element={<OrderManagement />} />
           <Route path="/login" element={<AdminLogin />} />
           <Route path="/manage-coupon" element={<CouponManagement />} />

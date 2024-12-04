@@ -1,5 +1,5 @@
 import React from "react";
-import ProductDetailsCard from '../../components/user/ProductDetailsCard.jsx'
+import ProductDetailsCard from '../../components/ProductDetailsCard.jsx'
 import Review from "../../components/user/Review.jsx";
 import Footer from '../../components/user/Footer.jsx'
 import ProductCard from '../../components/user/ProductCard.jsx'

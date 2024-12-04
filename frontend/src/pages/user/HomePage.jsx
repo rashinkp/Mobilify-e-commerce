@@ -1,7 +1,7 @@
 import React from "react";
 import Banner1 from "../../assets/Banner1_Home.svg";
 import Banner2 from "../../assets/Banner2_Home.svg";
-import ProductCard from "../../components/user/ProductCard";
+import ProductCard from "../../components/user/ProductCard.jsx";
 import Footer from "../../components/user/Footer";
 const HomePage = () => {
   return (
