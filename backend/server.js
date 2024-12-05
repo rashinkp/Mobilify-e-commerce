@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 // Centralized Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong" });
+  res.status(500).json({ message: err?.message || "Something went wrong" });
 });
 
 // Start server

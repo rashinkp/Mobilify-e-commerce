@@ -15,6 +15,11 @@ import UserDetail from '../pages/admin/UserDetail.jsx';
 import { useLocation } from 'react-router';
 const AdminRoutes = () => {
   const location = useLocation();
+
+  
+
+
+
   return (
     <>
       {location.pathname !== '/admin/login' && <Sidebar />}
