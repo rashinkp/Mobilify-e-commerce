@@ -106,18 +106,19 @@ const StorageCapacityManager = () => {
                 Add Color
               </button>
             </div>
-            <div className="flex justify-center gap-5 items-center">
+            <div className="flex justify-center mt-5 gap-5 items-center">
+              <span>Add stock</span>
               <button
                 onClick={() => decreaseStock(index)}
                 className="bg-darkBackground text-white px-3 py-1 rounded-md shadow-md transition duration-200"
               >
                 <FontAwesomeIcon icon={faMinus} />
               </button>
+
               <input
                 type="number"
                 id="first_name"
                 class="bg-gray-50 border w-28 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                value={capacity.stock}
                 required
               />
               <button

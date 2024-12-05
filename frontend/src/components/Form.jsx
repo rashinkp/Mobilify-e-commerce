@@ -46,7 +46,6 @@ const Form = ({
           <Controller
             name={field.name}
             control={control}
-            rules={validationRules[field.name]}
             render={({ field: controlledField }) => (
               <input
                 type={field.type}
@@ -69,20 +68,21 @@ const Form = ({
       >
         {buttonText}
       </button>
-      {extraLinks.map((link, index) => (
-        <p
-          key={index}
-          className="text-md text-gray-600 dark:text-gray-300 text-center"
-        >
-          {link.text}{" "}
-          <Link
-            to={link.path}
-            className="text-skyBlue hover:underline dark:text-blue-400"
+      {extraLinks &&
+        extraLinks.map((link, index) => (
+          <p
+            key={index}
+            className="text-md text-gray-600 dark:text-gray-300 text-center"
           >
-            {link.linkText}
-          </Link>
-        </p>
-      ))}
+            {link.text}{" "}
+            <Link
+              to={link.path}
+              className="text-skyBlue hover:underline dark:text-blue-400"
+            >
+              {link.linkText}
+            </Link>
+          </p>
+        ))}
     </form>
   );
 };

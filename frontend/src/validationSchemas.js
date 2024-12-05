@@ -28,6 +28,13 @@ export const loginValidationSchema = Yup.object().shape({
 });
 
 
+export const categoryNameValidationSchema = Yup.object().shape({
+  category: Yup.string()
+    .required("Category is required")
+    .min(4, "Minimum 4 characters required"),
+});
+
+
 
 export const otpValidationSchema = Yup.object().shape({
   otp: Yup.string()
