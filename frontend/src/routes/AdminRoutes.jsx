@@ -11,6 +11,7 @@ import SalesManagement from '../pages/admin/SalesManagement.jsx'
 import AdminProfile from '../pages/admin/AdminProfile.jsx'
 import ProductDetail from '../pages/admin/ProductDetail.jsx';
 import CategoryManagement from '../pages/admin/CategoryManagement.jsx';
+import UserDetail from '../pages/admin/UserDetail.jsx';
 const AdminRoutes = () => {
   
   return (
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/manage-users" element={<UserManagment />} />
+          <Route path="/manage-user" element={<UserDetail />} />
           <Route path="/manage-products" element={<ProductManagement />} />
           <Route path="/manage-product" element={<ProductDetail />} />
           <Route path="/manage-orders" element={<OrderManagement />} />

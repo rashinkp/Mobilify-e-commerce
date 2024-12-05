@@ -94,7 +94,7 @@ const Sidebar = () => {
             icon={faLayerGroup}
             label="Admin Profile"
             isSidebarOpen={isSidebarOpen}
-            path="/admin/profile"
+            path="/admin/manage-category"
           />
         </Link>
 
