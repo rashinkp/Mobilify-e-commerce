@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
+import ReviewList from "../../components/admin/ReviewList";
 
 const ProductManagement = () => {
   const [product, setProduct] = useState({
@@ -43,6 +44,20 @@ const ProductManagement = () => {
         storage: "256GB",
         ram: "8GB",
         stockCount: 10,
+      },
+    ],
+    reviews: [
+      {
+        id: "REV001",
+        comment: "Great product!",
+        date: "2023-09-12",
+        rating: 5,
+      },
+      {
+        id: "REV002",
+        comment: "Average experience.",
+        date: "2023-10-05",
+        rating: 3,
       },
     ],
   });
@@ -206,6 +221,11 @@ const ProductManagement = () => {
               </div>
             ))}
           </div>
+        </div>
+
+
+        <div>
+          <ReviewList reviews={product.reviews} />
         </div>
 
         {/* Action Buttons */}

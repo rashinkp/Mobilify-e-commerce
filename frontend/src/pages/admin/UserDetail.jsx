@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import ReviewList from "../../components/admin/ReviewList";
 
 const UserDetail = () => {
   const user = {
@@ -123,29 +124,7 @@ const UserDetail = () => {
         </div>
 
         {/* Reviews Section */}
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Reviews
-          </h2>
-          <ul className="mt-4 text-gray-600 dark:text-white space-y-2">
-            {user.reviews.map((review) => (
-              <li
-                key={review.id}
-                className="bg-gray-100 dark:bg-darkBackground p-4 rounded-md shadow-sm"
-              >
-                <p>
-                  <strong>Comment:</strong> {review.comment}
-                </p>
-                <p>
-                  <strong>Date:</strong> {review.date}
-                </p>
-                <p>
-                  <strong>Rating:</strong> {"⭐".repeat(review.rating)}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ReviewList reviews={user.reviews} />
 
         {/* Action Buttons */}
         <div className="p-6 bg-gray-50 dark:bg-black flex flex-col gap-3 sm:flex-row sm:justify-end">
