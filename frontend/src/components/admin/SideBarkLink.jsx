@@ -9,7 +9,7 @@ const SideBarkLink = ({ icon, label, isSidebarOpen,path }) => {
   return (
     <div
       className={` flex items-center space-x-4 text-darkText hover:text-white cursor-pointer p-2 rounded-md hover:bg-gray-700 dark:text-white mt-2 ${
-        location.pathname === path && "bg-skyBlue text-white"
+        (location.pathname === path ) && "bg-skyBlue text-white"
       }`}
     >
       <FontAwesomeIcon icon={icon} size="lg" />

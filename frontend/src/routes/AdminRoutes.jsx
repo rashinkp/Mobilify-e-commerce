@@ -12,11 +12,12 @@ import AdminProfile from '../pages/admin/AdminProfile.jsx'
 import ProductDetail from '../pages/admin/ProductDetail.jsx';
 import CategoryManagement from '../pages/admin/CategoryManagement.jsx';
 import UserDetail from '../pages/admin/UserDetail.jsx';
+import { useLocation } from 'react-router';
 const AdminRoutes = () => {
-  
+  const location = useLocation();
   return (
     <>
-      <Sidebar />
+      {location.pathname !== '/admin/login' && <Sidebar />}
       <div className="ms-10 sm:ms-20">
         <Routes>
           <Route path="/" element={<Dashboard />} />
