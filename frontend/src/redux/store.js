@@ -1,15 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import themeReducer from "./slices/themeSlice.js";
-import { thunk } from "redux-thunk";
-import adminAuthReducer from '../redux/slices/AdminAuthSlice.js';
-import userAuthReducer from '../redux/slices/UserAuthSlice.js';
+import { apiSlice } from "./slices/apiSlices.js";
+import authAdminReducer from './slices/authAdmin.js'
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     theme: themeReducer,
-    adminAuth: adminAuthReducer,
-    userAuth:userAuthReducer
+    adminAuth: authAdminReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
   },
-
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(apiSlice.middleware),
+  devTools: true,
 });
+
+
+export default store;

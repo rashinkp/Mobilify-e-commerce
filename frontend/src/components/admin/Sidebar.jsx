@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTachometerAlt,
@@ -16,19 +16,24 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/slices/themeSlice.js";
 import SideBarkLink from "./SideBarkLink.jsx";
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@headlessui/react";
 
 const Sidebar = () => {
-
-
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-
-  const theme = useSelector((state) => state.theme.theme)
+  const theme = useSelector((state) => state.theme.theme);
   const dispatch = useDispatch();
+  
+
+  const handleLogout = () => {
+    dispatch(logoutAdmin())
+    navigate('/admin/login')
+  }
   return (
     <div
-      className={`h-screen fixed ${
+      className={`h-screen fixed pe-2 ${
         isSidebarOpen ? "w-64" : "w-16"
       } bg-gray-100 dark:bg-black dark:text-white text-darkText  flex flex-col`}
     >
@@ -142,10 +147,17 @@ const Sidebar = () => {
           />
         </button>
       </div>
+      <div className="p-4">
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600`}
+        >
+          <FontAwesomeIcon icon="fa-solid fa-right-from-bracket" />
+          {isSidebarOpen && <span>Logout</span>}
+        </button>
+      </div>
     </div>
   );
 };
-
-
 
 export default Sidebar;

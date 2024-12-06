@@ -4,10 +4,15 @@ import Form from "../../components/Form.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
-import { loginAdmin } from "../../services/auth.js";
 import { useNavigate } from "react-router";
+import { useAdminLoginMutation } from "../../redux/slices/AdminApiSlices.js";
+import { adminLogin } from "../../redux/slices/authAdmin.js";
+
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  //props for form
   const formField = [
     {
       name: "email",
@@ -25,29 +30,40 @@ const AdminLogin = () => {
     },
   ];
 
-  const dispatch = useDispatch();
-  const { success, loading, error } = useSelector((state) => state.adminAuth);
-  useEffect(() => {
-    if (error) {
-      errorToast(error);
-    }
-
-    if (success) {
-      successToast("You have logged");
-    }
-  }, [error, success]);
-
-  const handleAdminAuth = async (data) => {
-    dispatch(loginAdmin(data));
-    navigate('/admin')
-  };
-
   const extraLinks = [
     {
-      linkText: "Fogot password ?",
-      path: "/admin",
+      linkText: "Forgot password?",
+      path: "/admin/forgot-password",
     },
   ];
+
+  
+
+  
+  //api handling
+
+  const [login, { isLoading }] = useAdminLoginMutation();
+
+  const { admin } = useSelector((state) => state.adminAuth)
+
+
+
+  useEffect(() => {
+    if (admin) {
+      navigate('/admin');
+    }
+  }, [navigate, admin])
+  
+    const handleAdminAuth = async ({email , password}) => {
+      try {
+        const res = await login({ email, password }).unwrap();
+        dispatch(adminLogin({ ...res }));
+        successToast('Login Successfull');
+        navigate('/admin')
+      } catch (err) {
+        errorToast(err?.data?.message || err.message || err.error);
+      }
+    };
 
   return (
     <>
@@ -60,7 +76,7 @@ const AdminLogin = () => {
           buttonText="Login"
           validationRules={loginValidationSchema}
         />
-        {loading && (
+        {isLoading && (
           <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
             <RotatingLines
               visible={true}

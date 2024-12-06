@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Sidebar from "../../components/admin/SideBar";
 import Widget from "../../components/admin/Widget.jsx";
 import SearchBar from "../../components/SearchBar.jsx";
 import ListCard from "../../components/admin/ListCard.jsx";
@@ -8,15 +7,9 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 const Dashboard = () => {
 
-  const {user, loading} = useSelector((state) => state.adminAuth)
-  const navigate = useNavigate();
 
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/admin/login");
-    }
-  }, [user, navigate]);
+
   const widgets = [
     {
       title: "Total Sales",
