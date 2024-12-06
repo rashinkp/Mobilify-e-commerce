@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
 import { loginAdmin } from "../../services/auth.js";
+import { useNavigate } from "react-router";
 const AdminLogin = () => {
+  const navigate = useNavigate();
   const formField = [
     {
       name: "email",
@@ -23,8 +25,8 @@ const AdminLogin = () => {
     },
   ];
 
-const dispatch = useDispatch();
-  const {success , loading , error} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { success, loading, error } = useSelector((state) => state.adminAuth);
   useEffect(() => {
     if (error) {
       errorToast(error);
@@ -33,10 +35,11 @@ const dispatch = useDispatch();
     if (success) {
       successToast("You have logged");
     }
-  }, [error , success]);
+  }, [error, success]);
 
   const handleAdminAuth = async (data) => {
-    dispatch(loginAdmin(data))
+    dispatch(loginAdmin(data));
+    navigate('/admin')
   };
 
   const extraLinks = [

@@ -1,10 +1,14 @@
-import { loginFailure, loginStart, loginSuccess } from "../redux/slices/authSlice";
+import {
+  loginFailure,
+  loginStart,
+  loginSuccess,
+} from "../redux/slices/AdminAuthSlice.js";
 import axiosInstance from "./axiosInstancle";
 
 export const loginAdmin = (data) => async (dispatch) => {
   dispatch(loginStart());
   try {
-    const response = await axiosInstance.post('admin/login', data);
+    const response = await axiosInstance.post("admin/login", data);
     dispatch(loginSuccess(response.data));
   } catch (error) {
     dispatch(
@@ -13,4 +17,4 @@ export const loginAdmin = (data) => async (dispatch) => {
       )
     );
   }
-}
+};

@@ -1,8 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Form from "../../components/Form.jsx";
 import { signUpValidationSchema } from "../../validationSchemas";
 import SignGoogle from "../../components/user/SignGoogle";
+import { useDispatch, useSelector } from "react-redux";
+import { errorToast, successToast } from "../../components/toast/index.js";
+import { registerUser } from "../../services/registerUser.js";
 const SignUp = () => {
+  const dispatch = useDispatch();
+  const { success, loading, error } = useSelector((state) => state.userAuth)
+
+
+  useEffect(() => {
+    if (success) {
+      successToast('Registration Successful');
+    }
+
+    if (error) {
+      errorToast(error)
+    }
+  }, [success, error])
+  
+
   const formFields = [
     {
       name: "name",
@@ -45,7 +63,7 @@ const SignUp = () => {
 
 
   const handleSignup = (data) => {
-    console.log('Signup data:',data)
+    dispatch(registerUser(data))
   }
 
   return (

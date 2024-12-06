@@ -11,7 +11,12 @@ const app = express();
 // Connect to MongoDB
 connectDB()
 // Middleware
-app.use(cors()); // Enable CORS
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
