@@ -17,19 +17,27 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/slices/themeSlice.js";
 import SideBarkLink from "./SideBarkLink.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@headlessui/react";
+import { useAdminLogoutMutation } from "../../redux/slices/AdminApiSlices.js";
+import { adminLogout } from "../../redux/slices/authAdmin.js";
+import { successToast } from "../toast/index.js";
 
 const Sidebar = () => {
-  const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const theme = useSelector((state) => state.theme.theme);
   const dispatch = useDispatch();
-  
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logoutAdmin())
-    navigate('/admin/login')
+  const [logoutApiCall] = useAdminLogoutMutation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const theme = useSelector((state) => state.theme.theme);
+  
+  const handleLogout = async() => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(adminLogout());
+      successToast('Logout successfull')
+      navigate('/admin/login')
+    } catch (err) {
+      console.log(err);
+    }
   }
   return (
     <div
