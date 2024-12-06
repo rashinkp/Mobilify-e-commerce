@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { loginValidationSchema } from "../../validationSchemas";
 import Form from "../../components/Form.jsx";
-import { adminLogin } from "../../redux/actions/auth.js";
 import { useDispatch, useSelector } from "react-redux";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
+import { loginAdmin } from "../../services/auth.js";
 const AdminLogin = () => {
   const formField = [
     {
@@ -23,22 +23,20 @@ const AdminLogin = () => {
     },
   ];
 
-  const dispatch = useDispatch();
-  const value = useSelector((state) => state.auth);
-  console.log("[value]:", value);
-
+const dispatch = useDispatch();
+  const {success , loading , error} = useSelector((state) => state.auth);
   useEffect(() => {
-    if (value.error) {
-      errorToast(value.error);
+    if (error) {
+      errorToast(error);
     }
 
-    if (value.success) {
+    if (success) {
       successToast("You have logged");
     }
-  }, [value]);
+  }, [error , success]);
 
   const handleAdminAuth = async (data) => {
-    adminLogin("http://localhost:4000/api/admin/login", data, dispatch);
+    dispatch(loginAdmin(data))
   };
 
   const extraLinks = [
@@ -59,8 +57,8 @@ const AdminLogin = () => {
           buttonText="Login"
           validationRules={loginValidationSchema}
         />
-        {value.loading && (
-          <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/0 flex justify-center items-center">
+        {loading && (
+          <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
             <RotatingLines
               visible={true}
               height="50"

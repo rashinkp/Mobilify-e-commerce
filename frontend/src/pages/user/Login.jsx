@@ -2,8 +2,6 @@ import React from "react";
 import Form from "../../components/Form.jsx";
 import { loginValidationSchema } from "../../validationSchemas";
 import SignGoogle from "../../components/user/SignGoogle";
-import { useDispatch, useSelector} from "react-redux"
-import { adminLogin } from "../../redux/actions/auth.js";
 const Login = () => {
   const loginFields = [
     {

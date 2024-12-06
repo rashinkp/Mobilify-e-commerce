@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import connectDB from "./config/db.js"; 
 import adminRoutes from './routes/adminRouter.js'
-
+import userRoutes from './routes/userRouter.js'
 dotenv.config(); 
 
 const app = express();
@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/api/admin", adminRoutes);
+app.use('/api/user', userRoutes);
 
 // Handle 404 Errors
 app.use((req, res, next) => {
