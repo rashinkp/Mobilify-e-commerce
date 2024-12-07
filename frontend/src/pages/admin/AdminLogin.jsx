@@ -44,15 +44,14 @@ const AdminLogin = () => {
 
   const [login, { isLoading }] = useAdminLoginMutation();
 
-  const { admin } = useSelector((state) => state.adminAuth)
-
+  const { adminInfo } = useSelector((state) => state.adminAuth)
 
 
   useEffect(() => {
-    if (admin) {
+    if (adminInfo) {
       navigate('/admin');
     }
-  }, [navigate, admin])
+  }, [navigate, adminInfo])
   
     const handleAdminAuth = async ({email , password}) => {
       try {

@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Banner1 from "../../assets/Banner1_Home.svg";
 import Banner2 from "../../assets/Banner2_Home.svg";
 import ProductCard from "../../components/user/ProductCard.jsx";
 import Footer from "../../components/user/Footer";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 const HomePage = () => {
+  const { userInfo } = useSelector((state) => state.userAuth);
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/user/login')
+    }
+  },[userInfo,navigate])
   return (
+
+    
     <div className="">
       <img src={Banner1} className="w-full mb-20 object-fill" alt="" />
       <div className="px-16">

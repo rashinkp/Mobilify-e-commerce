@@ -7,7 +7,14 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 const Dashboard = () => {
 
+  const { adminInfo } = useSelector((state) => state.adminAuth)
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!adminInfo) {
+      navigate('/admin/login')
+    }
+  },[adminInfo,navigate])
 
 
   const widgets = [

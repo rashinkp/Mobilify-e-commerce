@@ -2,10 +2,18 @@ import React from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ListItem = ({ title, items, columns, icon, textColor, actions }) => {
+const ListItem = ({
+  title,
+  items = [],
+  controles = () => [], 
+  columns,
+  icon,
+  textColor,
+  actions,
+}) => {
   return (
     <div
-      className={`rounded-lg shadow-md bg-gray-100 dark:bg-black p-4 sm:p-8 ${
+      className={`rounded-lg shadow-md p-4 sm:p-8 ${
         textColor || "text-gray-800"
       }`}
     >
@@ -51,7 +59,7 @@ const ListItem = ({ title, items, columns, icon, textColor, actions }) => {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-4">
-                {item.controls.map((control, index) => (
+                {controles(item._id).map((control, index) => (
                   <button
                     key={index}
                     onClick={control.action}
@@ -75,32 +83,33 @@ const ListItem = ({ title, items, columns, icon, textColor, actions }) => {
   );
 };
 
-ListItem.propTypes = {
-  title: PropTypes.string.isRequired,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      img: PropTypes.string,
-      controls: PropTypes.arrayOf(
-        PropTypes.shape({
-          text: PropTypes.string.isRequired,
-          action: PropTypes.func.isRequired,
-          style: PropTypes.string.isRequired,
-          icon: PropTypes.string,
-        })
-      ),
-    })
-  ).isRequired,
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      label: PropTypes.string,
-      render: PropTypes.func, // Optional custom render function
-      className: PropTypes.string, // Optional class for column
-    })
-  ).isRequired,
-  icon: PropTypes.string,
-  textColor: PropTypes.string,
-  actions: PropTypes.node,
-};
+
+// ListItem.propTypes = {
+//   title: PropTypes.string.isRequired,
+//   items: PropTypes.arrayOf(
+//     PropTypes.shape({
+//       img: PropTypes.string,
+//       controls: PropTypes.arrayOf(
+//         PropTypes.shape({
+//           text: PropTypes.string.isRequired,
+//           action: PropTypes.func.isRequired,
+//           style: PropTypes.string.isRequired,
+//           icon: PropTypes.string,
+//         })
+//       ),
+//     })
+//   ).isRequired,
+//   columns: PropTypes.arrayOf(
+//     PropTypes.shape({
+//       key: PropTypes.string.isRequired,
+//       label: PropTypes.string,
+//       render: PropTypes.func, // Optional custom render function
+//       className: PropTypes.string, // Optional class for column
+//     })
+//   ).isRequired,
+//   icon: PropTypes.string,
+//   textColor: PropTypes.string,
+//   actions: PropTypes.node,
+// };
 
 export default ListItem;

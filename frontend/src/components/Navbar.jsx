@@ -5,15 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/slices/themeSlice.js";
-import { Link, useLocation } from "react-router";
-const Navbar = ({
-  icons,
-  links,
-  rightSection,
-  profile,
-  isLogged,
-  role,
-}) => {
+import { Link, useLocation, useNavigate } from "react-router";
+import { useLogoutMutation } from "../redux/slices/userApiSlices.js";
+import { userLogout } from "../redux/slices/authUser.js";
+import { successToast } from "./toast/index.js";
+const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -21,6 +17,111 @@ const Navbar = ({
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.theme);
+
+
+  const navigate = useNavigate();
+  const icons = {
+    light: IconMain,
+    dark: IconMainWhite,
+  };
+
+  const [logoutApiCall] = useLogoutMutation();
+
+  const {userInfo} = useSelector((state) => state.userAuth)
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      setDropdownOpen(false)
+      await logoutApiCall().unwrap();
+      dispatch(userLogout());
+      successToast("Logout Successful");
+      navigate("/user/login");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const profile = {
+    img: "https://via.placeholder.com/150",
+    list: [
+      {
+        text: "Profile",
+        path: "/user/profile",
+      },
+      {
+        text: "Orders",
+        path: "/user/orders",
+      },
+      {
+        text: "Wishlist",
+        path: "/user/profile",
+      },
+      {
+        text: "Wallet",
+        path: "/user/wallet",
+      },
+    ],
+  };
+
+  const links = [
+    {
+      text: "home",
+      path: "/user",
+    },
+    {
+      text: "products",
+      path: "/user/products",
+    },
+    {
+      text: "contact",
+      path: "/user/contact",
+    },
+    {
+      text: "about us",
+      path: "/user/about",
+    },
+  ];
+
+  const rightSection = [
+    {
+      text: "Wish List",
+      icon: (
+        <FontAwesomeIcon
+          icon={["far", "heart"]}
+          size="xl"
+          className="cursor-pointer dark:text-lightText hover:text-primary"
+        />
+      ),
+      path: "/user/wishlist",
+    },
+    {
+      text: "My Cart",
+      icon: (
+        <FontAwesomeIcon
+          icon={["fas", "cart-shopping"]}
+          size="xl"
+          className="cursor-pointer dark:text-lightText hover:text-primary"
+        />
+      ),
+      path: "/user/cart",
+    },
+    {
+      text: "Toggle Theme",
+      icon: (
+        <FontAwesomeIcon
+          size="xl"
+          onClick={() => dispatch(toggleTheme())}
+          icon="fa-solid fa-moon"
+          className="cursor-pointer  hover:text-primary dark:text-lightText dark:hover:text-primary"
+        />
+      ),
+      onClick: () => dispatch(toggleTheme()),
+    },
+  ];
+
+
+  
 
   // Close the menu when the screen size is increased beyond a certain breakpoint
   useEffect(() => {
@@ -86,14 +187,15 @@ const Navbar = ({
         </div>
 
         {/* Right Section */}
-        {isLogged ? (
+        {userInfo ? (
           <div className="hidden lg:flex items-center gap-4 lg:gap-6">
             {/* Updated icons to prevent errors and ensure they appear */}
-            {rightSection && rightSection.map((link, index) => (
-              <Link key={index} to={link.path}>
-                {link.icon}
-              </Link>
-            ))}
+            {rightSection &&
+              rightSection.map((link, index) => (
+                <Link key={index} to={link.path}>
+                  {link.icon}
+                </Link>
+              ))}
 
             <div className="flex items-center gap-2 cursor-pointer relative">
               <div className="w-8 h-8 bg-lightBackground rounded-full overflow-hidden">
@@ -118,15 +220,15 @@ const Navbar = ({
                   <ul className="flex flex-col gap-4 px-4 py-3">
                     {profile.list.map((item, index) => (
                       <Link key={index} to={item.path}>
-                        <li
-                          className={`cursor-pointer ${
-                            item.text === "Logout" && "text-red-600"
-                          } hover:text-primary`}
-                        >
+                        <li className={`cursor-pointer hover:text-primary`}>
                           {item.text.toUpperCase()}
                         </li>
                       </Link>
                     ))}
+
+                    <li onClick={(e) => handleLogout(e)} className={`cursor-pointer hover:text-red-800 text-red-600`}>
+                      LOGOUT
+                    </li>
                   </ul>
                 </div>
               )}
@@ -144,14 +246,13 @@ const Navbar = ({
                 />
               </li>
               <li className="cursor-pointer hover:text-purple-700 ">LOGIN</li>
-              {role === "user" && (
+             
                 <li className="cursor-pointer hover:text-purple-700 ">
                   <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
                     <button className="">SIGN UP</button>
                     <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
                   </div>
                 </li>
-              )}
             </ul>
           </div>
         )}
