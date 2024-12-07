@@ -1,4 +1,5 @@
 import Admin from "../models/adminSchema.js";
+import Brand from "../models/brandSchema.js";
 import User from "../models/userSchema.js";
 import generateToken from "../utils/generateToken.js";
 import asyncHandler from 'express-async-handler'
@@ -124,3 +125,38 @@ export const blockUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+export const addBrand = asyncHandler(async (req, res) => {
+  const { name, description, website } = req.body;
+
+   const brandExists = await Brand.findOne({ name });
+   if (brandExists) {
+     res.status(400);
+     console.log("Brand already exists");
+     throw new Error("Brand already exists");
+  }
+  
+  const brand = await Brand.create({
+    name,
+    description,
+    website,
+  })
+
+  if (brand) {
+    res.status(201).json({
+      _id: brand._id,
+      name: brand.name,
+      email: brand.description,
+    });
+  } else {
+     res.status(400);
+     console.log("Invalid brand data");
+     throw new Error("Invalid brand data");
+  }
+})
+
+
+
+export const getAllBrand = asyncHandler(async (req, res) => {
+  
+})

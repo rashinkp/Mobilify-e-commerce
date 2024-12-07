@@ -12,6 +12,7 @@ import {
   faMoon,
   faSun,
   faLayerGroup,
+  faListUl,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/slices/themeSlice.js";
@@ -28,17 +29,17 @@ const Sidebar = () => {
   const [logoutApiCall] = useAdminLogoutMutation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const theme = useSelector((state) => state.theme.theme);
-  
-  const handleLogout = async() => {
+
+  const handleLogout = async () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(adminLogout());
-      successToast('Logout successfull')
-      navigate('/admin/login')
+      successToast("Logout successfull");
+      navigate("/admin/login");
     } catch (err) {
       console.log(err);
     }
-  }
+  };
   return (
     <div
       className={`h-screen fixed pe-2 ${
@@ -105,9 +106,18 @@ const Sidebar = () => {
         >
           <SideBarkLink
             icon={faLayerGroup}
-            label="Admin Profile"
+            label="Category Management"
             isSidebarOpen={isSidebarOpen}
             path="/admin/manage-category"
+          />
+        </Link>
+
+        <Link to="/admin/manage-brands" onClick={() => setIsSidebarOpen(false)}>
+          <SideBarkLink
+            icon={faListUl}
+            label="Brand Management"
+            isSidebarOpen={isSidebarOpen}
+            path="/admin/manage-brands"
           />
         </Link>
 

@@ -1,6 +1,6 @@
 import { apiSlice } from "./apiSlices";
 
-const ADMIN_URL = '/api/admin';
+const ADMIN_URL = "/api/admin";
 
 export const adminApiSLice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -40,9 +40,22 @@ export const adminApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    addBrand: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/brand`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Brand"],
+    }),
   }),
 });
 
-
-export const { useAdminLoginMutation, useAdminLogoutMutation, useFetchUsersQuery,useDeleteUserMutation, useBlockUserMutation} =
-  adminApiSLice;
+export const {
+  useAdminLoginMutation,
+  useAdminLogoutMutation,
+  useFetchUsersQuery,
+  useDeleteUserMutation,
+  useBlockUserMutation,
+  useAddBrandMutation,
+} = adminApiSLice;
