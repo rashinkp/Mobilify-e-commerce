@@ -62,7 +62,7 @@ const ListItem = ({
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-4">
-                  {controles(item._id).map((control, index) => (
+                  {controles(item).map((control, index) => (
                     <button
                       key={index}
                       onClick={control.action}

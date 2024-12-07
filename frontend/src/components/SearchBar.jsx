@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useState } from "react";
 
-const SearchBar = () => {
+const SearchBar = ({ searchTerm }) => {
   return (
     <div className="bg-gray-200 dark:bg-darkBackground dark:border h-14 flex items-center px-4 gap-3 w-64 sm:w-[300px] md:w-[400px] lg:w-[500px] rounded-2xl shadow-md">
       <FontAwesomeIcon
@@ -10,6 +10,7 @@ const SearchBar = () => {
       />
       <input
         type="text"
+        onChange={(e) => searchTerm(e.target.value)}
         placeholder="Search..."
         className="bg-transparent w-full h-full text-gray-700 dark:text-gray-300 placeholder-gray-500 dark:placeholder-gray-400 outline-none focus:ring-0"
       />
