@@ -165,3 +165,15 @@ export const getAllBrand = asyncHandler(async (req, res) => {
     res.status(404).json({message:'Couldnt find any brands'})
   }
 })
+
+
+export const deleteBrand = asyncHandler(async (req, res) => {
+  const brandId = req.params.id;
+  const brand = await Brand.findByIdAndDelete(brandId);
+
+  if (brand) {
+    res.status(200).json({message:'Brand deleted successfully'})
+  } else {
+    res.status(404).json({message:'Brand not found'})
+  }
+})

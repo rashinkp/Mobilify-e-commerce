@@ -1,5 +1,5 @@
 import express from "express";
-import { addBrand, authAdmin, blockUser, deleteUser, getAllBrand, getAllUsers, logoutAdmin, registerAdmin } from "../controllers/adminControllers.js";
+import { addBrand, authAdmin, blockUser, deleteBrand, deleteUser, getAllBrand, getAllUsers, logoutAdmin, registerAdmin } from "../controllers/adminControllers.js";
 
 const router = express.Router();
 
@@ -13,6 +13,10 @@ router.put("/user/:id", blockUser);
 
 //brand routers
 router.route('/brand').post(addBrand).get(getAllBrand)
+
+//special brand routes
+
+router.route("/brand/:id").delete(deleteBrand);
 
 
 

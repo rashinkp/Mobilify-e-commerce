@@ -54,6 +54,15 @@ export const adminApiSLice = apiSlice.injectEndpoints({
         url: `${ADMIN_URL}/brand`,
         method: "GET",
       }),
+      providesTags: ["Brand"],
+    }),
+
+    deleteBrand: builder.mutation({
+      query: (brandId) => ({
+        url: `${ADMIN_URL}/brand/${brandId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Brand"],
     }),
   }),
 });
@@ -65,5 +74,6 @@ export const {
   useDeleteUserMutation,
   useBlockUserMutation,
   useAddBrandMutation,
-  useGetAllBrandQuery
+  useGetAllBrandQuery,
+  useDeleteBrandMutation
 } = adminApiSLice;
