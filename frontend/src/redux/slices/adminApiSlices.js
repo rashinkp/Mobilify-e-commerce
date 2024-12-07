@@ -22,20 +22,28 @@ export const adminApiSLice = apiSlice.injectEndpoints({
     fetchUsers: builder.query({
       query: () => ({
         url: `${ADMIN_URL}/users`,
-        method: "GET", 
+        method: "GET",
       }),
       providesTags: ["User"],
     }),
     deleteUser: builder.mutation({
       query: (userId) => ({
         url: `${ADMIN_URL}/user/${userId}`,
-        method:'DELETE',
+        method: "DELETE",
       }),
       invalidatesTags: ["User"],
-    })
+    }),
+    editUser: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `${ADMIN_URL}/user/${userId}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
 
-export const { useAdminLoginMutation, useAdminLogoutMutation, useFetchUsersQuery,useDeleteUserMutation } =
+export const { useAdminLoginMutation, useAdminLogoutMutation, useFetchUsersQuery,useDeleteUserMutation, useEditUserMutation} =
   adminApiSLice;

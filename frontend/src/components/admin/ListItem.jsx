@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const ListItem = ({
   title,
   items = [],
-  controles = () => [], 
+  controles = () => [],
   columns,
   icon,
   textColor,
@@ -28,88 +28,63 @@ const ListItem = ({
         {actions && <div className="flex space-x-2">{actions}</div>}
       </div>
 
-      {/* List */}
-      <ul className="space-y-6">
-        {items.map((item, index) => (
-          <li
-            key={index}
-            className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
-          >
-            <div className="flex flex-col md:flex-row justify-between items-start sm:items-center space-y-4 md:space-y-0">
-              {/* Render each column */}
-              <div className="flex flex-col lg:flex-row sm:items-center lg:space-x-8 flex-grow">
-                {columns.map((column) => (
-                  <div
-                    key={column.key}
-                    className={`flex flex-col items-start text-center sm:text-left ${
-                      column.className || ""
-                    }`}
-                  >
-                    <span className="text-sm font-medium text-gray-500">
-                      {column.label && column.label}
-                    </span>
-                    <span className="font-bold text-md truncate max-w-[150px]">
-                      {column.render
-                        ? column.render(item[column.key])
-                        : item[column.key] || "N/A"}
-                    </span>
-                  </div>
-                ))}
-              </div>
+      {/* List or No Users Found */}
+      {items.length === 0 ? (
+        <p className="text-center text-white">No data found</p>
+      ) : (
+        <ul className="space-y-6">
+          {items.map((item, index) => (
+            <li
+              key={index}
+              className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
+            >
+              <div className="flex flex-col md:flex-row justify-between items-start sm:items-center space-y-4 md:space-y-0">
+                {/* Render each column */}
+                <div className="flex flex-col lg:flex-row sm:items-center lg:space-x-8 flex-grow">
+                  {columns.map((column) => (
+                    <div
+                      key={column.key}
+                      className={`flex flex-col items-start text-center sm:text-left ${
+                        column.className || ""
+                      }`}
+                    >
+                      <span className="text-sm font-medium text-gray-500">
+                        {column.label && column.label}
+                      </span>
+                      <span className="font-bold text-md truncate max-w-[150px]">
+                        {column.render
+                          ? column.render(item[column.key])
+                          : item[column.key] || "N/A"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-4">
-                {controles(item._id).map((control, index) => (
-                  <button
-                    key={index}
-                    onClick={control.action}
-                    className={`${control.style} text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-transform transform hover:scale-105 my-1`}
-                  >
-                    {control.icon && (
-                      <FontAwesomeIcon
-                        icon={control.icon}
-                        className="text-md"
-                      />
-                    )}
-                    <span>{control.text}</span>
-                  </button>
-                ))}
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-4">
+                  {controles(item._id).map((control, index) => (
+                    <button
+                      key={index}
+                      onClick={control.action}
+                      className={`${control.style} text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-transform transform hover:scale-105 my-1`}
+                    >
+                      {control.icon && (
+                        <FontAwesomeIcon
+                          icon={control.icon}
+                          className="text-md"
+                        />
+                      )}
+                      <span>{control.text}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
-
-
-// ListItem.propTypes = {
-//   title: PropTypes.string.isRequired,
-//   items: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       img: PropTypes.string,
-//       controls: PropTypes.arrayOf(
-//         PropTypes.shape({
-//           text: PropTypes.string.isRequired,
-//           action: PropTypes.func.isRequired,
-//           style: PropTypes.string.isRequired,
-//           icon: PropTypes.string,
-//         })
-//       ),
-//     })
-//   ).isRequired,
-//   columns: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       key: PropTypes.string.isRequired,
-//       label: PropTypes.string,
-//       render: PropTypes.func, // Optional custom render function
-//       className: PropTypes.string, // Optional class for column
-//     })
-//   ).isRequired,
-//   icon: PropTypes.string,
-//   textColor: PropTypes.string,
-//   actions: PropTypes.node,
-// };
 
 export default ListItem;
