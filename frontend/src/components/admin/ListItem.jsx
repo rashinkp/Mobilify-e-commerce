@@ -13,7 +13,7 @@ const ListItem = ({
 }) => {
   return (
     <div
-      className={`rounded-lg shadow-md p-4 sm:p-8 ${
+      className={`rounded-lg p-4 sm:p-8 ${
         textColor || "text-gray-800"
       }`}
     >
@@ -36,7 +36,7 @@ const ListItem = ({
           {items.map((item, index) => (
             <li
               key={index}
-              className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
+              className="p-4 border  dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
             >
               <div className="flex flex-col md:flex-row justify-between items-start sm:items-center space-y-4 md:space-y-0">
                 {/* Render each column */}

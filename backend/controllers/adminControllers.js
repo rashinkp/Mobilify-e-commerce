@@ -99,3 +99,28 @@ export const deleteUser = asyncHandler(async (req, res) => {
      res.status(500).json({ message: err.message });
   }
 })
+
+
+
+export const blockUser = asyncHandler(async (req, res) => {
+  const  userId  = req.params.id;
+  console.log(userId)
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const newStatus = !user.isBlocked;
+    await User.updateOne({ _id: userId }, { $set: { isBlocked: newStatus } });
+    return res
+      .status(200)
+      .json({
+        message: `User status updated to ${
+          newStatus ? "blocked" : "active"
+        } successfully`,
+      });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating user", error });
+  }
+});
+

@@ -33,11 +33,10 @@ export const adminApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
-    editUser: builder.mutation({
-      query: ({ userId, data }) => ({
+    blockUser: builder.mutation({
+      query: (userId) => ({
         url: `${ADMIN_URL}/user/${userId}`,
         method: "PUT",
-        body: data,
       }),
       invalidatesTags: ["User"],
     }),
@@ -45,5 +44,5 @@ export const adminApiSLice = apiSlice.injectEndpoints({
 });
 
 
-export const { useAdminLoginMutation, useAdminLogoutMutation, useFetchUsersQuery,useDeleteUserMutation, useEditUserMutation} =
+export const { useAdminLoginMutation, useAdminLogoutMutation, useFetchUsersQuery,useDeleteUserMutation, useBlockUserMutation} =
   adminApiSLice;

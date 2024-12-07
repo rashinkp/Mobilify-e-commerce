@@ -3,8 +3,8 @@ import SearchBar from "../../components/SearchBar";
 import ListItem from "../../components/admin/ListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  useBlockUserMutation,
   useDeleteUserMutation,
-  useEditUserMutation,
   useFetchUsersQuery,
 } from "../../redux/slices/AdminApiSlices";
 import { successToast, errorToast } from "../../components/toast/index.js";
@@ -18,9 +18,10 @@ const UserManagement = () => {
 
   const { data: users, error, isLoading, refetch } = useFetchUsersQuery();
   const [deleteUser] = useDeleteUserMutation();
-  const [editUser] = useEditUserMutation();
+  const [blockUser] = useBlockUserMutation();
+
  const openModal = (userId) => {
-   setSelectedUserId(userId); // Track the user ID
+   setSelectedUserId(userId); 
    setIsModalOpen(true);
  };
 
@@ -29,22 +30,20 @@ const UserManagement = () => {
     setIsModalOpen(false);
   };
 
-  const handleEdit = (userId) => {
-    console.log(`Editing user with ID: ${userId}`);
-  };
 
   const handleBlock = (userId) => {
-    editUser({ userId, data: { isBlocked: true } })
+    blockUser(userId)
       .unwrap()
       .then(() => {
         successToast("User blocked successfully");
+        console.log(users)
+        refetch();
       })
       .catch((error) => {
         errorToast("Error while blocking user");
         console.error(error);
       });
   };
-
 
   const handleDelete = () => {
     if (!selectedUserId) return;
@@ -64,17 +63,11 @@ const UserManagement = () => {
 
 
   // Variable to define controls
-  const getUserControls = (userId) => {
+  const getUserControls = (userId ) => {
     return [
       {
-        text: "Edit",
-        action: () => handleEdit(userId),
-        style: "bg-green-700 hover:bg-green-800",
-        icon: "fa-solid fa-pen",
-      },
-      {
         text: "Block",
-        action: () => handleBlock(userId),
+        action: () => handleBlock(userId ),
         style: "bg-yellow-700 hover:bg-yellow-800",
         icon: "fa-solid fa-ban",
       },
@@ -126,15 +119,14 @@ const UserManagement = () => {
       ),
     },
     {
-      key: "isBlock",
-      label: "Status",
+      key: "isBlocked",
       render: (value) => (
         <span
           className={`px-2 py-1 rounded-full text-sm ${
             !value ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
           }`}
         >
-          {value ? "Block" : "Not Blocked"}
+          {!value ? 'Not Blocked' : 'Bloked'}
         </span>
       ),
     },
