@@ -48,6 +48,13 @@ export const adminApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Brand"],
     }),
+
+    getAllBrand: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/brand`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -58,4 +65,5 @@ export const {
   useDeleteUserMutation,
   useBlockUserMutation,
   useAddBrandMutation,
+  useGetAllBrandQuery
 } = adminApiSLice;

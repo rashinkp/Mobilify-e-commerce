@@ -158,5 +158,10 @@ export const addBrand = asyncHandler(async (req, res) => {
 
 
 export const getAllBrand = asyncHandler(async (req, res) => {
-  
+  const brands = await Brand.find({});
+  if (brands) {
+    res.status(200).json(brands)
+  } else {
+    res.status(404).json({message:'Couldnt find any brands'})
+  }
 })
