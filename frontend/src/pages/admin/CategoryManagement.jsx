@@ -7,6 +7,7 @@ import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import { successToast, errorToast } from "../../components/toast/index.js";
 import Button from "../../components/ui/Button.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SearchBar from "../../components/SearchBar.jsx";
 
 const CategoryManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
@@ -14,6 +15,16 @@ const CategoryManagement = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { addCategory, deleteCategory, categories, isLoading } =
     useCategoryApi();
+  
+  const [searchTerm, setSearchTerm] = useState("");
+
+    const displayedCategory =
+      searchTerm.trim() === ""
+        ? categories
+        : categories?.filter(
+            (category) =>
+              category.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
 
   const handleAddCategory = async (data) => {
     try {
@@ -51,15 +62,6 @@ const CategoryManagement = () => {
     },
   ];
 
-  const categoryColumns = [
-    { key: "name", label: "Category Name", render: (value) => value },
-    { key: "description", label: "Description", render: (value) => value },
-    {
-      key: "isSoftDeleted",
-      label: "SoftDelete",
-      render: (value) => (value ? "True" : "False"),
-    },
-  ];
 
   const getCategoryControles = (category) => [
     {
@@ -99,6 +101,7 @@ const CategoryManagement = () => {
         onClose={() => setIsModalFormOpen(false)}
         onSubmit={handleAddCategory}
       />
+      <SearchBar searchTerm={setSearchTerm} />
       <Button
         icon={<FontAwesomeIcon icon="fa-solid fa-layer-group" />}
         text="Add Category"
@@ -108,8 +111,7 @@ const CategoryManagement = () => {
 
       <div className="w-full max-w-5xl">
         <CategoryList
-          categories={categories}
-          categoryColumns={categoryColumns}
+          categories={displayedCategory}
           getCategoryControles={getCategoryControles}
           icon="fa-solid fa-layer-group"
         />

@@ -6,7 +6,7 @@ import {
   useBlockUserMutation,
   useDeleteUserMutation,
   useFetchUsersQuery,
-} from "../../redux/slices/AdminApiSlices";
+} from "../../redux/slices/AdminApiSlices.js";
 import { successToast, errorToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
 import Modal from "../../components/Modal.jsx";

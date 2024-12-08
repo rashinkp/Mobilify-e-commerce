@@ -1,50 +1,30 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import SearchBar from "../../components/SearchBar";
-import Form from "../../components/Form";
-import ListItem from "../../components/admin/ListItem";
-import {
-  useAddBrandMutation,
-  useDeleteBrandMutation,
-  useGetAllBrandQuery,
-} from "../../redux/slices/adminApiSlices.js";
 import { successToast, errorToast } from "../../components/toast";
-import { brandValidationSchema } from "../../validationSchemas";
 import { RotatingLines } from "react-loader-spinner";
 import Modal from "../../components/Modal";
+import BrandList from "../../components/brand/BrandList.jsx";
+import BrandForm from "../../components/brand/BrandForm.jsx";
+import Button from "../../components/ui/Button.jsx";
+import useBrandApi from "../../hooks/useBrandApi.jsx";
+import SearchBar from "../../components/SearchBar.jsx";
 
 const BrandManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
+  const { addBrand, deleteBrand, brands, isLoading } = useBrandApi();
 
-  const formField = [
-    {
-      name: "name",
-      label: "Brand Name",
-      placeholder: "Enter brand name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "description",
-      label: "Brand Description",
-      placeholder: "Enter brand description",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "website",
-      label: "Website",
-      placeholder: "Enter brand website URL",
-      type: "text",
-      required: true,
-    },
-  ];
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const [addBrand] = useAddBrandMutation();
-  const [deleteBrand] = useDeleteBrandMutation();
-  const { data: brands, isLoading } = useGetAllBrandQuery();
+  const displayedBrands =
+    searchTerm.trim() === ""
+      ? brands
+      : brands?.filter(
+          (brand) =>
+            brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            brand.website.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
   const handleAddBrand = async (data) => {
     try {
@@ -54,10 +34,6 @@ const BrandManagement = () => {
     } catch (error) {
       errorToast(error?.data?.message || error.message || error.error);
     }
-  };
-
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) setIsModalFormOpen(false);
   };
 
   const handleDeleteBrand = async () => {
@@ -71,13 +47,7 @@ const BrandManagement = () => {
     }
   };
 
-  const brandColumns = [
-    { key: "name", label: "Brand Name", render: (value) => value },
-    { key: "description", label: "Description", render: (value) => value },
-    { key: "website", label: "Website", render: (value) => value },
-  ];
-
-  const getBrandControls = (brand) => [
+  const getBrandControles = (brand) => [
     {
       text: "Delete",
       action: () => {
@@ -113,38 +83,26 @@ const BrandManagement = () => {
           controles={modalControles}
         />
       )}
-      {isModalFormOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md"
-          onClick={handleOverlayClick}
-        >
-          <div className="p-6 w-full max-w-lg ">
-            <Form
-              fields={formField}
-              title="Add Brand"
-              buttonText="Add Brand"
-              onSubmit={handleAddBrand}
-              validationRules={brandValidationSchema}
-            />
-          </div>
-        </div>
-      )}
+      <BrandForm
+        isModalFormOpen={isModalFormOpen}
+        onClose={() => setIsModalFormOpen(false)}
+        onSubmit={handleAddBrand}
+      />
 
-      <button
-        className="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
-        onClick={() => setIsModalFormOpen(true)}
-      >
-        <FontAwesomeIcon icon="fa-solid fa-plus" /> Add Brand
-      </button>
+      <SearchBar searchTerm={setSearchTerm} />
+
+      <Button
+        icon={<FontAwesomeIcon icon="fa-solid fa-layer-group" />}
+        text="Add Brand"
+        colorStyle="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
+        action={() => setIsModalFormOpen(true)}
+      />
 
       <div className="w-full max-w-5xl">
-        <ListItem
-          title="Brand List"
-          items={brands || []}
-          columns={brandColumns}
-          icon="fa-copyright"
-          textColor="text-skyBlue"
-          controles={getBrandControls}
+        <BrandList
+          brands={displayedBrands}
+          getBrandControles={getBrandControles}
+          icon="fa-solid fa-copyright"
         />
       </div>
       {isLoading && (
