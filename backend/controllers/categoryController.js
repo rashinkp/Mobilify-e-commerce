@@ -55,13 +55,17 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 
 export const updateCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
-  const { name, description } = req.body;
+  const { name, description,isSoftDeleted } = req.body;
 
   const category = await Category.findById(categoryId);
 
   if (category) {
     category.name = name || category.name;
     category.description = description || category.description;
+    if (isSoftDeleted !== undefined) {
+      category.isSoftDeleted = isSoftDeleted;
+    }
+
 
     const updatedCategory = await category.save();
     res.status(200).json({

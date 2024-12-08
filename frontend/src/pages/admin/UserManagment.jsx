@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import SearchBar from "../../components/SearchBar";
 import ListItem from "../../components/admin/ListItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   useBlockUserMutation,
   useDeleteUserMutation,
@@ -15,7 +14,7 @@ const UserManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const { data: users, error, isLoading, refetch } = useFetchUsersQuery();
+  const { data: users, isLoading } = useFetchUsersQuery();
   const [deleteUser] = useDeleteUserMutation();
   const [blockUser] = useBlockUserMutation();
   const [searchTerm, setSearchTerm] = useState("");

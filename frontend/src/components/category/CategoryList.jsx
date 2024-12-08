@@ -5,6 +5,7 @@ import Modal from "../Modal";
 import { RotatingLines } from "react-loader-spinner";
 import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import CategoryEditForm from "./CategoryEditForm";
+import { useEditCategoryMutation } from "../../redux/slices/categoryApiSlices.js";
 
 const CategoryList = ({ categories, icon }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,6 +13,7 @@ const CategoryList = ({ categories, icon }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const { deleteCategory } = useCategoryApi();
+  const [editCategory] = useEditCategoryMutation();
 
   const handleDeleteCategory = async () => {
     try {
@@ -29,9 +31,26 @@ const CategoryList = ({ categories, icon }) => {
     setIsEditModalOpen(true);
   };
 
-  const handleSoftDeleteCategory = (category) => {
-    console.log("Soft delete logic for:", category);
-    // Add your soft-delete logic here
+  const handleSoftDelete = async (category) => {
+    const data = { isSoftDeleted: !category.isSoftDeleted };
+
+    try {
+      await editCategory({
+        categoryId: category._id,
+        data,
+      }).unwrap();
+      successToast(
+        `${
+          data.isSoftDeleted
+            ? "Category soft-deleted successfully"
+            : "Category recovered successfully"
+        }`
+      );
+    } catch (error) {
+      errorToast(
+        error?.data?.message || error.message || "Failed to update category"
+      );
+    }
   };
 
   const getCategoryControles = (category) => [
@@ -42,10 +61,10 @@ const CategoryList = ({ categories, icon }) => {
       icon: "fa-solid fa-pen",
     },
     {
-      text: "SoftDelete",
-      action: () => handleSoftDeleteCategory(category),
+      text: category.isSoftDeleted ? "Recover" : "SoftDelete",
+      action: () => handleSoftDelete(category),
       style: "bg-yellow-700 hover:bg-yellow-800",
-      icon: "fa-solid fa-ban",
+      icon: category.isSoftDeleted ? "fa-solid fa-hammer" : "fa-solid fa-ban",
     },
     {
       text: "Delete",
@@ -63,8 +82,16 @@ const CategoryList = ({ categories, icon }) => {
     { key: "description", label: "Description", render: (value) => value },
     {
       key: "isSoftDeleted",
-      label: "SoftDelete",
-      render: (value) => (value ? "True" : "False"),
+      label: "Status",
+      render: (value) => (
+        <span
+          className={`px-2 py-1 rounded-full text-sm ${
+            !value ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+          }`}
+        >
+          {!value ? "Active" : "Inactive"}
+        </span>
+      ),
     },
   ];
 
