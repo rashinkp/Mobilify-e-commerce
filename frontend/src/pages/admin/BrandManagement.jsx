@@ -125,7 +125,6 @@ const BrandManagement = () => {
               buttonText="Add Brand"
               onSubmit={handleAddBrand}
               validationRules={brandValidationSchema}
-              setModal={setIsModalFormOpen}
             />
           </div>
         </div>

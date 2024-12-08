@@ -1,80 +1,177 @@
 import React, { useState } from "react";
 import Form from "../../components/Form.jsx";
-import { categoryNameValidationSchema as categoryValidation } from "../../validationSchemas.js";
 import ListItem from "../../components/admin/ListItem.jsx";
+import { RotatingLines } from "react-loader-spinner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Modal from "../../components/Modal.jsx";
+import { categoryValidation } from "../../validationSchemas.js";
+import {
+  useAddCategoryMutation,
+  useGetAllCategoryQuery,
+} from "../../redux/slices/categoryApiSlices.js";
+import { errorToast, successToast } from "../../components/toast/index.js";
 
 const CategoryManagement = () => {
+  const [isModalFormOpen, setIsModalFormOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  //api's
+
+  const [addCategory] = useAddCategoryMutation();
+
+  const { data: categories, isLoading } = useGetAllCategoryQuery();
+
   const categoryFields = [
     {
-      name: "category",
+      name: "name",
       label: "Category Name",
       type: "text",
       placeholder: "Enter new Category",
       required: true,
     },
+    {
+      name: "description",
+      label: "Category Description",
+      type: "text",
+      placeholder: "Enter description",
+      required: true,
+    },
   ];
 
   // List action methods
-  const handleEdit = () => {
-    console.log("Category edit");
+  const handleEdit = (category) => {
+    console.log(category);
   };
-  const handleDelete = () => {
-    console.log("Category Delete");
+
+  const handleSoftDelete = (category) => {
+    console.log(category);
+  };
+
+  const handleDeleteBrand = (category) => {
+    console.log(category);
   };
 
   // Form action method
-  const handleAddCategory = () => {
-    console.log("Category added");
+  const handleAddCategory = async (data) => {
+    try {
+      await addCategory(data).unwrap();
+      successToast("Category Added successfully");
+      setIsModalFormOpen(false);
+    } catch (error) {
+      errorToast(error?.data?.message || error.message || error.error);
+    }
   };
 
-  // Passing actions to list
-  const categoryControls = [
+  //to close the modal
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) setIsModalFormOpen(false);
+  };
+
+  //control warning modal
+  const modalControles = [
     {
-      text: "Edit",
-      action: handleEdit,
-      style: "bg-green-700 hover:bg-green-800",
-      icon: "fa-solid fa-pen",
+      text: "Cancel",
+      action: () => setIsModalOpen(false),
+      style:
+        "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
     },
     {
       text: "Delete",
-      action: handleDelete,
+      action: handleDeleteBrand,
+      style:
+        "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
+    },
+  ];
+
+  const categoryColumns = [
+    { key: "name", label: "Category Name", render: (value) => value },
+    { key: "description", label: "Description", render: (value) => value },
+    { key: "isSoftDeleted", label: "SoftDelete", render: (value) => value },
+  ];
+
+  const getCategoryControles = (category) => [
+    {
+      text: "Edit",
+      action: handleEdit(category),
+      style: "bg-red-700 hover:bg-red-800",
+      icon: "fa-solid fa-pen",
+    },
+    {
+      text: "SoftDelete",
+      action: handleSoftDelete(category),
+      style: "bg-red-700 hover:bg-red-800",
+      icon: "fa-solid fa-ban",
+    },
+    {
+      text: "Delete",
+      action: () => {
+        setSelectedCategory(category);
+        setIsModalOpen(true);
+      },
       style: "bg-red-700 hover:bg-red-800",
       icon: "fa-solid fa-trash",
     },
   ];
-
-  const category = [
-    {
-      name: "Category Name",
-      controls: categoryControls,
-    },
-  ];
-
-  const columns = [{ key: "name", label: "Category Name" }];
-
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-4 mx-auto">
-      {/* Form Section */}
-      <div className="w-full lg:w-2/5  p-6 rounded-lg ">
-        <Form
-          title="Add Category"
-          fields={categoryFields}
-          onSubmit={handleAddCategory}
-          buttonText="Add Category"
-          validationRules={categoryValidation}
+    <div className="p-5 sm:p-10 flex flex-col gap-6 items-center">
+      {/* {isModalOpen && (
+        <Modal
+          title="Are you sure?"
+          description="This process cannot be undone. Make sure you are doing the right thing."
+          controles={modalControles}
         />
-      </div>
+      )} */}
+      {isModalFormOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md"
+          onClick={handleOverlayClick}
+        >
+          <div className="p-6 w-full max-w-lg ">
+            <Form
+              fields={categoryFields}
+              title="Add Category"
+              buttonText="Add Category"
+              onSubmit={handleAddCategory}
+              validationRules={categoryValidation}
+            />
+          </div>
+        </div>
+      )}
 
-      {/* List Section */}
-      <div className="w-full lg:w-3/5 p-6 rounded-lg">
+      <button
+        className="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
+        onClick={() => setIsModalFormOpen(true)}
+      >
+        <FontAwesomeIcon icon="fa-solid fa-layer-group" /> Add Category
+      </button>
+
+      <div className="w-full max-w-5xl">
         <ListItem
           title="Category List"
-          items={category}
-          columns={columns}
-          icon="fa-layer-group"
+          items={categories || []}
+          columns={categoryColumns}
+          icon="fa-solid fa-layer-group"
           textColor="text-skyBlue"
+          controles={getCategoryControles}
         />
       </div>
+      {isLoading && (
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import express from "express";
 import { addBrand, authAdmin, blockUser, deleteBrand, deleteUser, getAllBrand, getAllUsers, logoutAdmin, registerAdmin } from "../controllers/adminControllers.js";
+import { addCategory, getAllCategory } from "../controllers/categoryController.js";
 
 const router = express.Router();
 
@@ -17,6 +18,10 @@ router.route('/brand').post(addBrand).get(getAllBrand)
 //special brand routes
 
 router.route("/brand/:id").delete(deleteBrand);
+
+
+//category related routes
+router.route('/category').post(addCategory).get(getAllCategory)
 
 
 

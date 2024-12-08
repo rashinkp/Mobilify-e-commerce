@@ -17,7 +17,7 @@ const Form = ({
     formState: { errors },
   } = useForm({
     defaultValues: fields.reduce((acc, field) => {
-      acc[field.name] = "";
+      acc[field.name] = field.defaultValue || "";
       return acc;
     }, {}),
     resolver: yupResolver(validationRules),
@@ -26,7 +26,7 @@ const Form = ({
   const onFormSubmit = (data) => {
     onSubmit(data);
   };
-  
+
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}

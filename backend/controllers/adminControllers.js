@@ -146,7 +146,7 @@ export const addBrand = asyncHandler(async (req, res) => {
     res.status(201).json({
       _id: brand._id,
       name: brand.name,
-      email: brand.description,
+      description: brand.description,
     });
   } else {
      res.status(400);

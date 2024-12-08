@@ -8,10 +8,18 @@ export const passwordValidation = Yup.string()
   .required("Password is required")
   .min(6, "Password must be at least 6 characters");
 
+export const nameValidation = Yup.string()
+  .required("Name is required")
+  .min(4, "Minimum 4 characters required")
+  .max(100, "Maximum 100 characters allowed");
+
+export const descriptionValidation = Yup.string()
+    .required("Description is required")
+    .min(10, "Minimum 10 characters required") 
+    .max(500, "Maximum 500 characters allowed")
+
 export const signUpValidationSchema = Yup.object().shape({
-  name: Yup.string()
-    .required("Name is required")
-    .min(6, "Minimum 6 character required"),
+  name: nameValidation,
   email: emailValidation,
   password: passwordValidation,
   confirmPassword: Yup.string()
@@ -24,11 +32,7 @@ export const loginValidationSchema = Yup.object().shape({
   password: passwordValidation,
 });
 
-export const categoryNameValidationSchema = Yup.object().shape({
-  category: Yup.string()
-    .required("Category is required")
-    .min(4, "Minimum 4 characters required"),
-});
+
 
 export const otpValidationSchema = Yup.object().shape({
   otp: Yup.string()
@@ -38,15 +42,14 @@ export const otpValidationSchema = Yup.object().shape({
 });
 
 export const brandValidationSchema = Yup.object().shape({
-  name: Yup.string()
-    .required("Name is required")
-    .min(4, "Minimum 4 characters required")
-    .max(100, "Maximum 100 characters allowed"), // Added max length for name
-  description: Yup.string()
-    .required("Description is required")
-    .min(10, "Minimum 10 characters required") // Set a reasonable minimum length
-    .max(500, "Maximum 500 characters allowed"), // Limit the description length
+  name: nameValidation,
+  description:descriptionValidation, 
   website: Yup.string()
     .required("Website URL is required")
-    .url("Must be a valid URL"), // Validates if the string is a proper URL
+    .url("Must be a valid URL"), 
+});
+
+export const categoryValidation = Yup.object().shape({
+  name: nameValidation,
+  description: descriptionValidation,
 });
