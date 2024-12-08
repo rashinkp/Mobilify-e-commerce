@@ -32,12 +32,11 @@ export const addCategory = asyncHandler(async (req, res) => {
 export const getAllCategory = asyncHandler(async (req, res) => {
   const categories = await Category.find({});
   if (categories) {
-    res.status(200).json(categories)
+    res.status(200).json(categories);
   } else {
-    res.status(404).json({message:'Couldnt find any categories '})
+    res.status(404).json({ message: "Couldnt find any categories " });
   }
-})
-
+});
 
 //delete category
 
@@ -45,9 +44,33 @@ export const deleteCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
   const category = await Category.findByIdAndDelete(categoryId);
 
-   if (category) {
-     res.status(200).json({ message: "category deleted successfully" });
-   } else {
-     res.status(404).json({ message: "category not found" });
-   }
-})
+  if (category) {
+    res.status(200).json({ message: "category deleted successfully" });
+  } else {
+    res.status(404).json({ message: "category not found" });
+  }
+});
+
+//update category
+
+export const updateCategory = asyncHandler(async (req, res) => {
+  const categoryId = req.params.id;
+  const { name, description } = req.body;
+
+  const category = await Category.findById(categoryId);
+
+  if (category) {
+    category.name = name || category.name;
+    category.description = description || category.description;
+
+    const updatedCategory = await category.save();
+    res.status(200).json({
+      id: updatedCategory._id,
+      name: updatedCategory.name,
+      description: updatedCategory.description,
+    });
+  } else {
+    res.status(404);
+    throw new Error("Category not found");
+  }
+});
