@@ -7,7 +7,7 @@ import {
   useAddBrandMutation,
   useDeleteBrandMutation,
   useGetAllBrandQuery,
-} from "../../redux/slices/AdminApiSlices";
+} from "../../redux/slices/adminApiSlices.js";
 import { successToast, errorToast } from "../../components/toast";
 import { brandValidationSchema } from "../../validationSchemas";
 import { RotatingLines } from "react-loader-spinner";

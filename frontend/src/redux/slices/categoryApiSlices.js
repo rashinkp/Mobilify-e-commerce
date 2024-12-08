@@ -28,15 +28,14 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
     //   }),
     //   invalidatesTags: ["Category"],
     // }),
-    // deleteqCategory: builder.mutation({
-    //   query: (data) => ({
-    //     url: `${ADMIN_URL}/category`,
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["Category"],
-    // }),
+    deleteCategory: builder.mutation({
+      query: (categoryId) => ({
+        url: `${ADMIN_URL}/category/${categoryId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Category"],
+    }),
   }),
 });
 
-export const {useAddCategoryMutation, useGetAllCategoryQuery } = categoryApiSlice;
+export const {useAddCategoryMutation, useGetAllCategoryQuery, useDeleteCategoryMutation } = categoryApiSlice;

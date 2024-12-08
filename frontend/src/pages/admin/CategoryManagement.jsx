@@ -7,6 +7,7 @@ import Modal from "../../components/Modal.jsx";
 import { categoryValidation } from "../../validationSchemas.js";
 import {
   useAddCategoryMutation,
+  useDeleteCategoryMutation,
   useGetAllCategoryQuery,
 } from "../../redux/slices/categoryApiSlices.js";
 import { errorToast, successToast } from "../../components/toast/index.js";
@@ -21,6 +22,7 @@ const CategoryManagement = () => {
   const [addCategory] = useAddCategoryMutation();
 
   const { data: categories, isLoading } = useGetAllCategoryQuery();
+  const [deleteCategory] = useDeleteCategoryMutation()
 
   const categoryFields = [
     {
@@ -48,8 +50,15 @@ const CategoryManagement = () => {
     console.log(category);
   };
 
-  const handleDeleteBrand = (category) => {
-    console.log(category);
+  const handleDeleteBrand = async () => {
+    try {
+      await deleteCategory(selectedCategory._id).unwrap();
+      successToast('Category deleted');
+      setIsModalOpen(false);
+      setSelectedCategory(null)
+    } catch (error) {
+      errorToast(error?.data?.message || error.message || error.error);
+    }
   };
 
   // Form action method
@@ -115,13 +124,13 @@ const CategoryManagement = () => {
   ];
   return (
     <div className="p-5 sm:p-10 flex flex-col gap-6 items-center">
-      {/* {isModalOpen && (
+      {isModalOpen && (
         <Modal
           title="Are you sure?"
           description="This process cannot be undone. Make sure you are doing the right thing."
           controles={modalControles}
         />
-      )} */}
+      )}
       {isModalFormOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md"

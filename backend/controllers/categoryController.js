@@ -37,3 +37,17 @@ export const getAllCategory = asyncHandler(async (req, res) => {
     res.status(404).json({message:'Couldnt find any categories '})
   }
 })
+
+
+//delete category
+
+export const deleteCategory = asyncHandler(async (req, res) => {
+  const categoryId = req.params.id;
+  const category = await Category.findByIdAndDelete(categoryId);
+
+   if (category) {
+     res.status(200).json({ message: "category deleted successfully" });
+   } else {
+     res.status(404).json({ message: "category not found" });
+   }
+})
