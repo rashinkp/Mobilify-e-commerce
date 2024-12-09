@@ -52,14 +52,15 @@ const Form = ({
             render={({ field: controlledField }) =>
               field.type === "select" ? (
                 <select
-                  id={field.name}
                   {...controlledField}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-skyBlue focus:border-skyBlue bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  id={field.name}
+                  placeholder={field.placeholder}
+                  className="dark:bg-gray-600 dark:text-white px-5 py-3 rounded-lg"
                 >
                   <option value="">{field.placeholder}</option>
-                  {field.options?.map((option, index) => (
-                    <option key={index} value={option}>
-                      {option}
+                  {field.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>

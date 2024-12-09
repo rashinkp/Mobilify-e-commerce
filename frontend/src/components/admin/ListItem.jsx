@@ -10,13 +10,10 @@ const ListItem = ({
   icon,
   textColor,
   actions,
+  clickList,
 }) => {
   return (
-    <div
-      className={`rounded-lg p-4 sm:p-8 ${
-        textColor || "text-gray-800"
-      }`}
-    >
+    <div className={`rounded-lg p-4 sm:p-8 ${textColor || "text-gray-800"}`}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div className="flex items-center mb-4 sm:mb-0">
@@ -35,12 +32,13 @@ const ListItem = ({
         <ul className="space-y-6">
           {items.map((item, index) => (
             <li
+              onClick={() => clickList(item)}
               key={index}
               className="p-4 border  dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
             >
               <div className="flex flex-col md:flex-row justify-between items-start sm:items-center space-y-4 md:space-y-0">
                 {/* Render each column */}
-                <div className="flex flex-col lg:flex-row sm:items-center lg:space-x-8 flex-grow">
+                <div className="flex justify-between lg:px-10 flex-col lg:flex-row sm:items-center lg:space-x-8 flex-grow">
                   {columns.map((column) => (
                     <div
                       key={column.key}

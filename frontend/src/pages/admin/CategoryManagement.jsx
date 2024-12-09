@@ -20,7 +20,6 @@ const CategoryManagement = () => {
           category.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
   
-  console.log(categories)
 
   const handleAddCategory = async (data) => {
     try {

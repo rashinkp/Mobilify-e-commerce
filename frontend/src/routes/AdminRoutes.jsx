@@ -26,7 +26,7 @@ const AdminRoutes = () => {
           <Route path="/manage-users" element={<UserManagment />} />
           <Route path="/manage-user" element={<UserDetail />} />
           <Route path="/manage-products" element={<ProductManagement />} />
-          <Route path="/manage-product" element={<ProductDetail />} />
+          <Route path="/product/:productId" element={<ProductDetail />} />
           <Route path="/manage-orders" element={<OrderManagement />} />
           <Route path="/manage-brands" element={<BrandManagement />} />
           <Route path="/login" element={<AdminLogin />} />

@@ -11,17 +11,29 @@ export const productApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Product"],
+      invalidatesTags: ["Products"],
     }),
     getAllProducts: builder.query({
       query: () => ({
         url: `${ADMIN_URL}/product`,
         method: "get",
       }),
-      providesTags: ["Product"],
+      providesTags: ["Products"],
+    }),
+    getProduct: builder.query({
+      query: (productId) => ({
+        url: `${ADMIN_URL}/product/${productId}`,
+      }),
+    }),
+    deleteProduct: builder.mutation({
+      query: (productId) => ({
+        url: `${ADMIN_URL}/product/${productId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Products"],
     }),
   }),
 });
 
 
-export const { useAddProductMutation, useGetAllProductsQuery } = productApiSlice;
+export const { useAddProductMutation, useGetAllProductsQuery , useGetProductQuery , useDeleteProductMutation } = productApiSlice;

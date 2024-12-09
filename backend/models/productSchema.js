@@ -1,11 +1,5 @@
 import mongoose  from "mongoose";
 
-const CapacitySchema = new mongoose.Schema({
-  price: { type: Number, required: true },
-  RAM: { type: String, required: true },
-  stock: { type: Number, required: true },
-  Storage: { type: String, required: true },
-});
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -22,11 +16,13 @@ const ProductSchema = new mongoose.Schema(
     COD: { type: Boolean, default: true },
     warranty: { type: String, required: true },
     isSoftDelete: { type: Boolean, default: false },
-    isArchieved: { type: Boolean, default: false },
     model: { type: String, required: true },
-    size: { type:String, required: true },
+    size: { type: String, required: true },
+    ram: { type: Number, required: true },
+    storage: { type: Number, required: true },
+    price: { type: Number, required: true },
+    stock: { type: Number, required: true },
     network: { type: String, required: true },
-    Capacity: { type: [CapacitySchema], required: false },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

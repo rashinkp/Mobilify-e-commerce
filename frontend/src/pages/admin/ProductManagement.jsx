@@ -24,6 +24,7 @@ const ProductManagement = () => {
 
   // handling form submission of product adding
   const handleAddProduct = async (data) => {
+    console.log(data)
     try {
       await addProduct(data).unwrap();
       successToast("Product added successfully");
