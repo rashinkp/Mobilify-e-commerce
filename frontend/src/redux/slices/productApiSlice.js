@@ -24,6 +24,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: (productId) => ({
         url: `${ADMIN_URL}/product/${productId}`,
       }),
+      providesTags: ["ProductDetail"],
     }),
     deleteProduct: builder.mutation({
       query: (productId) => ({
@@ -32,8 +33,16 @@ export const productApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products"],
     }),
+    updateProduct: builder.mutation({
+      query: ({ productId, data }) => ({
+        url: `${ADMIN_URL}/product/${productId}`,
+        method: "PUT",
+        body:data
+      }),
+      invalidatesTags: ["ProductDetail"],
+    }),
   }),
 });
 
 
-export const { useAddProductMutation, useGetAllProductsQuery , useGetProductQuery , useDeleteProductMutation } = productApiSlice;
+export const { useAddProductMutation, useGetAllProductsQuery , useGetProductQuery , useDeleteProductMutation, useUpdateProductMutation } = productApiSlice;

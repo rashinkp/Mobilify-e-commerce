@@ -52,7 +52,16 @@ export const categoryValidation = Yup.object().shape({
   description: descriptionValidation,
 });
 
-export const productValidationSchema = Yup.object().shape({
+// Reusable transformation function
+const transformNumberField = (value, originalValue) => {
+  if (typeof originalValue === "string") {
+    return originalValue.trim() === "" ? null : Number(originalValue);
+  }
+  return originalValue;
+};
+
+// Validation schema
+export const productValidation = Yup.object().shape({
   name: Yup.string()
     .required("Product Name is required")
     .min(4, "Product Name must be at least 4 characters")
@@ -68,9 +77,7 @@ export const productValidationSchema = Yup.object().shape({
     .max(500, "Description can be at most 500 characters"),
 
   offerPercent: Yup.number()
-    .transform((value, originalValue) =>
-      originalValue.trim() === "" ? null : value
-    )
+    .transform(transformNumberField)
     .nullable()
     .typeError("Offer Percent must be a number")
     .required("Offer Percent is required")
@@ -88,8 +95,7 @@ export const productValidationSchema = Yup.object().shape({
       "Warranty must be in the format of 'x months' or 'x years'"
     ),
 
-  model: Yup.string()
-    .required("Model is required"),
+  model: Yup.string().required("Model is required"),
 
   size: Yup.string()
     .required("Size is required")
@@ -106,38 +112,32 @@ export const productValidationSchema = Yup.object().shape({
     ),
 
   price: Yup.number()
-    .transform((value, originalValue) =>
-      originalValue.trim() === "" ? null : value
-    )
+    .transform(transformNumberField)
     .nullable()
     .required("Price is required")
     .min(0, "Price cannot be negative"),
 
   storage: Yup.number()
-    .transform((value, originalValue) =>
-      originalValue.trim() === "" ? null : value
-    )
+    .transform(transformNumberField)
     .nullable()
     .required("Storage is required")
     .min(12, "Storage cannot be less than 12GB")
     .max(10000, "Storage cannot exceed 10TB"),
 
   ram: Yup.number()
-    .transform((value, originalValue) =>
-      originalValue.trim() === "" ? null : value
-    )
+    .transform(transformNumberField)
     .nullable()
     .required("RAM is required")
     .min(1, "RAM cannot be less than 1GB")
     .max(128, "RAM cannot exceed 128GB"),
 
   stock: Yup.number()
-    .transform((value, originalValue) =>
-      originalValue.trim() === "" ? null : value
-    )
+    .transform(transformNumberField)
     .nullable()
     .required("Stock is required")
     .min(0, "Stock cannot be negative")
     .max(10000, "Stock cannot exceed 10,000"),
-  COD: Yup.string().required('COD is required')
+
+  COD: Yup.string().required("COD is required"),
 });
+

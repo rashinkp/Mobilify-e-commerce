@@ -1,7 +1,7 @@
 import express from "express";
 import { addBrand, authAdmin, blockUser, deleteBrand, deleteUser, getAllBrand, getAllUsers, logoutAdmin, registerAdmin } from "../controllers/adminControllers.js";
 import { addCategory, deleteCategory, getAllCategory, updateCategory } from "../controllers/categoryController.js";
-import { addProduct, deleteProduct, getAllProducts, getProduct } from "../controllers/productControllers.js";
+import { addProduct, deleteProduct, getAllProducts, getProduct, updateProduct } from "../controllers/productControllers.js";
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.route('/category/:id').delete(deleteCategory).put(updateCategory);
 
 //product related routes
 router.route("/product").post(addProduct).get(getAllProducts);
-router.route("/product/:id").get(getProduct).delete(deleteProduct);
+router.route("/product/:id").get(getProduct).delete(deleteProduct).put(updateProduct);
 
 
 

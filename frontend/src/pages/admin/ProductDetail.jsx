@@ -7,9 +7,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useProductApi from "../../hooks/useProductApi";
 import { errorToast, successToast } from "../../components/toast";
 import Modal from "../../components/Modal";
+import ProductEditForm from "../../components/product/ProductEditForm";
 
 const ProductManagement = () => {
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { productId } = useParams();
   const {deleteProduct} = useProductApi()
   const { data: product, isLoading, error } = useGetProductQuery(productId);
@@ -61,6 +63,10 @@ const ProductManagement = () => {
     }
   }
 
+  const handleUpdate = async () => {
+    setIsEditModalOpen(true);
+  }
+
   return (
     <>
       {isDelModalOpen && (
@@ -81,6 +87,13 @@ const ProductManagement = () => {
                 "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
             },
           ]}
+        />
+      )}
+
+      {isEditModalOpen && (
+        <ProductEditForm
+          product={product}
+          onClose={() => setIsEditModalOpen(false)}
         />
       )}
       <div className="p-6 min-h-screen">
@@ -171,7 +184,7 @@ const ProductManagement = () => {
 
           {/* Action Buttons */}
           <div className="p-6 bg-gray-50 dark:bg-black flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <button className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700">
+            <button onClick={handleUpdate} className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700">
               <FontAwesomeIcon icon="fa-solid fa-pen" className="me-3" />
               Edit
             </button>

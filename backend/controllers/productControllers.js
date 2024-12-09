@@ -46,3 +46,27 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     res.status(404).json({message:'product not found'})
   }
 })
+
+
+export const updateProduct = asyncHandler(async (req, res) => {
+  const productId = req.params.id;
+  const updateData = req.body;
+
+
+  console.log(updateData)
+
+  const product = await Product.findById(productId);
+  if (product) {
+    Object.keys(updateData).forEach((key) => {
+      if (updateData[key] !== undefined) {
+        product[key] = updateData[key];
+      }
+    });
+
+    const updatedProduct = await product.save();
+    res.status(200).json(updatedProduct);
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+})

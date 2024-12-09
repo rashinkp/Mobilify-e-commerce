@@ -64,8 +64,6 @@ export const adminApiSLice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Brand"],
     }),
-
-    
   }),
 });
 
