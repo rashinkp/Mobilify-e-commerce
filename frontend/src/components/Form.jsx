@@ -30,7 +30,7 @@ const Form = ({
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="max-w-lg w-full  mx-auto p-8 bg-[rgb(241,241,241)] dark:bg-black shadow-md rounded-md space-y-6"
+      className="max-w-lg w-full mx-auto p-8 bg-gray-100 dark:bg-gray-800 shadow-md rounded-md space-y-6 overflow-auto"
     >
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center">
         {title}
@@ -46,15 +46,40 @@ const Form = ({
           <Controller
             name={field.name}
             control={control}
-            render={({ field: controlledField }) => (
-              <input
-                type={field.type}
-                id={field.name}
-                placeholder={field.placeholder}
-                {...controlledField}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-skyBlue focus:border-skyBlue bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-              />
-            )}
+            rules={{
+              required: field.required && `${field.label} is required.`,
+            }}
+            render={({ field: controlledField }) =>
+              field.type === "select" ? (
+                <select
+                  id={field.name}
+                  {...controlledField}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-skyBlue focus:border-skyBlue bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                >
+                  <option value="">{field.placeholder}</option>
+                  {field.options?.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : field.type === "checkbox" ? (
+                <input
+                  type="checkbox"
+                  id={field.name}
+                  {...controlledField}
+                  className="h-4 w-4 text-skyBlue border-gray-300 rounded focus:ring-skyBlue"
+                />
+              ) : (
+                <input
+                  type={field.type}
+                  id={field.name}
+                  placeholder={field.placeholder}
+                  {...controlledField}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-skyBlue focus:border-skyBlue bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                />
+              )
+            }
           />
 
           {errors[field.name] && (

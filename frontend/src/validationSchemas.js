@@ -53,3 +53,33 @@ export const categoryValidation = Yup.object().shape({
   name: nameValidation,
   description: descriptionValidation,
 });
+
+
+export const productValidationSchema = Yup.object().shape({
+  name: Yup.string()
+    .required("Product Name is required")
+    .min(4, "Product Name must be at least 4 characters")
+    .max(100, "Product Name can be at most 100 characters"),
+
+  description: Yup.string()
+    .required("Product Description is required")
+    .min(10, "Description must be at least 10 characters")
+    .max(500, "Description can be at most 500 characters"),
+
+  // brandId: Yup.string().required("Brand is required"),
+
+  // categoryId: Yup.string().required("Category is required"),
+
+  offerPercent: Yup.number()
+    .typeError("Offer Percent must be a number")
+    .required("Offer Percent is required")
+    .min(0, "Offer Percent cannot be negative")
+    .max(100, "Offer Percent cannot exceed 100%"),
+  
+  // COD: Yup.string().required("Cod is required"),
+  returnPolicy: Yup.string().required("ReturnPolicy is required"),
+  warranty: Yup.string().required("Warranty is required"),
+  model: Yup.string().required("Model is required"),
+  size: Yup.string().required("Size is required"),
+  network: Yup.string().required('Network is required')
+});

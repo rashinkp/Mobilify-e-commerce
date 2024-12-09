@@ -18,7 +18,9 @@ const CategoryManagement = () => {
       ? categories
       : categories?.filter((category) =>
           category.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+      );
+  
+  console.log(categories)
 
   const handleAddCategory = async (data) => {
     try {

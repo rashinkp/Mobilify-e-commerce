@@ -1,6 +1,7 @@
 import express from "express";
 import { addBrand, authAdmin, blockUser, deleteBrand, deleteUser, getAllBrand, getAllUsers, logoutAdmin, registerAdmin } from "../controllers/adminControllers.js";
 import { addCategory, deleteCategory, getAllCategory, updateCategory } from "../controllers/categoryController.js";
+import { addProduct, getAllProducts } from "../controllers/productControllers.js";
 
 const router = express.Router();
 
@@ -25,6 +26,10 @@ router.route('/category').post(addCategory).get(getAllCategory)
 
 //specific category manage
 router.route('/category/:id').delete(deleteCategory).put(updateCategory);
+
+//product related routes
+router.route("/product").post(addProduct).get(getAllProducts);
+
 
 
 
