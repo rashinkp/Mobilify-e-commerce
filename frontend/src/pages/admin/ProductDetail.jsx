@@ -8,13 +8,14 @@ import useProductApi from "../../hooks/useProductApi";
 import { errorToast, successToast } from "../../components/toast";
 import Modal from "../../components/Modal";
 import ProductEditForm from "../../components/product/ProductEditForm";
+import Button from "../../components/ui/Button";
 
 const ProductManagement = () => {
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { productId } = useParams();
-  const {deleteProduct,updateProduct} = useProductApi()
-   
+  const { deleteProduct, updateProduct } = useProductApi();
+
   const { data: product, isLoading, error } = useGetProductQuery(productId);
   const navigate = useNavigate();
   const reviews = [
@@ -35,7 +36,6 @@ const ProductManagement = () => {
   if (isLoading) {
     return (
       <div>
-        
         {isLoading && (
           <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
             <RotatingLines
@@ -54,27 +54,26 @@ const ProductManagement = () => {
     );
   }
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     try {
-      await deleteProduct(product._id)
-      successToast('Product deleted successfully')
-      navigate('/admin/manage-products')
+      await deleteProduct(product._id);
+      successToast("Product deleted successfully");
+      navigate("/admin/manage-products");
     } catch (error) {
       errorToast(error?.data?.message || error.message || error.error);
     }
-  }
+  };
 
   const handleUpdate = () => {
     setIsEditModalOpen(true);
-  }
+  };
 
   const handleSoftDelete = async () => {
-
     const data = product.isSoftDelete
-      ? { isSoftDelete:false}
-      : { isSoftDelete : true};
+      ? { isSoftDelete: false }
+      : { isSoftDelete: true };
     try {
-      await updateProduct({ productId: product._id, data })
+      await updateProduct({ productId: product._id, data });
       successToast(
         `${
           data.isSoftDelete
@@ -87,7 +86,7 @@ const ProductManagement = () => {
         error?.data?.message || error.message || "Failed to update product"
       );
     }
-  }
+  };
 
   return (
     <>
@@ -147,7 +146,11 @@ const ProductManagement = () => {
                   : "No offers available"}
               </p>
 
-              <p className={`${product.isSoftDelete ? `text-red-600` : "text-green-600"} font-bold`}>
+              <p
+                className={`${
+                  product.isSoftDelete ? `text-red-600` : "text-green-600"
+                } font-bold`}
+              >
                 {product.isSoftDelete ? `Inactive` : "Active"}
               </p>
             </div>
@@ -200,7 +203,12 @@ const ProductManagement = () => {
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
                 Images
               </h2>
-              <div className="mt-4 flex flex-wrap gap-4"></div>
+              <div className="mt-4 flex flex-wrap gap-4">
+                <div className="w-44 h-44 border border-gray-200"></div>
+                <div className="w-44 h-44 border border-gray-200"></div>
+                <div className="w-44 h-44 border border-gray-200"></div>
+                <div className="w-44 h-44 border border-gray-200"></div>
+              </div>
             </div>
           </div>
 
@@ -209,32 +217,32 @@ const ProductManagement = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="p-6 bg-gray-50 dark:bg-black flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <button
-              onClick={handleUpdate}
-              className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-pen" className="me-3" />
-              Edit
-            </button>
-            <button
-              onClick={handleSoftDelete}
-              className="bg-yellow-600 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-700"
-            >
+        </div>
+        <div className="p-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button
+            icon={<FontAwesomeIcon icon="fa-regular fa-image" />}
+            text="Mange Images"
+          />
+          <Button
+            icon={<FontAwesomeIcon icon="fa-solid fa-pen" />}
+            text="Edit Product"
+            action={handleUpdate}
+          />
+          <Button
+            icon={
               <FontAwesomeIcon
                 icon="fa-regular fa-file-zipper"
                 className="me-3"
               />
-              SoftDelete
-            </button>
-            <button
-              onClick={() => setIsDelModalOpen(true)}
-              className="bg-red-600 text-white px-4 py-2 rounded-md shadow hover:bg-red-700"
-            >
-              <FontAwesomeIcon icon="fa-solid fa-trash" className="me-3" />
-              Delete
-            </button>
-          </div>
+            }
+            text="Soft Delete"
+            action={handleSoftDelete}
+          />
+          <Button
+            icon={<FontAwesomeIcon icon="fa-solid fa-trash" className="me-3" />}
+            text="Delete Permanantly"
+            action={() => setIsDelModalOpen(true)}
+          />
         </div>
       </div>
     </>

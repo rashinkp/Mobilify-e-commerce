@@ -44,8 +44,6 @@ const ProductManagement = () => {
       <Button
         icon={<FontAwesomeIcon icon="fa-solid fa-plus" />}
         text="Add Product"
-        colorStyle="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
-        action={() => setIsModalFormOpen(true)}
       />
       <div className="w-full max-w-5xl">
         <ProductList

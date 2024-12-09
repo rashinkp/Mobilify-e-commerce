@@ -1,19 +1,15 @@
-import React from 'react'
+import React from "react";
 
-const Button = ({icon , text, colorStyle , action}) => {
+const Button = ({ icon, text, action }) => {
   return (
     <button
       type="button"
       onClick={action}
-      className={`${
-        colorStyle
-          ? colorStyle
-          : " dark:focus:ring-blue-800dark:bg-blue-600 dark:hover:bg-blue-700 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
-      }font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none`}
+      className={`font-medium rounded-md text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none dark:bg-black dark:text-white border border-black flex gap-3 items-center`}
     >
       {icon} {text}
     </button>
   );
-}
+};
 
-export default Button
+export default Button;

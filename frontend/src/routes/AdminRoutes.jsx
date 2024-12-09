@@ -14,6 +14,7 @@ import CategoryManagement from "../pages/admin/CategoryManagement.jsx";
 import UserDetail from "../pages/admin/UserDetail.jsx";
 import { useLocation } from "react-router";
 import BrandManagement from "../pages/admin/BrandManagement.jsx";
+import ManageImage from "../pages/admin/ManageImage.jsx";
 const AdminRoutes = () => {
   const location = useLocation();
 
@@ -34,6 +35,7 @@ const AdminRoutes = () => {
           <Route path="/manage-sales" element={<SalesManagement />} />
           <Route path="/profile" element={<AdminProfile />} />
           <Route path="/manage-category" element={<CategoryManagement />} />
+          <Route path="/manage-image" element={<ManageImage />} />
         </Routes>
       </div>
     </>
