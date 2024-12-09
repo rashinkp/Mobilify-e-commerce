@@ -4,8 +4,27 @@ import SearchBar from "../../components/SearchBar";
 import Footer from "../../components/user/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
+import useProductApi from "../../hooks/useProductApi";
+import { RotatingLines } from "react-loader-spinner";
 
 const Products = () => {
+  const { products, isLoading } = useProductApi();
+  if (isLoading) {
+    return (
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+    )
+  }
   return (
     <div className="flex flex-col items-center">
       <div className="mb-8 w-full flex justify-center max-w-7xl px-4">
@@ -80,15 +99,9 @@ const Products = () => {
       </div>
 
       <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 5xl:grid-cols-5 justify-center px-4">
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
+        {products.map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
       </div>
 
       <div className="mt-20 w-full max-w-7xl px-4">

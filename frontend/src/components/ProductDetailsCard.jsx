@@ -1,10 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import AddCartButton from "../components/user/AddCartButton";
+import { useParams } from "react-router";
+import { useGetProductQuery } from "../redux/slices/productApiSlice";
+import { RotatingLines } from "react-loader-spinner";
 
 const ProductDetails = () => {
   const [mainImage, setMainImage] = useState("/images/product1.jpg");
-  const [selectedVariant, setSelectedVariant] = useState("Black");
+  const { id } = useParams();
+  const { data: product, isLoading, error } = useGetProductQuery(id);
 
   const thumbnails = [
     "/images/product1.jpg",
@@ -13,70 +17,27 @@ const ProductDetails = () => {
     "/images/product4.jpg",
   ];
 
-  const product = {
-    name: "Stylish Smart Watch",
-    model: "X100 Pro",
-    stars: 4.5,
-    reviewCount: 120,
-    description:
-      "A premium smartwatch with advanced fitness tracking, heart rate monitoring, and sleek design.",
-    brand: "TechTime",
-    offer: "25% OFF",
-    returnPolicy: "30-day return policy",
-    codAvailable: true,
-    warranty: "1 Year Manufacturer Warranty",
-    color: ["Black", "Silver", "Rose Gold", "Blue"],
-    capacities: [
-      {
-        storage: 64,
-        ram: 4,
-        price: 799,
-        id: "basic",
-      },
-      {
-        storage: 128,
-        ram: 8,
-        price: 999,
-        id: "standard",
-      },
-      {
-        storage: 256,
-        ram: 16,
-        price: 1299,
-        id: "pro",
-      },
-      {
-        storage: 512,
-        ram: 32,
-        price: 1599,
-        id: "ultra",
-      },
-    ],
-    physicalSpecs: {
-      displaySize: "1.5-inch AMOLED",
-      displayResolution: "390 x 450 pixels",
-      weight: "48 grams",
-      thickness: "10.7 mm",
-      screenProtection: "Corning Gorilla Glass",
-    },
-    connectivity: {
-      bluetooth: "5.0",
-      wifi: "802.11 a/b/g/n",
-      gps: "Yes",
-      nfc: "Yes",
-    },
-    network: "4G LTE",
-    stock: "In Stock",
-  };
 
-  const [selectedCapacity, setSelectedCapacity] = useState(
-    product.capacities[0].id
+if (isLoading) {
+  return (
+    <div>
+      {isLoading && (
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+      )}
+    </div>
   );
-
-  const selectedCapacityDetails = selectedCapacity
-    ? product.capacities.find((cap) => cap.id === selectedCapacity)
-    : product.capacities[0];
-
+}
   return (
     <div className="max-w-6xl mx-auto p-5 bg-white dark:bg-black shadow-lg rounded-xl">
       <div className="grid md:grid-cols-2 gap-8">
@@ -152,7 +113,7 @@ const ProductDetails = () => {
           </p>
 
           {/* Capacity Selection */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
               Select Storage & RAM:
             </h3>
@@ -176,10 +137,10 @@ const ProductDetails = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Color Selection */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
               Select Color:
             </h3>
@@ -198,16 +159,16 @@ const ProductDetails = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Price and Cart */}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                ₹{selectedCapacityDetails.price.toLocaleString()}
+                ₹{product.price}
               </p>
               <p className="text-green-600 font-medium">
-                {product.offer} Applied
+                {product.offerPercent}% OFF Applied
               </p>
             </div>
             <AddCartButton />
@@ -227,18 +188,26 @@ const ProductDetails = () => {
               <h4 className="font-semibold text-gray-600 dark:text-gray-300 mb-2">
                 Physical Details
               </h4>
-              <div className="space-y-2 text-sm">
-                {Object.entries(product.physicalSpecs).map(([key, value]) => (
-                  <p key={key} className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400 capitalize">
-                      {key.replace(/([A-Z])/g, " $1").toLowerCase()}
-                    </span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
-                      {value}
-                    </span>
-                  </p>
-                ))}
-              </div>
+              <p className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-400">Size</span>
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  {product.size}
+                </span>
+              </p>
+
+              <p className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-400">RAM</span>
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  {product.ram}
+                </span>
+              </p>
+
+              <p className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-400">Storage</span>
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  {product.storage}
+                </span>
+              </p>
             </div>
 
             {/* Connectivity and Additional Details */}
@@ -247,16 +216,7 @@ const ProductDetails = () => {
                 Connectivity & Additional Info
               </h4>
               <div className="space-y-2 text-sm">
-                {Object.entries(product.connectivity).map(([key, value]) => (
-                  <p key={key} className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400 capitalize">
-                      {key.toUpperCase()}
-                    </span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
-                      {value}
-                    </span>
-                  </p>
-                ))}
+                {/* add here also */}
                 <p className="flex justify-between items-center">
                   <span className="text-gray-600 dark:text-gray-400">
                     Network
@@ -272,12 +232,6 @@ const ProductDetails = () => {
 
         {/* Additional Details */}
         <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border dark:border-gray-800 grid grid-cols-1 gap-1 text-sm">
-          <div>
-            <p className="text-gray-600 dark:text-gray-400 mb-1">Brand</p>
-            <p className="font-semibold text-gray-800 dark:text-gray-200">
-              {product.brand}
-            </p>
-          </div>
           <div>
             <p className="text-gray-600 dark:text-gray-400 mb-1">Warranty</p>
             <p className="font-semibold text-gray-800 dark:text-gray-200">
@@ -298,7 +252,7 @@ const ProductDetails = () => {
             </p>
             <p
               className={`font-semibold ${
-                product.stock === "In Stock" ? "text-green-600" : "text-red-600"
+                product.stock >= 20 ? "text-green-600" : "text-red-600"
               }`}
             >
               {product.stock}
@@ -312,10 +266,10 @@ const ProductDetails = () => {
               </span>
               <span
                 className={`font-medium ${
-                  product.codAvailable ? "text-green-600" : "text-red-600"
+                  product.COD ? "text-green-600" : "text-red-600"
                 }`}
               >
-                {product.codAvailable ? "Yes" : "No"}
+                {product.COD ? "Yes" : "No"}
               </span>
             </p>
           </div>

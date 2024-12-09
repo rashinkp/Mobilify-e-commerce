@@ -1,11 +1,17 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddCartButton from "./AddCartButton";
+import { useNavigate } from "react-router";
 
-const ProductCard = () => {
+const ProductCard = ({ product }) => {
+  const { name, price, description, _id } = product;
+  const navigate = useNavigate()
+  const handleClick = () => {
+    navigate(`/user/product/${_id}`)
+  }
   return (
     <>
-      <div className="cursor-pointer">
+      <div className="cursor-pointer" onClick={handleClick}>
         <div className="border rounded-lg shadow-lg overflow-hidden w-80 bg-lightBackground h-72 flex justify-center items-center dark:bg-darkBackground">
           {/* Upper part: Love icon and product image */}
           <div className="relative px-2">
@@ -29,15 +35,13 @@ const ProductCard = () => {
           <div className="p-4">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-semibold dark:text-lightText">
-                Iphone 16 Pro Max
+                {name}
               </h3>
               <span className="text-darkText font-extrabold text-lg dark:text-lightText">
-                $175
+                ${price}
               </span>
             </div>
-            <p className="text-darkGray mb-2">
-              Description of the product goes here.
-            </p>
+            <p className="text-darkGray mb-2">{description}</p>
             <div className="flex items-center mb-4">
               <span className="text-green-500 text-sm flex gap-1">
                 <FontAwesomeIcon icon="fa-solid fa-star" />
