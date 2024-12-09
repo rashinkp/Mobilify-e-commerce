@@ -13,7 +13,8 @@ const ProductManagement = () => {
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { productId } = useParams();
-  const {deleteProduct} = useProductApi()
+  const {deleteProduct,updateProduct} = useProductApi()
+   
   const { data: product, isLoading, error } = useGetProductQuery(productId);
   const navigate = useNavigate();
   const reviews = [
@@ -63,8 +64,29 @@ const ProductManagement = () => {
     }
   }
 
-  const handleUpdate = async () => {
+  const handleUpdate = () => {
     setIsEditModalOpen(true);
+  }
+
+  const handleSoftDelete = async () => {
+
+    const data = product.isSoftDelete
+      ? { isSoftDelete:false}
+      : { isSoftDelete : true};
+    try {
+      await updateProduct({ productId: product._id, data })
+      successToast(
+        `${
+          data.isSoftDelete
+            ? "Successfully soft deleted"
+            : "Successfully recovered"
+        }`
+      );
+    } catch (error) {
+      errorToast(
+        error?.data?.message || error.message || "Failed to update product"
+      );
+    }
   }
 
   return (
@@ -123,6 +145,10 @@ const ProductManagement = () => {
                 {product.offerPercent
                   ? `${product.offerPercent}% OFF Applied`
                   : "No offers available"}
+              </p>
+
+              <p className={`${product.isSoftDelete ? `text-red-600` : "text-green-600"} font-bold`}>
+                {product.isSoftDelete ? `Inactive` : "Active"}
               </p>
             </div>
           </div>
@@ -184,18 +210,17 @@ const ProductManagement = () => {
 
           {/* Action Buttons */}
           <div className="p-6 bg-gray-50 dark:bg-black flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <button onClick={handleUpdate} className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700">
+            <button
+              onClick={handleUpdate}
+              className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700"
+            >
               <FontAwesomeIcon icon="fa-solid fa-pen" className="me-3" />
               Edit
             </button>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700">
-              <FontAwesomeIcon
-                icon="fa-solid fa-box-archive"
-                className="me-3"
-              />
-              Archive
-            </button>
-            <button className="bg-yellow-600 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-700">
+            <button
+              onClick={handleSoftDelete}
+              className="bg-yellow-600 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-700"
+            >
               <FontAwesomeIcon
                 icon="fa-regular fa-file-zipper"
                 className="me-3"
