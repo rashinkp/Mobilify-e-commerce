@@ -11,7 +11,7 @@ const ProductSchema = new mongoose.Schema(
       required: false,
     },
     offerPercent: { type: Number, required: true },
-    image: { type: [String], required: false },
+    images: { type: [Object], required: false },
     returnPolicy: { type: String, required: true },
     COD: { type: Boolean, default: true },
     warranty: { type: String, required: true },

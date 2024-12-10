@@ -1,12 +1,20 @@
 import React from 'react'
-import { useAddProductMutation, useDeleteProductMutation, useGetAllProductsQuery, useGetProductQuery, useUpdateProductMutation } from '../redux/slices/productApiSlice'
+import { useAddProductMutation, useDeleteProductMutation, useGetAllProductsQuery, useGetProductQuery, useUpdateProductImageMutation, useUpdateProductMutation } from '../redux/slices/productApiSlice'
 
 const useProductApi = () => {
   const [addProduct] = useAddProductMutation();
   const { data: products, isLoading } = useGetAllProductsQuery()
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
-  return { addProduct, products, isLoading , deleteProduct, updateProduct }
+  const [updateImage] = useUpdateProductImageMutation()
+  return {
+    addProduct,
+    products,
+    isLoading,
+    deleteProduct,
+    updateProduct,
+    updateImage,
+  };
 }
 
 export default useProductApi

@@ -35,7 +35,7 @@ const AdminRoutes = () => {
           <Route path="/manage-sales" element={<SalesManagement />} />
           <Route path="/profile" element={<AdminProfile />} />
           <Route path="/manage-category" element={<CategoryManagement />} />
-          <Route path="/manage-image" element={<ManageImage />} />
+          <Route path="/manage-image/:id" element={<ManageImage />} />
         </Routes>
       </div>
     </>

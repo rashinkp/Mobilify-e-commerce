@@ -1,10 +1,17 @@
 import React, { useRef, useState } from "react";
 import Button from "../../components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { successToast } from "../../components/toast/index.js";
+import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig.js";
+import useProductApi from "../../hooks/useProductApi.jsx";
+import { useParams } from 'react-router'
+import { useUpdateProductImageMutation } from "../../redux/slices/productApiSlice.js";
 const ManageImage = () => {
   const ImageRefs = Array.from({ length: 4 }, () => useRef());
   const [images, setImages] = useState([null, null, null, null]);
+
+  const { id: productId } = useParams();
+  const [updateImage] = useUpdateProductImageMutation();
 
   const handleImageClick = (index) => {
     ImageRefs[index].current.click();
@@ -26,41 +33,32 @@ const ManageImage = () => {
   };
 
   const uploadToCloudinary = async () => {
-    if (images.includes(null)) {
-      alert("Please select images for all slots!");
+    const filteredImages = images.filter((img) => img !== null);
+
+    if (filteredImages.length < 1) {
+      alert("Please select at least one image");
       return;
     }
 
-    const uploadPreset = "Mobilify";
-    const cloudName = "dxogdfuse";
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
     const uploadedUrls = [];
-
-    for (const image of images) {
-      const formData = new FormData();
-      formData.append("file", image);
-      formData.append("upload_preset", uploadPreset);
-
+    for (const image of filteredImages) {
       try {
-        const response = await fetch(cloudinaryUrl, {
-          method: "POST",
-          body: formData,
-        });
-        const data = await response.json();
+        const data = await uploadImageToCloudinary(image);
         uploadedUrls.push(data);
+        await updateImage({productId, uploadedUrls});
+        successToast("Image uploading completed");
       } catch (error) {
         console.error("Upload error:", error);
       }
     }
 
-    console.log("Uploaded URLs:", uploadedUrls);
+    
   };
 
   return (
     <div className="flex flex-col ms-14 items-center justify-center space-y-6 p-4 overflow-auto">
       {/* Image Slots */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full max-w-4xl ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full max-w-4xl">
         {images.map((image, index) => (
           <div
             key={index}

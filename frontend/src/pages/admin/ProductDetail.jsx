@@ -58,7 +58,7 @@ const ProductManagement = () => {
     try {
       await deleteProduct(product._id);
       successToast("Product deleted successfully");
-      navigate("/admin/manage-products");
+      navigate(`/admin/manage-products`);
     } catch (error) {
       errorToast(error?.data?.message || error.message || error.error);
     }
@@ -87,6 +87,10 @@ const ProductManagement = () => {
       );
     }
   };
+
+  const handleMangeImages = () => {
+    navigate(`/admin/manage-image/${product._id}`)
+  }
 
   return (
     <>
@@ -222,6 +226,7 @@ const ProductManagement = () => {
           <Button
             icon={<FontAwesomeIcon icon="fa-regular fa-image" />}
             text="Mange Images"
+            action={handleMangeImages}
           />
           <Button
             icon={<FontAwesomeIcon icon="fa-solid fa-pen" />}

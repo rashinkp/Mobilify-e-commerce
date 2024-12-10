@@ -37,12 +37,19 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: ({ productId, data }) => ({
         url: `${ADMIN_URL}/product/${productId}`,
         method: "PUT",
-        body:data
+        body: data,
       }),
       invalidatesTags: ["ProductDetail"],
+    }),
+    updateProductImage: builder.mutation({
+      query: ({ productId, uploadedUrls }) => ({
+          url: `${ADMIN_URL}/product-images/${productId}`,
+          method: "PUT",
+          body: uploadedUrls,
+        }),
     }),
   }),
 });
 
 
-export const { useAddProductMutation, useGetAllProductsQuery , useGetProductQuery , useDeleteProductMutation, useUpdateProductMutation } = productApiSlice;
+export const { useAddProductMutation, useGetAllProductsQuery , useGetProductQuery , useDeleteProductMutation, useUpdateProductMutation,useUpdateProductImageMutation } = productApiSlice;

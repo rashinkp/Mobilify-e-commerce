@@ -52,9 +52,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const updateData = req.body;
 
-
-  console.log(updateData)
-
   const product = await Product.findById(productId);
   if (product) {
     Object.keys(updateData).forEach((key) => {
@@ -70,3 +67,39 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 })
+
+
+export const updateImages = asyncHandler(async (req, res) => {
+  const productId = req.params.id; // Extract the product ID from the URL
+  const images = req.body; // Get the array of images from the request body
+
+  if (!Array.isArray(images)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid data format. Expected an array of images." });
+  }
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { $push: { images: { $each: images } } }, 
+      { new: true } 
+    );
+
+    console.log(updatedProduct)
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(200).json({
+      message: "Images added successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "An error occurred while updating the product images",
+      details: error.message,
+    });
+  }
+});

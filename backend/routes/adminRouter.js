@@ -1,7 +1,7 @@
 import express from "express";
 import { addBrand, authAdmin, blockUser, deleteBrand, deleteUser, getAllBrand, getAllUsers, logoutAdmin, registerAdmin } from "../controllers/adminControllers.js";
 import { addCategory, deleteCategory, getAllCategory, updateCategory } from "../controllers/categoryController.js";
-import { addProduct, deleteProduct, getAllProducts, getProduct, updateProduct } from "../controllers/productControllers.js";
+import { addProduct, deleteProduct, getAllProducts, getProduct, updateImages, updateProduct } from "../controllers/productControllers.js";
 
 const router = express.Router();
 
@@ -31,6 +31,6 @@ router.route('/category/:id').delete(deleteCategory).put(updateCategory);
 router.route("/product").post(addProduct).get(getAllProducts);
 router.route("/product/:id").get(getProduct).delete(deleteProduct).put(updateProduct);
 
-
+router.route("/product-images/:id").put(updateImages);
 
 export default router;

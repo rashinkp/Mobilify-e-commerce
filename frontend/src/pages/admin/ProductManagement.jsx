@@ -44,6 +44,7 @@ const ProductManagement = () => {
       <Button
         icon={<FontAwesomeIcon icon="fa-solid fa-plus" />}
         text="Add Product"
+        action={() => setIsModalFormOpen(true)}
       />
       <div className="w-full max-w-5xl">
         <ProductList
