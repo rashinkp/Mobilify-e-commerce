@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import Product from '../models/productSchema.js'
-
+import cloudinary from '../config/cloudinary.js'
 
 
 export const addProduct = asyncHandler(async (req, res) => {
@@ -69,13 +69,10 @@ export const updateProduct = asyncHandler(async (req, res) => {
 })
 
 
+
 export const updateImages = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const { uploadedUrl: images, deleteQueue } = req.body;
-
-  if (images.length < 1) {
-    throw new Error("Please select at least 1 image");
-  }
 
   if (!Array.isArray(images)) {
     return res
@@ -84,22 +81,32 @@ export const updateImages = asyncHandler(async (req, res) => {
   }
 
   try {
+    // Find the product
     const product = await Product.findById(productId);
 
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
+    // Handle the delete queue
     if (deleteQueue && Array.isArray(deleteQueue)) {
-      deleteQueue.forEach((index) => {
-        if (product.images[index]) {
-          product.images.splice(index, 1); 
+      for (const index of deleteQueue) {
+        const imageToDelete = product.images[index];
+        if (imageToDelete) {
+          // Delete the image from Cloudinary
+          const publicId = imageToDelete.public_id; 
+          await cloudinary.uploader.destroy(publicId);
+
+          // Remove the image from the product
+          product.images.splice(index, 1);
         }
-      });
+      }
     }
 
+    // Add new images
     product.images.push(...images);
 
+    // Save the updated product
     const updatedProduct = await product.save();
 
     res.status(200).json({
@@ -114,4 +121,3 @@ export const updateImages = asyncHandler(async (req, res) => {
     });
   }
 });
-
