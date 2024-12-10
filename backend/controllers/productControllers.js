@@ -70,8 +70,14 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
 
 export const updateImages = asyncHandler(async (req, res) => {
-  const productId = req.params.id; // Extract the product ID from the URL
-  const images = req.body; // Get the array of images from the request body
+  const productId = req.params.id; 
+  const images = req.body; 
+
+
+
+  if (images.length < 1) {
+    throw new Error("Please select atleast 1 image");
+  }
 
   if (!Array.isArray(images)) {
     return res
@@ -97,6 +103,7 @@ export const updateImages = asyncHandler(async (req, res) => {
       product: updatedProduct,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       error: "An error occurred while updating the product images",
       details: error.message,

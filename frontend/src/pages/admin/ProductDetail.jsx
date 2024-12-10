@@ -127,6 +127,7 @@ const ProductManagement = () => {
           <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center">
             <div className="flex-shrink-0">
               <img
+                src={product.images[0].secure_url}
                 alt="Main Product Image"
                 className="w-24 h-24 sm:w-64 sm:h-64 rounded-lg border-4 border-white shadow-md"
               />
@@ -208,10 +209,11 @@ const ProductManagement = () => {
                 Images
               </h2>
               <div className="mt-4 flex flex-wrap gap-4">
-                <div className="w-44 h-44 border border-gray-200"></div>
-                <div className="w-44 h-44 border border-gray-200"></div>
-                <div className="w-44 h-44 border border-gray-200"></div>
-                <div className="w-44 h-44 border border-gray-200"></div>
+                {product.images.map((image, index) => (
+                  <div className="w-44 h-44 border border-gray-200" key={index}>
+                    <img src={image.secure_url} alt="" className="h-full w-full object-fill" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -1,17 +1,34 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Button from "../../components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { successToast } from "../../components/toast/index.js";
+import { errorToast, successToast } from "../../components/toast/index.js";
 import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig.js";
-import useProductApi from "../../hooks/useProductApi.jsx";
-import { useParams } from 'react-router'
-import { useUpdateProductImageMutation } from "../../redux/slices/productApiSlice.js";
+import { useParams } from "react-router";
+import {
+  useGetProductQuery,
+  useUpdateProductImageMutation,
+} from "../../redux/slices/productApiSlice.js";
+import { RotatingLines } from "react-loader-spinner";
+
 const ManageImage = () => {
   const ImageRefs = Array.from({ length: 4 }, () => useRef());
-  const [images, setImages] = useState([null, null, null, null]);
+  const [images, setImages] = useState([null, null, null, null]); 
+  const [deleteQueue, setDeleteQueue] = useState([]); 
 
   const { id: productId } = useParams();
   const [updateImage] = useUpdateProductImageMutation();
+  const { data: product, isLoading, error } = useGetProductQuery(productId);
+
+  useEffect(() => {
+    if (product?.images) {
+      const initialImages = product.images.map((img) => img.secure_url);
+      setImages((prev) => [
+        ...initialImages,
+        ...Array(4 - initialImages.length).fill(null),
+      ]);
+    }
+  }, [product]);
+
 
   const handleImageClick = (index) => {
     ImageRefs[index].current.click();
@@ -26,34 +43,69 @@ const ManageImage = () => {
     }
   };
 
+
   const handleDelete = (index) => {
     const updatedImages = [...images];
+    if (typeof updatedImages[index] === "string") {
+      setDeleteQueue([...deleteQueue, updatedImages[index]]);
+    }
     updatedImages[index] = null;
     setImages(updatedImages);
   };
 
   const uploadToCloudinary = async () => {
-    const filteredImages = images.filter((img) => img !== null);
-
-    if (filteredImages.length < 1) {
-      alert("Please select at least one image");
-      return;
+    let newImages = images.filter((img) => img && typeof img !== "string"); 
+    if (newImages.length < 1) {
+      errorToast('Please select 1 new image to upload')
+      return true
     }
+    const existingImages = images.filter(
+      (img) => typeof img === "string" && !deleteQueue.includes(img)
+    ); 
+    let uploadedUrl = [];
+    
 
-    const uploadedUrls = [];
-    for (const image of filteredImages) {
+    for (const image of newImages) {
       try {
         const data = await uploadImageToCloudinary(image);
-        uploadedUrls.push(data);
-        await updateImage({productId, uploadedUrls});
-        successToast("Image uploading completed");
+        uploadedUrl.push(data);
+        newImages = null;
       } catch (error) {
         console.error("Upload error:", error);
       }
     }
 
-    
+
+    try {
+      await updateImage({
+        productId,
+        uploadedUrl: [...uploadedUrl]
+      });
+      successToast("Images updated successfully!");
+      uploadedUrl=[]
+    } catch (error) {
+      console.error("Update error:", error);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col ms-14 items-center justify-center space-y-6 p-4 overflow-auto">
@@ -67,7 +119,11 @@ const ManageImage = () => {
             {image ? (
               <>
                 <img
-                  src={URL.createObjectURL(image)}
+                  src={
+                    typeof image === "string"
+                      ? image
+                      : URL.createObjectURL(image)
+                  }
                   alt=""
                   className="h-40 sm:h-72 w-full object-cover"
                 />
