@@ -30,7 +30,7 @@ const Form = ({
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="max-w-lg w-full mx-auto p-8 bg-gray-100 dark:bg-gray-800 shadow-md rounded-md space-y-6 overflow-auto"
+      className="max-w-lg w-full mx-auto p-8 bg-gray-100 dark:bg-black shadow-md rounded-md space-y-6 overflow-auto"
     >
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center">
         {title}

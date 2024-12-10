@@ -9,6 +9,7 @@ import { errorToast, successToast } from "../../components/toast";
 import Modal from "../../components/Modal";
 import ProductEditForm from "../../components/product/ProductEditForm";
 import Button from "../../components/ui/Button";
+import noImage from '../../assets/noImage.png'
 
 const ProductManagement = () => {
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
@@ -127,7 +128,7 @@ const ProductManagement = () => {
           <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center">
             <div className="flex-shrink-0">
               <img
-                src={product.images[0].secure_url}
+                src={product?.images[0]?.secure_url || noImage }
                 alt="Main Product Image"
                 className="w-24 h-24 sm:w-64 sm:h-64 rounded-lg border-4 border-white shadow-md object-cover"
               />
@@ -209,9 +210,9 @@ const ProductManagement = () => {
                 Images
               </h2>
               <div className="mt-4 flex flex-wrap gap-4">
-                {product.images.map((image, index) => (
+                {product?.images?.map((image, index) => (
                   <div className="w-44 h-44 border border-gray-200" key={index}>
-                    <img src={image.secure_url} alt="" className="h-full w-full object-cover" />
+                    <img src={image.secure_url || noImage} alt="" className="h-full w-full object-cover" />
                   </div>
                 ))}
               </div>

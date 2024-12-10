@@ -141,3 +141,27 @@ export const productValidation = Yup.object().shape({
   COD: Yup.string().required("COD is required"),
 });
 
+
+
+export const imageValidationSchema = Yup.object().shape({
+  file: Yup.mixed()
+    .required("An image file is required")
+    .test(
+      "fileType",
+      "Only JPG, JPEG, PNG, and SVG files are allowed",
+      (value) => {
+        if (!value) return false;
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/jpg",
+          "image/svg+xml",
+        ];
+        return allowedTypes.includes(value.type);
+      }
+    )
+    .test("fileSize", "File size should not exceed 5MB", (value) => {
+      if (!value) return true;
+      return value.size <= 5 * 1024 * 1024; // 5MB size limit
+    }),
+});

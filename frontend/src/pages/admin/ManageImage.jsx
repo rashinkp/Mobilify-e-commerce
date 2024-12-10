@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { imageValidationSchema } from "../../validationSchemas.js"; 
 import Button from "../../components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { errorToast, successToast } from "../../components/toast/index.js";
@@ -12,9 +13,8 @@ import { RotatingLines } from "react-loader-spinner";
 
 const ManageImage = () => {
   const ImageRefs = Array.from({ length: 4 }, () => useRef());
-  const [images, setImages] = useState([null, null, null, null]); 
-  const [deleteQueue, setDeleteQueue] = useState([]); 
-
+  const [images, setImages] = useState([null, null, null, null]);
+  const [deleteQueue, setDeleteQueue] = useState([]);
   const { id: productId } = useParams();
   const [updateImage] = useUpdateProductImageMutation();
   const { data: product, isLoading, error } = useGetProductQuery(productId);
@@ -29,51 +29,41 @@ const ManageImage = () => {
     }
   }, [product]);
 
-
-
-
   const handleImageClick = (index) => {
     ImageRefs[index].current.click();
   };
 
-  const handleImageChange = (e, index) => {
+  const handleImageChange = async (e, index) => {
     const selectedImage = e.target.files[0];
     if (selectedImage) {
-      const updatedImages = [...images];
-      updatedImages[index] = selectedImage;
-      setImages(updatedImages);
+      try {
+        await imageValidationSchema.validate({ file: selectedImage });
+        const updatedImages = [...images];
+        updatedImages[index] = selectedImage;
+        setImages(updatedImages);
+      } catch (validationError) {
+        errorToast(validationError.message);
+      }
     }
   };
 
-
- const handleDelete = (index) => {
-  const updatedImages = [...images];
-  if (typeof updatedImages[index] === "string") {
-    setDeleteQueue((prevQueue) => [
-      ...prevQueue,
-      index, 
-    ]);
-  }
-  updatedImages[index] = null;
-  setImages(updatedImages);
+  const handleDelete = (index) => {
+    const updatedImages = [...images];
+    if (typeof updatedImages[index] === "string") {
+      setDeleteQueue((prevQueue) => [...prevQueue, index]);
+    }
+    updatedImages[index] = null;
+    setImages(updatedImages);
   };
-  
-
 
   const uploadToCloudinary = async () => {
-    let newImages = images.filter((img) => img && typeof img !== "string"); 
+    let newImages = images.filter((img) => img && typeof img !== "string");
     if (newImages.length < 1) {
-      errorToast('Please select 1 new image to upload')
-      return true
+      errorToast("Please select 1 new image to upload");
+      return true;
     }
-    // const existingImages = images.filter(
-    //   (img) => typeof img === "string" && !deleteQueue.includes(img)
-    // ); 
-
 
     let uploadedUrl = [];
-    
-
     for (const image of newImages) {
       try {
         const data = await uploadImageToCloudinary(image);
@@ -84,7 +74,6 @@ const ManageImage = () => {
       }
     }
 
-
     try {
       await updateImage({
         productId,
@@ -92,7 +81,7 @@ const ManageImage = () => {
         deleteQueue,
       });
       successToast("Images updated successfully!");
-      uploadedUrl=[]
+      uploadedUrl = [];
     } catch (error) {
       console.error("Update error:", error);
     }

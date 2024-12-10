@@ -4,42 +4,39 @@ import AddCartButton from "../components/user/AddCartButton";
 import { useParams } from "react-router";
 import { useGetProductQuery } from "../redux/slices/productApiSlice";
 import { RotatingLines } from "react-loader-spinner";
-import noImage from '../assets/noImage.png'
+import noImage from "../assets/noImage.png";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  
+
   const { data: product, isLoading, error } = useGetProductQuery(id);
 
   const [mainImage, setMainImage] = useState(noImage);
-  
+
   useEffect(() => {
     setMainImage(product?.images[0]?.secure_url);
-  },[product])
+  }, [product]);
 
-  
-
-
-if (isLoading) {
-  return (
-    <div>
-      {isLoading && (
-        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-          <RotatingLines
-            visible={true}
-            height="50"
-            width="50"
-            color="grey"
-            strokeColor="#fff"
-            strokeWidth="2"
-            animationDuration="8"
-            ariaLabel="rotating-lines-loading"
-          />
-        </div>
-      )}
-    </div>
-  );
-}
+  if (isLoading) {
+    return (
+      <div>
+        {isLoading && (
+          <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+            <RotatingLines
+              visible={true}
+              height="50"
+              width="50"
+              color="grey"
+              strokeColor="#fff"
+              strokeWidth="2"
+              animationDuration="8"
+              ariaLabel="rotating-lines-loading"
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="max-w-6xl mx-auto p-5 bg-white dark:bg-black shadow-lg rounded-xl">
       <div className="grid md:grid-cols-2 gap-8">
@@ -71,8 +68,9 @@ if (isLoading) {
                 onClick={() => setMainImage(thumb.secure_url)}
               >
                 <img
-                  src={thumb.secure_url}
+                  src={thumb.secure_url || noImage}
                   alt={`Thumbnail ${index + 1}`}
+                  l
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -205,7 +203,9 @@ if (isLoading) {
               </p>
 
               <p className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Storage</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Storage
+                </span>
                 <span className="font-medium text-gray-800 dark:text-gray-200">
                   {product.storage}
                 </span>

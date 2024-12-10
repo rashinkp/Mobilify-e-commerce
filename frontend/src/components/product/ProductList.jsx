@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ListItem from "../admin/ListItem";
 import { useNavigate } from "react-router";
+import noImage from '../../assets/noImage.png'
 
 const ProductList = ({ products, icon }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -8,6 +9,16 @@ const ProductList = ({ products, icon }) => {
   const navigate = useNavigate();
 
   const productColumns = [
+    {
+      key: "images",
+      render: (img) => (
+        <img
+          src={img[0]?.secure_url || noImage}
+          alt="Product"
+          className="w-12 h-12 rounded-full object-cover"
+        />
+      ),
+    },
     { key: "name", label: "Name", render: (value) => value },
     { key: "model", label: "Model", render: (value) => value },
     { key: "price", label: "Price", render: (value) => value },

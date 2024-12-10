@@ -1,7 +1,18 @@
-import React from 'react'
-import Form from '../../components/Form.jsx'
-import { otpValidationSchema } from '../../validationSchemas';
+import React from "react";
+import Form from "../../components/Form.jsx";
+import { otpValidationSchema } from "../../validationSchemas";
+import { useRegisterMutation } from "../../redux/slices/userApiSlices.js";
+import { errorToast, successToast } from "../../components/toast/index.js";
+import { useLocation, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { userLogin } from "../../redux/slices/authUser.js";
 const VerifyOtp = () => {
+  const [register, { isLoading }] = useRegisterMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { id } = location.state || {};
+
   const formFields = [
     {
       name: "otp",
@@ -20,11 +31,21 @@ const VerifyOtp = () => {
     },
   ];
 
-  const handleSubmit = (data) => {
-    console.log('Otp : ', data)
-  } 
+  const handleSubmit = async (data) => {
+    try {
+      const res = await register({ data, id }).unwrap();
+      dispatch(userLogin({ ...res }));
+      successToast("User registered successfull");
+      navigate("/user/");
+    } catch (error) {
+      errorToast(
+        error?.data?.message || error.message || "Failed to register user"
+      );
+      console.log(error);
+    }
+  };
   return (
-    <div className='mt-56'>
+    <div className="mt-56">
       <Form
         title="Verilfy OTP"
         fields={formFields}
@@ -35,6 +56,6 @@ const VerifyOtp = () => {
       />
     </div>
   );
-}
+};
 
-export default VerifyOtp
+export default VerifyOtp;

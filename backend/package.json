@@ -9,7 +9,10 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.3",
-    "nodemon": "^3.1.7"
+    "nodemailer": "^6.9.16",
+    "nodemon": "^3.1.7",
+    "otp-generator": "^4.0.1",
+    "redis": "^4.7.0"
   },
   "name": "backend",
   "version": "1.0.0",
