@@ -1,21 +1,23 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddCartButton from "../components/user/AddCartButton";
 import { useParams } from "react-router";
 import { useGetProductQuery } from "../redux/slices/productApiSlice";
 import { RotatingLines } from "react-loader-spinner";
+import noImage from '../assets/noImage.png'
 
 const ProductDetails = () => {
-  const [mainImage, setMainImage] = useState("/images/product1.jpg");
   const { id } = useParams();
+  
   const { data: product, isLoading, error } = useGetProductQuery(id);
 
-  const thumbnails = [
-    "/images/product1.jpg",
-    "/images/product2.jpg",
-    "/images/product3.jpg",
-    "/images/product4.jpg",
-  ];
+  const [mainImage, setMainImage] = useState(noImage);
+  
+  useEffect(() => {
+    setMainImage(product?.images[0]?.secure_url);
+  },[product])
+
+  
 
 
 if (isLoading) {
@@ -58,7 +60,7 @@ if (isLoading) {
           </div>
 
           <div className="flex justify-center mt-4 space-x-3">
-            {thumbnails.map((thumb, index) => (
+            {product.images.map((thumb, index) => (
               <div
                 key={index}
                 className={`w-20 h-20 rounded-lg overflow-hidden cursor-pointer border-2 ${
@@ -66,10 +68,10 @@ if (isLoading) {
                     ? "border-blue-500"
                     : "border-transparent dark:border-gray-700"
                 }`}
-                onClick={() => setMainImage(thumb)}
+                onClick={() => setMainImage(thumb.secure_url)}
               >
                 <img
-                  src={thumb}
+                  src={thumb.secure_url}
                   alt={`Thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

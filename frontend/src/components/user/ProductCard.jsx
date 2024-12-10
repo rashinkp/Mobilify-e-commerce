@@ -24,7 +24,7 @@ const ProductCard = ({ product }) => {
             </span>
             <img
               className=" w-64 h-60 object-cover rounded-md"
-              src="https://via.placeholder.com/300"
+              src={product.images[0].secure_url}
               alt="Product"
             />
           </div>

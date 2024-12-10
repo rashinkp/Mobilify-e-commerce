@@ -129,7 +129,7 @@ const ProductManagement = () => {
               <img
                 src={product.images[0].secure_url}
                 alt="Main Product Image"
-                className="w-24 h-24 sm:w-64 sm:h-64 rounded-lg border-4 border-white shadow-md"
+                className="w-24 h-24 sm:w-64 sm:h-64 rounded-lg border-4 border-white shadow-md object-cover"
               />
             </div>
             <div className="ml-3 sm:ml-6">
@@ -211,7 +211,7 @@ const ProductManagement = () => {
               <div className="mt-4 flex flex-wrap gap-4">
                 {product.images.map((image, index) => (
                   <div className="w-44 h-44 border border-gray-200" key={index}>
-                    <img src={image.secure_url} alt="" className="h-full w-full object-fill" />
+                    <img src={image.secure_url} alt="" className="h-full w-full object-cover" />
                   </div>
                 ))}
               </div>
