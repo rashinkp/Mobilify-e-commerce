@@ -30,6 +30,8 @@ const ManageImage = () => {
   }, [product]);
 
 
+
+
   const handleImageClick = (index) => {
     ImageRefs[index].current.click();
   };
@@ -44,14 +46,19 @@ const ManageImage = () => {
   };
 
 
-  const handleDelete = (index) => {
-    const updatedImages = [...images];
-    if (typeof updatedImages[index] === "string") {
-      setDeleteQueue([...deleteQueue, updatedImages[index]]);
-    }
-    updatedImages[index] = null;
-    setImages(updatedImages);
+ const handleDelete = (index) => {
+  const updatedImages = [...images];
+  if (typeof updatedImages[index] === "string") {
+    setDeleteQueue((prevQueue) => [
+      ...prevQueue,
+      index, 
+    ]);
+  }
+  updatedImages[index] = null;
+  setImages(updatedImages);
   };
+  
+
 
   const uploadToCloudinary = async () => {
     let newImages = images.filter((img) => img && typeof img !== "string"); 
@@ -59,9 +66,11 @@ const ManageImage = () => {
       errorToast('Please select 1 new image to upload')
       return true
     }
-    const existingImages = images.filter(
-      (img) => typeof img === "string" && !deleteQueue.includes(img)
-    ); 
+    // const existingImages = images.filter(
+    //   (img) => typeof img === "string" && !deleteQueue.includes(img)
+    // ); 
+
+
     let uploadedUrl = [];
     
 
@@ -79,7 +88,8 @@ const ManageImage = () => {
     try {
       await updateImage({
         productId,
-        uploadedUrl: [...uploadedUrl]
+        uploadedUrl: [...uploadedUrl],
+        deleteQueue,
       });
       successToast("Images updated successfully!");
       uploadedUrl=[]

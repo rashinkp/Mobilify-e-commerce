@@ -70,13 +70,11 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
 
 export const updateImages = asyncHandler(async (req, res) => {
-  const productId = req.params.id; 
-  const images = req.body; 
-
-
+  const productId = req.params.id;
+  const { uploadedUrl: images, deleteQueue } = req.body;
 
   if (images.length < 1) {
-    throw new Error("Please select atleast 1 image");
+    throw new Error("Please select at least 1 image");
   }
 
   if (!Array.isArray(images)) {
@@ -86,27 +84,34 @@ export const updateImages = asyncHandler(async (req, res) => {
   }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      { $push: { images: { $each: images } } }, 
-      { new: true } 
-    );
+    const product = await Product.findById(productId);
 
-    console.log(updatedProduct)
-
-    if (!updatedProduct) {
+    if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
+    if (deleteQueue && Array.isArray(deleteQueue)) {
+      deleteQueue.forEach((index) => {
+        if (product.images[index]) {
+          product.images.splice(index, 1); 
+        }
+      });
+    }
+
+    product.images.push(...images);
+
+    const updatedProduct = await product.save();
+
     res.status(200).json({
-      message: "Images added successfully",
+      message: "Images updated successfully",
       product: updatedProduct,
     });
   } catch (error) {
-    console.log(error)
+    console.error(error);
     res.status(500).json({
       error: "An error occurred while updating the product images",
       details: error.message,
     });
   }
 });
+
