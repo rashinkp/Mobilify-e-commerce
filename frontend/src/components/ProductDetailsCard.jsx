@@ -37,6 +37,8 @@ const ProductDetails = () => {
       </div>
     );
   }
+
+  
   return (
     <div className="max-w-6xl mx-auto p-5 bg-white dark:bg-black shadow-lg rounded-xl">
       <div className="grid md:grid-cols-2 gap-8">
@@ -44,7 +46,7 @@ const ProductDetails = () => {
         <div className="relative ">
           <div className="w-full h-[500px] bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
             <img
-              src={mainImage}
+              src={mainImage || noImage}
               alt="Main Product"
               className="max-h-full max-w-full object-contain"
             />
@@ -198,7 +200,7 @@ const ProductDetails = () => {
               <p className="flex justify-between items-center">
                 <span className="text-gray-600 dark:text-gray-400">RAM</span>
                 <span className="font-medium text-gray-800 dark:text-gray-200">
-                  {product.ram}
+                  {product.ram} GB
                 </span>
               </p>
 
@@ -207,7 +209,7 @@ const ProductDetails = () => {
                   Storage
                 </span>
                 <span className="font-medium text-gray-800 dark:text-gray-200">
-                  {product.storage}
+                  {product.storage} GB
                 </span>
               </p>
             </div>

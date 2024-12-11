@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Form from "../../components/Form.jsx";
 import { loginValidationSchema } from "../../validationSchemas";
-import SignGoogle from "../../components/user/SignGoogle";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { useGoogleSignMutation, useLoginMutation, useRegisterMutation } from "../../redux/slices/userApiSlices.js";
+import { useLoginMutation } from "../../redux/slices/userApiSlices.js";
 import { userLogin } from "../../redux/slices/authUser.js";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
-// import GoogleLogin/ from "react-google-login";
-// import GoogleSignIn from "./GoogleSignIn.jsx";
-import { googleLogout } from "@react-oauth/google";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import GoogleSignIn from "./GoogleSignIn.jsx";
 
 export const clientId =
   "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com";
@@ -59,7 +54,6 @@ const Login = () => {
   }, [userInfo, navigate]);
 
   const [login, { isLoading }] = useLoginMutation();
-  const [googleSign] = useGoogleSignMutation();
 
   const handleLogin = async ({ email, password }) => {
     try {
@@ -76,43 +70,10 @@ const Login = () => {
       );
     }
   };
-      const [user, setUser] = useState([]);
+    
 
 
-  const loginBtn = useGoogleLogin({
-    onSuccess: (codeResponse) => setUser(codeResponse),
-    onError: (error) => console.log("Login Failed:", error),
-  });
-
-  // const errorMessage = (error) => {
-  //   console.log(error);
-  // };
-
-  useEffect(() => {
-    if (user) {
-      axios
-        .get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.access_token}`,
-              Accept: "application/json",
-            },
-          }
-        )
-        .then(async(res) => {
-          const { name, email, picture } = res.data
-          const response = await googleSign({ name, email, picture });
-          const user = response.data;
-          dispatch(userLogin({...user}))
-          successToast("Login Successful");
-          navigate("/user");
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [user]);
-
-
+  
     
   return (
     <div>
@@ -124,23 +85,9 @@ const Login = () => {
         extraLinks={extraLinks}
         validationRules={loginValidationSchema}
       />
-      <div className="mt-5" onClick={loginBtn}>
-        <SignGoogle />
-      </div>
       <div className="mt-5">
+        <GoogleSignIn />
       </div>
-
-      {/* {profile &&(
-        <div>
-          <img src={profile.picture} alt="user image" />
-          <h3>User Logged in</h3>
-          <p>Name: {profile.name}</p>
-          <p>Email Address: {profile.email}</p>
-          <br />
-          <br />
-          <button onClick={logOut}>Log out</button>
-        </div>
-      ) } */}
 
       {isLoading && (
         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import { useSendOtpMutation } from "../../redux/slices/userApiSlices.js";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
+import GoogleSignIn from "./GoogleSignIn.jsx";
 const SignUp = () => {
   const navigate = useNavigate();
   
@@ -92,7 +93,7 @@ const SignUp = () => {
         validationRules={signUpValidationSchema}
       />
       <div className="mt-5">
-        <SignGoogle />
+        <GoogleSignIn />
       </div>
     </div>
   );

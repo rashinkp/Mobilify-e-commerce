@@ -1,42 +1,58 @@
-// import React from "react";
-// import { GoogleLogin, useGoogleLogin } from "react-google-login";
-// import { useGoogleSignMutation } from "../../redux/slices/userApiSlices";
+import React, { useEffect, useState } from 'react'
+import SignGoogle from '../../components/user/SignGoogle';
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import { useGoogleSignMutation } from '../../redux/slices/userApiSlices';
+import { useDispatch } from 'react-redux';
+import { userLogin } from '../../redux/slices/authUser';
+import { successToast } from '../../components/toast';
+import { useNavigate } from 'react-router';
 
-// const clientId =
-//   "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com"; //
+const GoogleSignIn = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [googleSign] = useGoogleSignMutation();
 
-// const GoogleSignIn = () => {
-//   const [googleSign] = useGoogleSignMutation();
 
-//   const onSuccess = async (response) => {
-//     console.log("Login Success:", response);
-//     const tokenId = response.tokenId;
+  const loginBtn = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      setUser(codeResponse);
+    },
+    onError: (error) => console.log("Login Failed:", error),
+  });
 
-//     try {
-//       const result = await googleSign({ token: tokenId }).unwrap();
-//       console.log("JWT Token:", result);
-//     } catch (error) {
-//       console.error("Error during Google sign-in:", error);
-//     }
-//   };
 
-//   const onFailure = (response) => {
-//     console.error("Login Failed:", response);
-//   };
+  useEffect(() => {
+    if (user && user.access_token) {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.access_token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .then(async (res) => {
+          const { name, email, picture } = res.data;
+          const response = await googleSign({ name, email, picture }).unwrap();
+          const user = response.data;
+          dispatch(userLogin({ ...user }));
+          successToast("Login Successful");
+          navigate("/user");
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [user, googleSign, dispatch]);
 
-//   return (
-//     <div>
-//       <h2>Google Sign-In</h2>
-//       <GoogleLogin
-//         clientId={clientId}
-//         buttonText="Sign in with Google"
-//         onSuccess={onSuccess}
-//         onFailure={onFailure}
-//         cookiePolicy={"single_host_origin"}
-//       />
-//       <div class="g-signin2" data-onsuccess="onSignIn"></div>
-//     </div>
-//   );
-// };
+  return (
+    <div onClick={loginBtn}>
+      <SignGoogle  />
+    </div>
+  );
+};
 
-// export default GoogleSignIn;
+
+export default GoogleSignIn
