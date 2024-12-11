@@ -10,9 +10,12 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const { otpId } = await User.findById(id);
   
-  
 
   const response = await OTP.findById(otpId)
+
+  if (!response) {
+    res.status(400).json({message:'otp not found resend it'})
+  }
   
   
   const actualOtp = response.otp;

@@ -58,6 +58,9 @@ export const sendOTP = async (req, res) => {
   }
 };
 
+
+
+
 export const resendOTP = asyncHandler(async (req, res) => {
   const { id:userId } = req.body;
 
@@ -83,10 +86,22 @@ export const resendOTP = asyncHandler(async (req, res) => {
       result = await OTP.findOne({ otp: otp });
     }
 
-    const otpPayload = { otp, userId };
+    const { email } = await User.findById(userId);
+
+
+    const otpPayload = { otp, email };
     const otpBody = await OTP.create(otpPayload);
 
+
     const otpId = otpBody._id;
+
+    const updatedUser = await User.findByIdAndUpdate(userId , { $set: { otpId: otpId } })
+
+
+    
+    
+    console.log(updatedUser);
+
     res.status(200).json({
       success: true,
       message: "OTP resend successfully",

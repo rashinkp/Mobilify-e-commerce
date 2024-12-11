@@ -11,7 +11,7 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(295);
   const [resendOtp] = useResendotpMutation();
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const VerifyOtp = () => {
     try {
       const result = await resendOtp({id});
       successToast("OTP resent successfully");
-      setTimeLeft(5);
+      setTimeLeft(295);
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message ||
