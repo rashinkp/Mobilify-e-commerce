@@ -2,12 +2,14 @@
 import nodemailer from "nodemailer";
 
 const mailSender = async (email, title, body) => {
+
+  console.log(email,title,body)
   try {
     let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
+      host: "smtp.gmail.com",
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: "mobilify45@gmail.com",
+        pass: "funq qwiv wemo axyn",
       },
     });
     // Send emails to users
