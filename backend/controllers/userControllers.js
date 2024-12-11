@@ -2,31 +2,31 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userSchema.js";
 import generateToken from "../utils/generateToken.js";
 import { OTP } from "../models/otpSchema.js";
+import { OAuth2Client } from "google-auth-library";
+const client = new OAuth2Client(
+  "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com"
+);
 
 export const registerUser = asyncHandler(async (req, res) => {
   const { otp } = req.body.data;
-  const { id } = req.body
-
+  const { id } = req.body;
 
   const { otpId } = await User.findById(id);
-  
 
-  const response = await OTP.findById(otpId)
+  const response = await OTP.findById(otpId);
 
   if (!response) {
-    res.status(400).json({message:'otp not found resend it'})
+    res.status(400).json({ message: "otp not found resend it" });
   }
-  
-  
+
   const actualOtp = response.otp;
 
   if (actualOtp !== otp) {
     return res.status(400).json({
       success: false,
-      message:'OTP is not matching',
-    })
+      message: "OTP is not matching",
+    });
   }
-
 
   const user = await User.findOneAndUpdate(
     { _id: id },
@@ -38,7 +38,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     const updatedUser = await User.findById(id);
     generateToken(res, updatedUser._id, "user");
     await OTP.findByIdAndDelete(otpId);
-    await User.findByIdAndUpdate( id ,{$unset: {otpId:''}})
+    await User.findByIdAndUpdate(id, { $unset: { otpId: "" } });
     res.status(201).json({
       id: updatedUser._id,
       name: updatedUser.name,
@@ -79,5 +79,32 @@ export const logoutUser = asyncHandler(async (req, res) => {
     console.error("Error during admin logout:", error);
 
     throw new Error("Failed to log out admin");
+  }
+});
+
+export const signWithGoogle = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  console.log("hsdflkasdfljkasdfljksdljksldjkf");
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience:
+        "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com",
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, sub } = payload;
+
+    generateToken(res, sub, "googleuser");
+    res.status(201).json({
+      sub,
+      name,
+      email,
+    });
+  } catch (error) {
+    console.error("Error verifying Google token:", error);
+    res.status(401).json({ message: "Invalid Google token" });
   }
 });
