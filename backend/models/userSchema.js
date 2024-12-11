@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    otpId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
   },
   { timestamps: true }
 );

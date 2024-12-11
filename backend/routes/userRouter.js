@@ -1,6 +1,6 @@
 import express from 'express';
 import { logoutUser, registerUser, userLogin } from '../controllers/userControllers.js';
-import {sendOTP} from "../controllers/otpController.js";
+import {resendOTP, sendOTP} from "../controllers/otpController.js";
 
 const router = express.Router();
 
@@ -12,6 +12,7 @@ router.post("/logout", logoutUser);
 
 
 router.post("/getotp", sendOTP); 
+router.post("/resendotp",resendOTP);
 
 
 export default router;

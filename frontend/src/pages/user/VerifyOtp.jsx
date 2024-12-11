@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Form from "../../components/Form.jsx";
 import { otpValidationSchema } from "../../validationSchemas";
-import { useRegisterMutation } from "../../redux/slices/userApiSlices.js";
+import { useRegisterMutation, useResendotpMutation } from "../../redux/slices/userApiSlices.js";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
@@ -11,7 +11,8 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [resendOtp] = useResendotpMutation();
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -43,15 +44,33 @@ const VerifyOtp = () => {
     },
   ];
 
- const extraLinks = [
-   {
-     text: `${timeLeft === 0 ? "" : "OTP expires in " + formatTime(timeLeft)}`,
-     linkText: `${
-       timeLeft === 0 ? "OTP Expired. Please request a new one." : ""
-     }`,
-     path: "/user",
-   },
- ];
+ 
+  
+  const handleResend = async () => {
+    try {
+      const result = await resendOtp({id});
+      successToast("OTP resent successfully");
+      setTimeLeft(5);
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to resend OTP";
+      errorToast(errorMessage);
+      console.log(error); 
+    }
+  };
+
+
+  const extraLinks = [
+    {
+      text: `${timeLeft === 0 ? "" : "OTP expires in " + formatTime(timeLeft)}`,
+      linkText: `${
+        timeLeft === 0 ? "OTP Expired. Please request a new one." : ""
+      }`,
+      onclick: handleResend,
+    },
+  ];
 
 
   const handleSubmit = async (data) => {

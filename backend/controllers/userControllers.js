@@ -8,41 +8,38 @@ export const registerUser = asyncHandler(async (req, res) => {
   const { id } = req.body
 
 
-  const data = await OTP.findById(id);
-  if (!data) {
-    res.status(404).json({ message: "Otp not found" });
-  }
-
-  const { userId } = data;
-
+  const { otpId } = await User.findById(id);
+  
   
 
+  const response = await OTP.findById(otpId)
+  
+  
+  const actualOtp = response.otp;
 
-
-
-  const response = await OTP.find({ userId }).sort({ createdAt: -1 }).limit(1);
-
-  if (response.length === 0 || otp !== response[0].otp) {
+  if (actualOtp !== otp) {
     return res.status(400).json({
       success: false,
-      message: "The OTP is not valid",
-    });
+      message:'OTP is not matching',
+    })
   }
 
+
   const user = await User.findOneAndUpdate(
-    { _id: userId },
+    { _id: id },
     { $set: { isActive: true } },
     { new: true }
   );
 
   if (user) {
-    const updatedUser = await User.findById(userId);
+    const updatedUser = await User.findById(id);
     generateToken(res, updatedUser._id, "user");
-    await OTP.findByIdAndDelete(id);
+    await OTP.findByIdAndDelete(otpId);
+    await User.findByIdAndUpdate( id ,{$unset: {otpId:''}})
     res.status(201).json({
-      id: userId,
-      name: user.name,
-      email: user.email,
+      id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
     });
   } else {
     res.status(400);

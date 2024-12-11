@@ -102,7 +102,8 @@ const Form = ({
           >
             {link.text}{" "}
             <Link
-              to={link.path}
+              to={link.path || undefined}
+              onClick={link.onclick}
               className="text-skyBlue hover:underline dark:text-blue-400"
             >
               {link.linkText}

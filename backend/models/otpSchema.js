@@ -8,9 +8,8 @@ const otpSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
+  email: {
+    type: String,
   },
   createdAt: {
     type: Date,
@@ -39,14 +38,10 @@ async function sendVerificationEmail(email, otp) {
 otpSchema.pre("save", async function (next) {
   console.log("New document saved to the database");
 
-  // Only send an email when a new document is created
   if (this.isNew) {
     try {
-      // Fetch the user using the userId stored in OTP
-      const user = await User.findById(this.userId);
-      if (user) {
-        const email = user.email;
-        await sendVerificationEmail(email, this.otp);
+      if (this.email) {
+        await sendVerificationEmail(this.email, this.otp);
       } else {
         console.log("User not found, cannot send OTP email");
       }
