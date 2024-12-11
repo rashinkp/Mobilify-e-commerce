@@ -5,15 +5,23 @@ import { OTP } from "../models/otpSchema.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   const { otp } = req.body.data;
-  const { id } = req.body;
+  const { id } = req.body
+
 
   const data = await OTP.findById(id);
   if (!data) {
-    res.status(404).json({ messege: "Otp is not valid" });
+    res.status(404).json({ message: "Otp not found" });
   }
-  const { email, password, name } = data;
 
-  const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+  const { userId } = data;
+
+  
+
+
+
+
+  const response = await OTP.find({ userId }).sort({ createdAt: -1 }).limit(1);
+
   if (response.length === 0 || otp !== response[0].otp) {
     return res.status(400).json({
       success: false,
@@ -21,18 +29,18 @@ export const registerUser = asyncHandler(async (req, res) => {
     });
   }
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
-
-  await OTP.findByIdAndDelete(id)
+  const user = await User.findOneAndUpdate(
+    { _id: userId },
+    { $set: { isActive: true } },
+    { new: true }
+  );
 
   if (user) {
-    generateToken(res, user._id, "user");
+    const updatedUser = await User.findById(userId);
+    generateToken(res, updatedUser._id, "user");
+    await OTP.findByIdAndDelete(id);
     res.status(201).json({
-      id: user._id,
+      id: userId,
       name: user.name,
       email: user.email,
     });

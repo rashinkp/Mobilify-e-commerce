@@ -32,7 +32,7 @@ const UserRoutes = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/email-verification" element={<VerifyOtp />} />
+        <Route path="/email-verification/:id" element={<VerifyOtp />} />
       </Routes>
     </>
   );

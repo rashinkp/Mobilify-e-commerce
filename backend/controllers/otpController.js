@@ -14,6 +14,16 @@ export const sendOTP = async (req, res) => {
       });
     }
 
+    const user = await User.create({
+      name,
+      email,
+      password,
+      isActive:false
+    })
+
+
+    const userId = user._id;
+
     let otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
@@ -29,17 +39,14 @@ export const sendOTP = async (req, res) => {
       result = await OTP.findOne({ otp: otp });
     }
 
-    const otpPayload = { email, otp, password, name };
+    const otpPayload = { otp, userId };
     const otpBody = await OTP.create(otpPayload);
 
-    console.log(otpBody)
-    const id  = otpBody._id
-
+    const otpId = otpBody._id
     res.status(200).json({
       success: true,
       message: "OTP sent successfully",
-      otp,
-      id,
+      otpId,
     });
   } catch (error) {
     console.log(error.message);

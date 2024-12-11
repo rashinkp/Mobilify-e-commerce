@@ -61,15 +61,19 @@ const SignUp = () => {
     if (userInfo) {
       navigate('/user');
     }
-  },[userInfo,navigate])
+  }, [userInfo, navigate])
+  
 
 
   const handleSignup = async({name,email,password,}) => {
     try {
       const res = await sendOtp({ name, email, password }).unwrap();
-      console.log(res)
+      console.log(res);
+      const { otpId } = res;
+
+
       successToast(`OTP send to ${email}`);
-      navigate("/user/email-verification", {state:{id:res.id}});
+      navigate(`/user/email-verification/${otpId}`);
     } catch (err) {
       errorToast(err?.data?.message || err.error || err.message || 'An error occured while registering');
       console.log(err)
