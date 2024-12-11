@@ -4,13 +4,13 @@ import { loginValidationSchema } from "../../validationSchemas";
 import SignGoogle from "../../components/user/SignGoogle";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { useLoginMutation } from "../../redux/slices/userApiSlices.js";
+import { useGoogleSignMutation, useLoginMutation, useRegisterMutation } from "../../redux/slices/userApiSlices.js";
 import { userLogin } from "../../redux/slices/authUser.js";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
 // import GoogleLogin/ from "react-google-login";
 // import GoogleSignIn from "./GoogleSignIn.jsx";
-import { googleLogout, GoogleOAuthProvider } from "@react-oauth/google";
+import { googleLogout } from "@react-oauth/google";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 
@@ -59,6 +59,7 @@ const Login = () => {
   }, [userInfo, navigate]);
 
   const [login, { isLoading }] = useLoginMutation();
+  const [googleSign] = useGoogleSignMutation();
 
   const handleLogin = async ({ email, password }) => {
     try {
@@ -83,11 +84,9 @@ const Login = () => {
     onError: (error) => console.log("Login Failed:", error),
   });
 
-  const errorMessage = (error) => {
-    console.log(error);
-  };
-
-      const [profile, setProfile] = useState([]);
+  // const errorMessage = (error) => {
+  //   console.log(error);
+  // };
 
   useEffect(() => {
     if (user) {
@@ -101,18 +100,20 @@ const Login = () => {
             },
           }
         )
-        .then((res) => {
-          setProfile(res.data);
+        .then(async(res) => {
+          const { name, email, picture } = res.data
+          const response = await googleSign({ name, email, picture });
+          const user = response.data;
+          dispatch(userLogin({...user}))
+          successToast("Login Successful");
+          navigate("/user");
         })
         .catch((err) => console.log(err));
     }
   }, [user]);
 
 
-    const logOut = () => {
-      googleLogout();
-      setProfile(null);
-    };
+    
   return (
     <div>
       <Form
@@ -128,8 +129,6 @@ const Login = () => {
       </div>
       <div className="mt-5">
       </div>
-
-      <pre>{JSON.stringify(user)}</pre>
 
       {/* {profile &&(
         <div>

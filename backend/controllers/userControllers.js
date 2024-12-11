@@ -83,26 +83,24 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const signWithGoogle = asyncHandler(async (req, res) => {
-  const { token } = req.body;
+  const { email, name, picture } = req.body;
 
-  console.log("hsdflkasdfljkasdfljksdljksldjkf");
+  const user = await User.create({
+    email,
+    name,
+    picture,
+  })
+
 
   try {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience:
-        "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com",
-    });
-
-    const payload = ticket.getPayload();
-    const { email, name, sub } = payload;
-
-    generateToken(res, sub, "googleuser");
+    generateToken(res, user._id, "user");
     res.status(201).json({
-      sub,
-      name,
-      email,
+      id: user._id,
+      name: name,
+      email: email,
     });
+
+
   } catch (error) {
     console.error("Error verifying Google token:", error);
     res.status(401).json({ message: "Invalid Google token" });

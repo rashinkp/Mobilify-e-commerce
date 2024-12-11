@@ -44,12 +44,15 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     googleSign: builder.mutation({
-      query: (data) => ({
+      query: (data) => {
+        console.log(data)
+        return({
         url: `${USERS_URL}/googlesign`,
         method: 'POST',
         body: data
       })
-    })
+      }
+    }),
   }),
 });
 

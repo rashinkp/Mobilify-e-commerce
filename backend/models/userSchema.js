@@ -8,12 +8,9 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
-      required: true,
     },
     password: {
       type: String,
-      required: true,
     },
     isActive: {
       type: Boolean,
@@ -22,6 +19,9 @@ const userSchema = new mongoose.Schema(
     isBlocked: {
       type: Boolean,
       default: false,
+    },
+    picture: {
+      type:String,
     },
     otpId: {
       type: mongoose.Schema.Types.ObjectId,

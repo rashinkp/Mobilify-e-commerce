@@ -9,6 +9,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useLogoutMutation } from "../redux/slices/userApiSlices.js";
 import { userLogout } from "../redux/slices/authUser.js";
 import { successToast } from "./toast/index.js";
+import { googleLogout } from "@react-oauth/google";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -35,6 +36,7 @@ const Navbar = () => {
       setDropdownOpen(false)
       await logoutApiCall().unwrap();
       dispatch(userLogout());
+      googleLogout();
       successToast("Logout Successful");
       navigate("/user/login");
     } catch (err) {
