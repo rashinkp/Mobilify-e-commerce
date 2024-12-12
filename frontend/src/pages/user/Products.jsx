@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ProductCard from "../../components/user/ProductCard";
 import SearchBar from "../../components/SearchBar";
 import Footer from "../../components/user/Footer";
@@ -10,6 +10,16 @@ import BrudCrump from "../../components/BrudCrump";
 
 const Products = () => {
   const { products, isLoading } = useProductApi();
+  const [searchTerm, setSearchTerm] = useState("");
+  const displayedProduct =
+    searchTerm.trim() === ""
+      ? products || []
+      : products?.filter(
+          (product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        ) || [];
+  
+  
   if (isLoading) {
     return (
         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -46,7 +56,7 @@ const Products = () => {
       </div>
       <div className="flex flex-col items-center">
         <div className="mb-8 w-full flex justify-center max-w-7xl px-4">
-          <SearchBar />
+          <SearchBar searchTerm={setSearchTerm} />
         </div>
 
         <div className="flex flex-wrap justify-between w-full max-w-7xl mb-6 px-4 dark:text-lightText">
@@ -117,7 +127,7 @@ const Products = () => {
         </div>
 
         <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 5xl:grid-cols-5 justify-center px-4">
-          {products.map((product) => (
+          {displayedProduct.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
