@@ -38,7 +38,6 @@ const ProductManagement = () => {
   if (isLoading) {
     return (
       <div>
-        {isLoading && (
           <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
             <RotatingLines
               visible={true}
@@ -51,7 +50,6 @@ const ProductManagement = () => {
               ariaLabel="rotating-lines-loading"
             />
           </div>
-        )}
       </div>
     );
   }

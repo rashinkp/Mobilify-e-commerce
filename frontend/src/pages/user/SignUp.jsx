@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Form from "../../components/Form.jsx";
 import { signUpValidationSchema } from "../../validationSchemas";
 import SignGoogle from "../../components/user/SignGoogle";
@@ -10,7 +10,7 @@ import { RotatingLines } from "react-loader-spinner";
 import GoogleSignIn from "./GoogleSignIn.jsx";
 const SignUp = () => {
   const navigate = useNavigate();
-  
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const formFields = [
     {
@@ -66,19 +66,41 @@ const SignUp = () => {
   
 
 
-  const handleSignup = async({name,email,password,}) => {
+  const handleSignup = async ({ name, email, password, }) => {
+    setIsUpdating(true)
     try {
       const res = await sendOtp({ name, email, password }).unwrap();
       const { userId } = res;
 
-
+      setIsUpdating(false);
       successToast(`OTP send to ${email}`);
       navigate(`/user/email-verification/${userId}`);
     } catch (err) {
+      setIsUpdating(false);
       errorToast(err?.data?.message || err.error || err.message || 'An error occured while registering');
       console.log(err)
     }
   }
+
+
+   if (isUpdating) {
+     return (
+        <div> 
+           <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+             <RotatingLines
+               visible={true}
+               height="50"
+               width="50"
+               color="grey"
+               strokeColor="#fff"
+               strokeWidth="2"
+               animationDuration="8"
+               ariaLabel="rotating-lines-loading"
+             />
+           </div>
+       </div>
+     );
+   }
 
 
 

@@ -13,6 +13,7 @@ export const clientId =
   "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com";
 
 const Login = () => {
+  
   const loginFields = [
     {
       name: "email",
@@ -56,6 +57,7 @@ const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
 
   const handleLogin = async ({ email, password }) => {
+ 
     try {
       const res = await login({ email, password }).unwrap();
       dispatch(userLogin({ ...res }));
@@ -69,11 +71,10 @@ const Login = () => {
           "An error occured while registering"
       );
     }
+
+    
   };
     
-
-
-  
     
   return (
     <div>
@@ -89,7 +90,7 @@ const Login = () => {
         <GoogleSignIn />
       </div>
 
-      {isLoading && (
+      {isLoading  && (
         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
           <RotatingLines
             visible={true}
