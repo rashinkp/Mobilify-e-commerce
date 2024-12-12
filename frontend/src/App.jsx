@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Router, Routes } from "react-router";
-import Navbar from "./components/Navbar.jsx";
+import { Route, Routes } from "react-router";
 import { useSelector } from "react-redux";
 import UserRoutes from "./routes/UserRoutes";
 import AdminRoutes from "./routes/AdminRoutes";

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router";
-import { useAdminLoginMutation } from "../../redux/slices/AdminApiSlices.js";
+import { useAdminLoginMutation } from "../../redux/slices/adminApiSlices.js";
 import { adminLogin } from "../../redux/slices/authAdmin.js";
 
 const AdminLogin = () => {
