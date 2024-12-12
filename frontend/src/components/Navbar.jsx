@@ -10,6 +10,7 @@ import { useLogoutMutation } from "../redux/slices/userApiSlices.js";
 import { userLogout } from "../redux/slices/authUser.js";
 import { successToast } from "./toast/index.js";
 import { googleLogout } from "@react-oauth/google";
+import BrudCrump from "./BrudCrump.jsx";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -228,7 +229,10 @@ const Navbar = () => {
                       </Link>
                     ))}
 
-                    <li onClick={(e) => handleLogout(e)} className={`cursor-pointer hover:text-red-800 text-red-600`}>
+                    <li
+                      onClick={(e) => handleLogout(e)}
+                      className={`cursor-pointer hover:text-red-800 text-red-600`}
+                    >
                       LOGOUT
                     </li>
                   </ul>
@@ -237,7 +241,7 @@ const Navbar = () => {
             </div>
           </div>
         ) : (
-          <div>
+          <div className=" hidden lg:flex">
             <ul className="flex flex-row gap-7 items-center px-4 dark:text-lightText">
               <li className="cursor-pointer hover:text-purple-700">
                 <FontAwesomeIcon
@@ -247,14 +251,18 @@ const Navbar = () => {
                   className="cursor-pointer hover:text-primary  dark:hover:text-primary"
                 />
               </li>
-              <li className="cursor-pointer hover:text-purple-700 ">LOGIN</li>
-             
-                <li className="cursor-pointer hover:text-purple-700 ">
-                  <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+              <Link to="/user/login">
+                <li className="cursor-pointer hover:text-purple-700 ">LOGIN</li>
+              </Link>
+
+              <li className="cursor-pointer hover:text-purple-700 ">
+                <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+                  <Link to="/user/signup">
                     <button className="">SIGN UP</button>
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
-                  </div>
-                </li>
+                  </Link>
+                  <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                </div>
+              </li>
             </ul>
           </div>
         )}
@@ -280,24 +288,53 @@ const Navbar = () => {
                   </li>
                 </Link>
               ))}
-              <div className="flex items-center gap-3 mt-2">
-                {/* Updated icons to prevent errors and ensure they appear */}
+              {userInfo ? (
+                <div className="flex items-center gap-3 mt-2">
+                  {/* Updated icons to prevent errors and ensure they appear */}
 
-                {rightSection.map((link, index) => (
-                  <Link to={link.path}>
-                    <li>{link.icon}</li>
-                  </Link>
-                ))}
-                <div className="flex items-center gap-2 cursor-pointer">
-                  <div className="w-6 h-6 bg-secondary rounded-full overflow-hidden">
-                    <img
-                      src="https://via.placeholder.com/150"
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
+                  {rightSection.map((link, index) => (
+                    <Link to={link.path}>
+                      <li>{link.icon}</li>
+                    </Link>
+                  ))}
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <div className="w-6 h-6 bg-secondary rounded-full overflow-hidden">
+                      <img
+                        src="https://via.placeholder.com/150"
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div>
+                  <ul className="flex flex-row gap-7 items-center px-4 dark:text-lightText">
+                    <li className="cursor-pointer hover:text-purple-700">
+                      <FontAwesomeIcon
+                        size="xl"
+                        onClick={() => dispatch(toggleTheme())}
+                        icon="fa-solid fa-moon"
+                        className="cursor-pointer hover:text-primary  dark:hover:text-primary"
+                      />
+                    </li>
+                    <Link to="/user/login">
+                      <li className="cursor-pointer hover:text-purple-700 ">
+                        LOGIN
+                      </li>
+                    </Link>
+
+                    <li className="cursor-pointer hover:text-purple-700 ">
+                      <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+                        <Link to="/user/signup">
+                          <button className="">SIGN UP</button>
+                        </Link>
+                        <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </ul>
           </div>
         )}

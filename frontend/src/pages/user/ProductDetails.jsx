@@ -26,6 +26,8 @@ const ProductDetails = () => {
       </div>
     );
   }
+
+  
   return (
     <div className="mx-5">
       <ProductDetailsCard />

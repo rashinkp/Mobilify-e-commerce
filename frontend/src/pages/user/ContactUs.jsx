@@ -1,10 +1,31 @@
 import React from "react";
 import Footer from "../../components/user/Footer";
 import ContactForm from "../../components/user/ContactForm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import BrudCrump from "../../components/BrudCrump";
 
 const ContactUs = () => {
+
+    const brudCrumpList = [
+      {
+        name: "Home",
+        icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
+        path: "/user",
+      },
+      {
+        name: "contact-us",
+        icon: <FontAwesomeIcon icon="fa-solid fa-phone" />,
+        path: "/user/contact",
+      },
+    ];
+      
+
+
   return (
     <div className="">
+      <div className="ms-10">
+        <BrudCrump list={brudCrumpList} />
+      </div>
       <div className="flex flex-wrap justify-between items-center">
         {/* Left section: Text */}
         <div className="w-full md:w-1/2 text-center md:text-center mb-10 md:mb-0">

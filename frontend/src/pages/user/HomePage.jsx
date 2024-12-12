@@ -7,14 +7,10 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { RotatingLines } from "react-loader-spinner";
 import useProductApi from "../../hooks/useProductApi.jsx";
+import BrudCrump from "../../components/BrudCrump.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const HomePage = () => {
-  const { userInfo } = useSelector((state) => state.userAuth);
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (!userInfo) {
-      navigate('/user/login')
-    }
-  }, [userInfo, navigate])
+ 
   
   const { products, isLoading } = useProductApi();
   if (isLoading) {
@@ -33,6 +29,8 @@ const HomePage = () => {
       </div>
     );
   }
+
+  
 
   return (
     <div className="">
