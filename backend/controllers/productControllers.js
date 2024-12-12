@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import Product from '../models/productSchema.js'
 import cloudinary from '../config/cloudinary.js'
+import mongoose from 'mongoose';
 
 
 export const addProduct = asyncHandler(async (req, res) => {
@@ -63,23 +64,34 @@ export const updateProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const updateData = req.body;
 
+  try {
+    // Find the product by ID
+    const product = await Product.findById(productId);
 
-  const product = await Product.findById(productId);
-  if (product) {
+    if (!product) {
+      res.status(404);
+      throw new Error("Product not found");
+    }
+
     Object.keys(updateData).forEach((key) => {
       if (updateData[key] !== undefined) {
-        product[key] = updateData[key];
+        if (key === "categoryId" && mongoose.isValidObjectId(updateData[key])) {
+          // Convert categoryId to ObjectId
+          product[key] =new mongoose.Types.ObjectId(updateData[key]);
+        } else {
+          product[key] = updateData[key];
+        }
       }
     });
 
     const updatedProduct = await product.save();
-    res.status(200).json(updatedProduct);
-  } else {
-    res.status(404);
-    throw new Error("Product not found");
-  }
-})
 
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 export const updateImages = asyncHandler(async (req, res) => {

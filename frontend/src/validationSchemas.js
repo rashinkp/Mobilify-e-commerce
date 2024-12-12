@@ -141,8 +141,6 @@ export const productValidation = Yup.object().shape({
   COD: Yup.string().required("COD is required"),
 });
 
-
-
 export const imageValidationSchema = Yup.object().shape({
   file: Yup.mixed()
     .required("An image file is required")
@@ -156,6 +154,7 @@ export const imageValidationSchema = Yup.object().shape({
           "image/png",
           "image/jpg",
           "image/svg+xml",
+          "image/webp",
         ];
         return allowedTypes.includes(value.type);
       }

@@ -3,10 +3,20 @@ import Form from "../Form.jsx";
 import { productValidation } from "../../validationSchemas.js";
 import { errorToast, successToast } from "../toast/index.js";
 import useProductApi from "../../hooks/useProductApi.jsx";
-import { productFields } from "./ProductFields.js";
+import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
+import { getProductFields } from "../product/productFields.js";
 
 const ProductEditForm = ({ product, onClose }) => {
   const { updateProduct } = useProductApi();
+  const { categories = [], isLoading } = useCategoryApi();
+
+  const categoryOptions = categories.map((category) => ({
+    label: category.name,
+    value: category._id,
+  }));
+
+  // Generate fields with default values using the product object
+  const productFields = getProductFields(categoryOptions, product);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -14,10 +24,9 @@ const ProductEditForm = ({ product, onClose }) => {
     }
   };
 
-  const handleSubmit = (data) => {
-
+  const handleSubmit = async (data) => {
     try {
-      updateProduct({ productId: product._id, data }).unwrap();
+      await updateProduct({ productId: product._id, data }).unwrap();
       successToast("Product updated successfully");
       onClose();
     } catch (error) {
@@ -26,12 +35,6 @@ const ProductEditForm = ({ product, onClose }) => {
       );
     }
   };
-
- 
-
-  const response = productFields.map((item) => {
-    return {...item,defaultValue:product[item.name]}
-  })
 
   return (
     <div
@@ -44,7 +47,7 @@ const ProductEditForm = ({ product, onClose }) => {
       >
         <Form
           title="Update Product"
-          fields={response}
+          fields={productFields}
           onSubmit={handleSubmit}
           buttonText="Submit"
           validationRules={productValidation}
@@ -53,5 +56,6 @@ const ProductEditForm = ({ product, onClose }) => {
     </div>
   );
 };
+
 
 export default ProductEditForm;

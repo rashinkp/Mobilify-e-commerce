@@ -1,11 +1,11 @@
-
-export const productFields = [
+export const getProductFields = (categoryOptions = [], product = {}) => [
   {
     name: "name",
     label: "Product Name",
     type: "text",
     placeholder: "Enter new Product name",
     required: true,
+    defaultValue: product.name || "",
   },
   {
     name: "description",
@@ -13,27 +13,24 @@ export const productFields = [
     type: "text",
     placeholder: "Enter description",
     required: true,
+    defaultValue: product.description || "",
   },
-  // {
-  //   name: "brandId",
-  //   label: "Brand",
-  //   type: "select",
-  //   placeholder: "Select brand",
-  //   required: true,
-  // },
-  // {
-  //   name: "categoryId",
-  //   label: "Category",
-  //   type: "select",
-  //   placeholder: "Select category",
-  //   required: true,
-  // },
+  {
+    name: "categoryId",
+    label: "Category",
+    type: "select",
+    placeholder: "Select category",
+    required: true,
+    options: categoryOptions,
+    defaultValue: product.categoryId || "",
+  },
   {
     name: "offerPercent",
     label: "Offer Percent",
     type: "number",
     placeholder: "Enter offer percent",
     required: true,
+    defaultValue: product.offerPercent || 0,
   },
   {
     name: "returnPolicy",
@@ -41,6 +38,7 @@ export const productFields = [
     type: "text",
     placeholder: "Enter return policy",
     required: false,
+    defaultValue: product.returnPolicy || "",
   },
   {
     name: "COD",
@@ -52,6 +50,7 @@ export const productFields = [
       { label: "Yes", value: true },
       { label: "No", value: false },
     ],
+    defaultValue: product.COD !== undefined ? product.COD : "",
   },
   {
     name: "warranty",
@@ -59,6 +58,7 @@ export const productFields = [
     type: "text",
     placeholder: "Enter warranty details",
     required: true,
+    defaultValue: product.warranty || "",
   },
   {
     name: "model",
@@ -66,6 +66,7 @@ export const productFields = [
     type: "text",
     placeholder: "Enter model",
     required: true,
+    defaultValue: product.model || "",
   },
   {
     name: "size",
@@ -73,6 +74,7 @@ export const productFields = [
     type: "text",
     placeholder: "Enter size",
     required: true,
+    defaultValue: product.size || "",
   },
   {
     name: "ram",
@@ -80,6 +82,7 @@ export const productFields = [
     type: "number",
     placeholder: "Enter ram",
     required: true,
+    defaultValue: product.ram || 0,
   },
   {
     name: "storage",
@@ -87,13 +90,15 @@ export const productFields = [
     type: "number",
     placeholder: "Enter storage",
     required: true,
+    defaultValue: product.storage || 0,
   },
   {
     name: "stock",
-    label: "Stock cound",
+    label: "Stock count",
     type: "number",
     placeholder: "Enter stock",
     required: true,
+    defaultValue: product.stock || 0,
   },
   {
     name: "price",
@@ -101,6 +106,7 @@ export const productFields = [
     type: "number",
     placeholder: "Enter product price",
     required: true,
+    defaultValue: product.price || 0,
   },
   {
     name: "network",
@@ -108,5 +114,6 @@ export const productFields = [
     type: "text",
     placeholder: "Enter network",
     required: true,
+    defaultValue: product.network || "",
   },
 ];

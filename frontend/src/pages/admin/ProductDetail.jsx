@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useProductApi from "../../hooks/useProductApi";
 import { errorToast, successToast } from "../../components/toast";
 import Modal from "../../components/Modal";
-import ProductEditForm from "../../components/product/ProductEditForm";
+import ProductEditForm from "../../components/product/ProductEditForm.jsx";
 import Button from "../../components/ui/Button";
 import noImage from "../../assets/noImage.png";
 import QunatityManage from "../../components/admin/QunatityManage";
@@ -147,7 +147,7 @@ const ProductManagement = () => {
                 Model: {product.model || "Model not available"}
               </p>
               <p className="text-sm">Brand: related</p>
-              <p className="text-sm">Category: related</p>
+              <p className="text-sm">Category: { product.category}</p>
 
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
                 ₹{product.price || "N/A"}

@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddCartButton from "./AddCartButton";
 import { useNavigate } from "react-router";
+import noImage from '../../assets/noImage.png'
 
 const ProductCard = ({ product }) => {
   const { name, price, description, _id } = product;
@@ -24,7 +25,7 @@ const ProductCard = ({ product }) => {
             </span>
             <img
               className=" w-64 h-60 object-cover rounded-md"
-              src={product.images[0].secure_url}
+              src={product?.images[0]?.secure_url || noImage}
               alt="Product"
             />
           </div>

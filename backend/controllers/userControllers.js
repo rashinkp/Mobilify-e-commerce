@@ -85,24 +85,27 @@ export const logoutUser = asyncHandler(async (req, res) => {
 export const signWithGoogle = asyncHandler(async (req, res) => {
   const { email, name, picture } = req.body;
 
-  const user = await User.create({
-    email,
-    name,
-    picture,
-  })
-
-
   try {
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        email,
+        name,
+        picture,
+      });
+    }
+
     generateToken(res, user._id, "user");
+
     res.status(201).json({
       id: user._id,
-      name: name,
-      email: email,
+      name: user.name, 
+      email: user.email, 
     });
-
-
   } catch (error) {
-    console.error("Error verifying Google token:", error);
-    res.status(401).json({ message: "Invalid Google token" });
+    console.error("Error during Google sign-in:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+

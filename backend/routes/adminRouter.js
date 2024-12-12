@@ -33,4 +33,9 @@ router.route("/product/:id").get(getProduct).delete(deleteProduct).put(updatePro
 
 router.route("/product-images/:id").put(updateImages);
 
+
+//category related routes
+
+router.route('/category').get(getAllCategory);
+
 export default router;

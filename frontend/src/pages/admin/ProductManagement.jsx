@@ -21,16 +21,15 @@ const ProductManagement = () => {
   // search filtering
   const displayedProduct =
     searchTerm.trim() === ""
-      ? products
+      ? products || [] 
       : products?.filter((product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        ) || [];
 
-  // Filter products based on selection
-  const filteredProducts = displayedProduct.filter((product) => {
+  const filteredProducts = (displayedProduct || []).filter((product) => {
     if (filter === "all") return true;
     if (filter === "active") return product.isSoftDelete === false;
-    if (filter === "deleted") return product.isSoftDelete === true;
+    if (filter === "low stock") return product.stock < 20;
     return true;
   });
 
@@ -44,6 +43,23 @@ const ProductManagement = () => {
       errorToast(error?.data?.message || error.message || error.error);
     }
   };
+
+  {
+    isLoading && (
+      <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-5 sm:p-10 flex flex-col gap-6 items-center h-full overflow-auto">
@@ -73,7 +89,7 @@ const ProductManagement = () => {
         >
           <option value="all">All Products</option>
           <option value="active">Active Products</option>
-          <option value="deleted">Deleted Products</option>
+          <option value="low stock">Low Stock</option>
         </select>
       </div>
 
