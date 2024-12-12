@@ -13,11 +13,12 @@ const QunatityManage = ({ count }) => {
 
   const handleUpdateStock = async () => {
     try {
+      if(stock < 0) throw 'stock can not be less than 0'
       const data = { stock };
       await updateProduct({ data, productId });
       successToast("Product Stock updated successfully")
     } catch (error) {
-      errorToast(error?.data?.message || error?.message || 'Error occured while updating product quantity');
+      errorToast(error?.data?.message || error?.message || error || 'Error occured while updating product quantity');
     }
   };
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAddProductMutation, useDeleteProductMutation, useGetAllProductsQuery, useGetProductQuery, useUpdateProductImageMutation, useUpdateProductMutation } from '../redux/slices/productApiSlice'
+import { useAddProductMutation, useDeleteProductMutation, useGetAllProductsQuery, useGetProductQuery, useGetProductsQuery, useUpdateProductImageMutation, useUpdateProductMutation } from '../redux/slices/productApiSlice'
 
 const useProductApi = () => {
   const [addProduct] = useAddProductMutation();

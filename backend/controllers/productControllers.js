@@ -17,13 +17,24 @@ export const addProduct = asyncHandler(async (req, res) => {
 
 
 export const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
-  if (products) {
-    res.status(201).json(products);
-  } else {
-    res.status(404).json({message:'Couldn"t find any products'})
+  const { all } = req.query;
+
+  const filter = all ? {} : { isSoftDelete: false };
+
+  try {
+    const products = await Product.find(filter);
+
+    if (products.length > 0) {
+      res.status(200).json(products); 
+    } else {
+      res.status(404).json({ message: "Couldn't find any products" }); 
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching products", error: error.message }); 
   }
-})
+});
 
 
 export const getProduct = asyncHandler(async (req, res) => {
@@ -51,6 +62,7 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 export const updateProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const updateData = req.body;
+
 
   const product = await Product.findById(productId);
   if (product) {

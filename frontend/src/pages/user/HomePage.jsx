@@ -1,14 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Banner1 from "../../assets/Banner1_Home.svg";
 import Banner2 from "../../assets/Banner2_Home.svg";
 import ProductCard from "../../components/user/ProductCard.jsx";
 import Footer from "../../components/user/Footer";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import { RotatingLines } from "react-loader-spinner";
 import useProductApi from "../../hooks/useProductApi.jsx";
-import BrudCrump from "../../components/BrudCrump.jsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const HomePage = () => {
  
   
