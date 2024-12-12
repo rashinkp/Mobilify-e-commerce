@@ -48,7 +48,8 @@ const QunatityManage = ({ count }) => {
           />
           <button
             onClick={handleUpdateStock}
-            className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition"
+            className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled = {count === stock}
           >
             Update
           </button>

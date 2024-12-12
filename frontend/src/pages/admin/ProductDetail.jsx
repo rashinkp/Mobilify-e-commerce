@@ -95,9 +95,7 @@ const ProductManagement = () => {
   };
 
 
-  const handleUpdateStock = () => {
-
-  }
+ 
 
   return (
     <>

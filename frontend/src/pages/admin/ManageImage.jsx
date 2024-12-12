@@ -11,6 +11,7 @@ import {
   useUpdateProductImageMutation,
 } from "../../redux/slices/productApiSlice.js";
 import { RotatingLines } from "react-loader-spinner";
+import Modal from "../../components/Modal.jsx";
 
 const ManageImage = () => {
   const ImageRefs = Array.from({ length: 4 }, () => useRef());
@@ -19,6 +20,9 @@ const ManageImage = () => {
   const { id: productId } = useParams();
   const [updateImage] = useUpdateProductImageMutation();
   const { data: product, isLoading, error } = useGetProductQuery(productId);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDelModalOpen, setIsDelModalOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState(null);
 
   useEffect(() => {
     if (product?.images) {
@@ -48,19 +52,24 @@ const ManageImage = () => {
     }
   };
 
-  const handleDelete = (index) => {
+  const handleDelete = () => {
+    const index = deleteIndex;
     const updatedImages = [...images];
     if (typeof updatedImages[index] === "string") {
       setDeleteQueue((prevQueue) => [...prevQueue, index]);
     }
     updatedImages[index] = null;
+    setIsDelModalOpen(false);
     setImages(updatedImages);
   };
 
+
   const uploadToCloudinary = async () => {
+    setIsUploading(true);
     let newImages = images.filter((img) => img && typeof img !== "string");
     if (newImages.length < 1) {
       errorToast("Please select 1 new image to upload");
+      setIsUploading(false)
       return true;
     }
 
@@ -81,6 +90,7 @@ const ManageImage = () => {
         uploadedUrl: [...uploadedUrl],
         deleteQueue,
       });
+      setIsUploading(false)
       successToast("Images updated successfully!");
       uploadedUrl = [];
     } catch (error) {
@@ -88,7 +98,7 @@ const ManageImage = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isUploading) {
     return (
       <div>
         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -108,62 +118,88 @@ const ManageImage = () => {
   }
 
   return (
-    <div className="flex flex-col ms-14 items-center justify-center space-y-6 p-4 overflow-auto">
-      {/* Image Slots */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full max-w-4xl">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="relative rounded-lg overflow-hidden shadow-md border border-black h-40 sm:h-72 w-full"
-          >
-            {image ? (
-              <>
-                <img
-                  src={
-                    typeof image === "string"
-                      ? image
-                      : URL.createObjectURL(image)
-                  }
-                  alt=""
-                  className="h-40 sm:h-72 w-full object-cover"
-                />
-                <div className="absolute top-2 right-2">
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="px-4 py-2 bg-black text-white rounded-full"
-                  >
-                    <FontAwesomeIcon icon="fa-solid fa-trash" />
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div
-                onClick={() => handleImageClick(index)}
-                className="h-full flex justify-center items-center border-2 border-dashed border-gray-400 rounded-lg cursor-pointer"
-              >
-                <span className="text-gray-500">Add Image</span>
-              </div>
-            )}
-            <input
-              ref={ImageRefs[index]}
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageChange(e, index)}
-              hidden
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-center space-x-4">
-        <Button
-          action={uploadToCloudinary}
-          icon={<FontAwesomeIcon icon="fa-solid fa-upload" />}
-          text="Upload Image"
+    <>
+      {isDelModalOpen && (
+        <Modal
+          title="Are you sure?"
+          description="This process cannot be undone..."
+          controles={[
+            {
+              text: "Cancel",
+              action: () => setIsDelModalOpen(false),
+              style:
+                "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
+            },
+            {
+              text: "Delete",
+              action: handleDelete,
+              style:
+                "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
+            },
+          ]}
         />
+      )}
+      <div className="flex flex-col ms-14 items-center justify-center space-y-6 p-4 overflow-auto">
+        {/* Image Slots */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full max-w-4xl">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className="relative rounded-lg overflow-hidden shadow-md border border-black h-40 sm:h-72 w-full"
+            >
+              {image ? (
+                <>
+                  <img
+                    src={
+                      typeof image === "string"
+                        ? image
+                        : URL.createObjectURL(image)
+                    }
+                    alt=""
+                    className="h-40 sm:h-72 w-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <button
+                      onClick={() => {
+                        setIsDelModalOpen(true);
+                        
+                        setDeleteIndex(index); 
+                      }}
+                      className="px-4 py-2 bg-black text-white rounded-full"
+                    >
+                      <FontAwesomeIcon icon="fa-solid fa-trash" />
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div
+                  onClick={() => handleImageClick(index)}
+                  className="h-full flex justify-center items-center border-2 border-dashed border-gray-400 rounded-lg cursor-pointer"
+                >
+                  <span className="text-gray-500">Add Image</span>
+                </div>
+              )}
+              <input
+                ref={ImageRefs[index]}
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, index)}
+                hidden
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-center space-x-4">
+          <Button
+            action={uploadToCloudinary}
+            icon={<FontAwesomeIcon icon="fa-solid fa-upload" />}
+            text="Upload Image"
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
