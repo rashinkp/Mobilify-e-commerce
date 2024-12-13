@@ -3,6 +3,7 @@ import User from "../models/userSchema.js";
 import generateToken from "../utils/generateToken.js";
 import { OTP } from "../models/otpSchema.js";
 import { OAuth2Client } from "google-auth-library";
+import jwt from 'jsonwebtoken'
 const client = new OAuth2Client(
   "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com"
 );
@@ -108,4 +109,29 @@ export const signWithGoogle = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+
+export const getUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  try {
+    const user = await User.findById(id);
+
+
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching the user",
+      error: error.message,
+    });
+  }
+});
+
 

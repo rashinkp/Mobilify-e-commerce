@@ -3,6 +3,7 @@ import { addBrand, authAdmin, blockUser, deleteBrand, deleteUser, getAllBrand, g
 import { addCategory, deleteCategory, getAllCategory, updateCategory } from "../controllers/categoryController.js";
 import { addProduct, deleteProduct, getAllProducts, getProduct, updateImages, updateProduct } from "../controllers/productControllers.js";
 import protect from "../middlewares/protect.js";
+import { getUser } from "../controllers/userControllers.js";
 
 const router = express.Router();
 
@@ -33,6 +34,11 @@ router.route("/product").post(protect('admin'),addProduct).get(protect('admin'),
 router.route("/product/:id").get(protect('admin'),getProduct).delete(protect('admin'),deleteProduct).put(protect('admin'),updateProduct);
 
 router.route("/product-images/:id").put(protect('admin'),updateImages);
+
+//user related routes
+
+
+
 
 
 export default router;

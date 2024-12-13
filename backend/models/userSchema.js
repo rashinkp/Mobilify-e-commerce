@@ -21,11 +21,25 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     picture: {
-      type:String,
+      type: String,
     },
     otpId: {
       type: mongoose.Schema.Types.ObjectId,
     },
+    addresses: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          default: mongoose.Types.ObjectId,
+        },
+        street: { type: String, trim: true },
+        city: { type: String, trim: true },
+        state: { type: String, trim: true },
+        postalCode: { type: String, trim: true },
+        country: { type: String, trim: true },
+        label: { type: String, trim: true },
+      },
+    ],
   },
   { timestamps: true }
 );

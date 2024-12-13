@@ -55,7 +55,14 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 
 export const updateCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
-  const { name, description,isSoftDeleted } = req.body;
+  const { name, description, isSoftDeleted } = req.body;
+  
+  const categoryExists = await Category.findOne({ name });
+
+  if (categoryExists) {
+    return res.status(400).json({message:'Category already exists'});
+    
+  }
 
   const category = await Category.findById(categoryId);
 
