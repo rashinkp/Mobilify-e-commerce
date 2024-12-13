@@ -38,8 +38,7 @@ const GoogleSignIn = () => {
         .then(async (res) => {
           const { name, email, picture } = res.data;
           const response = await googleSign({ name, email, picture }).unwrap();
-          const user = response.data;
-          dispatch(userLogin({ ...user }));
+          dispatch(userLogin({ ...response }));
           successToast("Login Successful");
           navigate("/user");
         })

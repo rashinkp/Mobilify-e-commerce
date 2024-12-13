@@ -11,31 +11,20 @@ import {
   Camera,
   MapPinHouse,
 } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { useLogoutMutation } from "../../redux/slices/userApiSlices";
+import { useDispatch, useSelector } from "react-redux";
+import { useGetUserQuery, useLogoutMutation } from "../../redux/slices/userApiSlices";
 import { userLogout } from "../../redux/slices/authUser";
 import { googleLogout } from "@react-oauth/google";
 import { successToast } from "../../components/toast";
 import { useNavigate } from "react-router";
 import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
+import { RotatingLines } from "react-loader-spinner";
 
 const UserProfileDashboard = () => {
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    profileImage: "/api/placeholder/200/200",
-    addresses: [
-      { id: 1, label: "Home", address: "123 Main St, Cityville, State 12345" },
-      {
-        id: 2,
-        label: "Work",
-        address: "456 Business Ave, Worktown, State 67890",
-      },
-    ],
-  });
-
-  
+  const { userInfo } = useSelector((state) => state.userAuth);
+  const {data, isLoading ,isError, error} = useGetUserQuery(userInfo.id)
+  const {user} = data || {}
 
   const [activeSection, setActiveSection] = useState("profile");
 
@@ -74,7 +63,27 @@ const UserProfileDashboard = () => {
     }
   };
 
-  console.log(activeSection);
+  if (isError) return <div>Error: {error.message}</div>;
+
+
+   if (isLoading ) {
+     return (
+       <div>
+         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+           <RotatingLines
+             visible={true}
+             height="50"
+             width="50"
+             color="grey"
+             strokeColor="#fff"
+             strokeWidth="2"
+             animationDuration="8"
+             ariaLabel="rotating-lines-loading"
+           />
+         </div>
+       </div>
+     );
+   }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-darkBackground  p-4 md:p-8">

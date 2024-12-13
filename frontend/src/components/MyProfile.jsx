@@ -1,28 +1,39 @@
 import { Edit } from 'lucide-react';
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
+import { useGetUserQuery } from '../redux/slices/userApiSlices';
 
 const MyProfile = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    profileImage: "/api/placeholder/200/200",
-    addresses: [
-      { id: 1, label: "Home", address: "123 Main St, Cityville, State 12345" },
-      {
-        id: 2,
-        label: "Work",
-        address: "456 Business Ave, Worktown, State 67890",
-      },
-    ],
-  });
-
+  const { userInfo } = useSelector((state) => state.userAuth);
+  const { data, isLoading, isError, error } = useGetUserQuery(userInfo.id);
+  const { user } = data || {};
 
 
   
 
+  if (isError) return <div>Error: {error.message}</div>;
   
+  
+     if (isLoading ) {
+       return (
+         <div>
+           <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+             <RotatingLines
+               visible={true}
+               height="50"
+               width="50"
+               color="grey"
+               strokeColor="#fff"
+               strokeWidth="2"
+               animationDuration="8"
+               ariaLabel="rotating-lines-loading"
+             />
+           </div>
+         </div>
+       );
+     }
   
 
   return (
