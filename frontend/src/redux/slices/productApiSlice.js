@@ -26,8 +26,9 @@ export const productApiSlice = apiSlice.injectEndpoints({
         limit = 10,
         sortBy = "createdAt",
         order = "desc",
+        filterBy='all'
       } = {}) => ({
-        url: `${ADMIN_URL}/product?page=${page}&limit=${limit}&sortBy=${sortBy}&order=${order}`,
+        url: `${ADMIN_URL}/product?page=${page}&limit=${limit}&sortBy=${sortBy}&order=${order}&filterBy=${filterBy}`,
         method: "GET",
       }),
       providesTags: ["Products"],

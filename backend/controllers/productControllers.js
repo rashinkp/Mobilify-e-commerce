@@ -19,16 +19,22 @@ export const addProduct = asyncHandler(async (req, res) => {
 
 export const getAllProducts = asyncHandler(async (req, res) => {
   const {
-    all,
     page = 1,
     limit = 10,
     sortBy = "createdAt",
     order = "desc",
+    filterBy='All'
   } = req.query;
 
   const skip = (page - 1) * limit;
 
-  const filter = all === "true" ? {} : { isSoftDelete: false };
+  let filter = {};
+
+  if (filterBy === 'active') {
+    filter = { isSoftDelete: false };
+  } else if (filterBy === 'low stock') {
+    filter = { stock: { $lt: 20 } };
+  }
 
   try {
     const products = await Product.find(filter)
@@ -36,7 +42,10 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       .skip(Number(skip))
       .limit(Number(limit));
     
-    const totalCount = await Product.countDocuments();
+    const totalCount = await Product.countDocuments(filter);
+
+
+    console.log(totalCount)
 
     if (products.length > 0) {
       res.status(200).json({products,totalCount});

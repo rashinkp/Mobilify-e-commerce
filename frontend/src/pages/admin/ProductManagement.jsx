@@ -31,6 +31,7 @@ const ProductManagement = () => {
     page: currentPage || 1,
     limit: pageSize,
     sortBy: "createdAt",
+    filterBy:filter,
     order: "desc",
   });
 
@@ -61,12 +62,12 @@ const ProductManagement = () => {
           product.name.toLowerCase().includes(searchTerm.toLowerCase())
         ) || [];
 
-  const filteredProducts = (displayedProduct || []).filter((product) => {
-    if (filter === "all") return true;
-    if (filter === "active") return product.isSoftDelete === false;
-    if (filter === "low stock") return product.stock < 20;
-    return true;
-  });
+  // const filteredProducts = (displayedProduct || []).filter((product) => {
+  //   if (filter === "all") return true;
+  //   if (filter === "active") return product.isSoftDelete === false;
+  //   if (filter === "low stock") return product.stock < 20;
+  //   return true;
+  // });
 
   // handling form submission of product adding
   const handleAddProduct = async (data) => {
@@ -130,7 +131,7 @@ const ProductManagement = () => {
 
       {/* Product List */}
       <div className="w-full max-w-5xl mt-5">
-        <ProductList products={filteredProducts} icon="fa-solid fa-box" />
+        <ProductList products={products} icon="fa-solid fa-box" />
       </div>
 
       <Pagination
