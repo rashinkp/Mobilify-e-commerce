@@ -1,3 +1,4 @@
+
 import { apiSlice } from './apiSlices'
 
 
@@ -58,7 +59,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/user/${userId}`,
         method:'GET',
       }),
-      invalidatesTags: ['User']
+      providesTags: ['User']
     }),
   }),
 });

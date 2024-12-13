@@ -164,3 +164,16 @@ export const imageValidationSchema = Yup.object().shape({
       return value.size <= 5 * 1024 * 1024; // 5MB size limit
     }),
 });
+
+
+export const addressValidationSchema = Yup.object().shape({
+  label: Yup.string().required("Label is required"),
+  street: Yup.string().required("Street is required"),
+  city: Yup.string().required("City is required"),
+  state: Yup.string().required("State is required"),
+  postalCode: Yup.string()
+    .matches(/^[0-9]{5}$/, "Postal code must be 5 digits")
+    .required("Postal code is required"),
+  country: Yup.string().required("Country is required"),
+});
+

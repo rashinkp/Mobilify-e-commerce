@@ -1,43 +1,61 @@
 import { Edit, Plus, Trash2 } from "lucide-react";
 import React, { useState } from "react";
+import { useAddAddressMutation, useGetAddressQuery } from "../../redux/slices/addressApiSlice.js";
+import { errorToast, successToast } from "../toast";
+import { useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { addressValidationSchema } from "../../validationSchemas";
+import { useGetUserQuery } from "../../redux/slices/userApiSlices.js";
+import { RotatingLines } from "react-loader-spinner";
+
+// Validation schema using yup
+
 
 const MyAddress = () => {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const { userInfo } = useSelector((state) => state.userAuth);
+  const userId = userInfo.id;
 
-  const [newAddress, setNewAddress] = useState({
-    label: "",
-    address: "",
+  const [addAddress] = useAddAddressMutation();
+
+  const {data,isLoading,isError,error} = useGetAddressQuery(userInfo.id)
+  const { addresses } = data || {}
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      label: "",
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+    },
+    resolver: yupResolver(addressValidationSchema),
   });
 
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    profileImage: "/api/placeholder/200/200",
-    addresses: [
-      { id: 1, label: "Home", address: "123 Main St, Cityville, State 12345" },
-      {
-        id: 2,
-        label: "Work",
-        address: "456 Business Ave, Worktown, State 67890",
-      },
-    ],
-  });
-
-  const handleAddAddress = () => {
-    if (newAddress.label && newAddress.address) {
-      setUser((prev) => ({
-        ...prev,
-        addresses: [
-          ...prev.addresses,
-          {
-            id: prev.addresses.length + 1,
-            ...newAddress,
-          },
-        ],
-      }));
-      setIsAddingAddress(false);
-      setNewAddress({ label: "", address: "" });
+  const handleAddAddress = async (data) => {
+     console.log("Form Submitted:", data); 
+    try {
+      await addAddress({ data, userId });
+      successToast("Address added successfully");
+      reset(); // Reset form fields after successful submit
+    } catch (error) {
+      errorToast(
+        error?.data?.message ||
+          error?.message ||
+          error?.data ||
+          "Error occurred while adding address"
+      );
+      console.log(error)
     }
+    setIsAddingAddress(false);
   };
 
   const handleDeleteAddress = (id) => {
@@ -46,6 +64,27 @@ const MyAddress = () => {
       addresses: prev.addresses.filter((addr) => addr.id !== id),
     }));
   };
+
+  if (isError) return <div>Error: {error.message}</div>;
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
@@ -62,55 +101,134 @@ const MyAddress = () => {
       </div>
 
       {isAddingAddress && (
-        <div className="bg-white dark:bg-black p-4 rounded-lg dark:border-none border mb-4">
-          <input
-            type="text"
-            placeholder="Address Label (e.g., Home, Work)"
-            className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-            value={newAddress.label}
-            onChange={(e) =>
-              setNewAddress((prev) => ({
-                ...prev,
-                label: e.target.value,
-              }))
-            }
+        <form
+          onSubmit={handleSubmit(handleAddAddress)}
+          className="bg-white dark:bg-black p-4 rounded-lg dark:border-none border mb-4"
+        >
+          <Controller
+            name="label"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Label (Home, Work, etc.)"
+                className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
+              />
+            )}
           />
-          <textarea
-            placeholder="Full Address"
-            className="w-full p-2 border dark:bg-slate-800 dark:border-none rounded-md mb-2"
-            value={newAddress.address}
-            onChange={(e) =>
-              setNewAddress((prev) => ({
-                ...prev,
-                address: e.target.value,
-              }))
-            }
+          {errors.label && (
+            <p className="text-red-500">{errors.label.message}</p>
+          )}
+
+          <Controller
+            name="street"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Street"
+                className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
+              />
+            )}
           />
+          {errors.street && (
+            <p className="text-red-500">{errors.street.message}</p>
+          )}
+
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="City"
+                className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
+              />
+            )}
+          />
+          {errors.city && <p className="text-red-500">{errors.city.message}</p>}
+
+          <Controller
+            name="state"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="State"
+                className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
+              />
+            )}
+          />
+          {errors.state && (
+            <p className="text-red-500">{errors.state.message}</p>
+          )}
+
+          <Controller
+            name="postalCode"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Postal Code"
+                className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
+              />
+            )}
+          />
+          {errors.postalCode && (
+            <p className="text-red-500">{errors.postalCode.message}</p>
+          )}
+
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Country"
+                className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
+              />
+            )}
+          />
+          {errors.country && (
+            <p className="text-red-500">{errors.country.message}</p>
+          )}
+
           <div className="flex space-x-2">
             <button
-              onClick={handleAddAddress}
-              className="bg-green-500  text-white px-4 py-2 rounded-md hover:bg-green-600"
+              type="submit"
+              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
             >
               Save Address
             </button>
             <button
+              type="button"
               onClick={() => setIsAddingAddress(false)}
               className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
             >
               Cancel
             </button>
           </div>
-        </div>
+        </form>
       )}
 
-      {user.addresses.map((address) => (
+      {addresses.map((address, i) => (
         <div
-          key={address.id}
+          key={i}
           className="bg-white dark:bg-slate-800 p-4 rounded-lg dark:border-none border mb-2 flex justify-between items-center"
         >
           <div>
-            <h3 className="font-semibold">{address.label}</h3>
-            <p className="text-gray-600 dark:text-white">{address.address}</p>
+            <h3 className="font-semibold">{address.label}</h3>{" "}
+            {/* Display label */}
+            <p className="text-gray-600 dark:text-gray-300">
+              {address.street}, {address.city},{address.state},
+              {address.postalCode},{address.country},
+            </p>
           </div>
           <div className="flex space-x-2">
             <button className="text-blue-600 hover:text-blue-700">

@@ -20,11 +20,14 @@ import { useNavigate } from "react-router";
 import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
 import { RotatingLines } from "react-loader-spinner";
+import noImage from '../../assets/noImage.png'
 
 const UserProfileDashboard = () => {
   const { userInfo } = useSelector((state) => state.userAuth);
   const {data, isLoading ,isError, error} = useGetUserQuery(userInfo.id)
-  const {user} = data || {}
+  const { user } = data || {}
+  
+
 
   const [activeSection, setActiveSection] = useState("profile");
 
@@ -83,7 +86,7 @@ const UserProfileDashboard = () => {
          </div>
        </div>
      );
-   }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-darkBackground  p-4 md:p-8">
@@ -93,7 +96,7 @@ const UserProfileDashboard = () => {
           <div className="flex flex-col items-center mb-6">
             <div className="relative">
               <img
-                src={user.profileImage}
+                src={user.picture || noImage}
                 alt="Profile"
                 className="w-24 h-24 rounded-full object-cover border-4 border-blue-50"
               />
@@ -122,7 +125,11 @@ const UserProfileDashboard = () => {
             <MenuSection icon={Wallet} title="My Wallet" section="wallet" />
             <MenuSection icon={ShoppingCart} title="My Cart" section="cart" />
             <MenuSection icon={Heart} title="Wishlist" section="wishlist" />
-            <MenuSection icon={MapPinHouse} title="My Address" section="address" />
+            <MenuSection
+              icon={MapPinHouse}
+              title="My Address"
+              section="address"
+            />
             <MenuSection
               icon={Lock}
               title="Change Password"
