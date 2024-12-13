@@ -5,10 +5,22 @@ import ProductCard from "../../components/user/ProductCard.jsx";
 import Footer from "../../components/user/Footer";
 import { RotatingLines } from "react-loader-spinner";
 import useProductApi from "../../hooks/useProductApi.jsx";
+import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices.js";
+import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 const HomePage = () => {
  
   
-  const { products, isLoading } = useProductApi();
+  const {data,isLoading , isError, error } = useGetAllProductsQuery({
+    limit: 8,
+    sortBy: 'createdAt',
+    order:'desc',
+  })
+
+
+  const { products = [] } = data || {};
+
+  if (isError) return <div>Error: {error.message}</div>;
+
   if (isLoading) {
     return (
       <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
