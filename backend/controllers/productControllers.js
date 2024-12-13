@@ -18,24 +18,38 @@ export const addProduct = asyncHandler(async (req, res) => {
 
 
 export const getAllProducts = asyncHandler(async (req, res) => {
-  const { all } = req.query;
+  const {
+    all,
+    page = 1,
+    limit = 10,
+    sortBy = "createdAt",
+    order = "desc",
+  } = req.query;
 
-  const filter = all ? {} : { isSoftDelete: false };
+  const skip = (page - 1) * limit;
+
+  const filter = all === "true" ? {} : { isSoftDelete: false };
 
   try {
-    const products = await Product.find(filter);
+    const products = await Product.find(filter)
+      .sort({ [sortBy]: order === "desc" ? -1 : 1 })
+      .skip(Number(skip))
+      .limit(Number(limit));
+    
+    const totalCount = await Product.countDocuments();
 
     if (products.length > 0) {
-      res.status(200).json(products); 
+      res.status(200).json({products,totalCount});
     } else {
-      res.status(404).json({ message: "Couldn't find any products" }); 
+      res.status(404).json({ message: "Couldn't find any products" });
     }
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error fetching products", error: error.message }); 
+      .json({ message: "Error fetching products", error: error.message });
   }
 });
+
 
 
 export const getProduct = asyncHandler(async (req, res) => {

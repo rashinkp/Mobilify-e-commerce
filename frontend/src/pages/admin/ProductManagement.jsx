@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProductAddForm from "../../components/product/ProductAddForm.jsx";
 import SearchBar from "../../components/SearchBar";
 import Button from "../../components/ui/Button";
@@ -7,21 +7,56 @@ import useProductApi from "../../hooks/useProductApi";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import ProductList from "../../components/product/ProductList.jsx";
 import { RotatingLines } from "react-loader-spinner";
-import { useGetProductsQuery } from "../../redux/slices/productApiSlice.js";
+import { useGetAllProductsQuery, useGetProductsQuery } from "../../redux/slices/productApiSlice.js";
+import Pagination from "../../components/Pagination.jsx";
 
 const ProductManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all"); // for dropdown selection
+  const [filter, setFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 8; 
 
   const { addProduct } = useProductApi();
 
-  const { data: products, error, isLoading } = useGetProductsQuery();
+  // const { data: products, error, isLoading } = useGetProductsQuery();
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useGetAllProductsQuery({
+    page: currentPage || 1,
+    limit: pageSize,
+    sortBy: "createdAt",
+    order: "desc",
+  });
+
+  const { products = [], totalCount = 0 } = data || {};
+
+
+  useEffect(() => {
+    if (totalCount) {
+      setTotalPages(Math.ceil(totalCount / pageSize))
+    }
+  }, [totalCount]);
+
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  }
+
+
+  if (isError) return <div>Error: {error.message}</div>;
 
   // search filtering
   const displayedProduct =
     searchTerm.trim() === ""
-      ? products || [] 
+      ? products || []
       : products?.filter((product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase())
         ) || [];
@@ -97,6 +132,12 @@ const ProductManagement = () => {
       <div className="w-full max-w-5xl mt-5">
         <ProductList products={filteredProducts} icon="fa-solid fa-box" />
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       {/* Loader Spinner */}
       {isLoading && (

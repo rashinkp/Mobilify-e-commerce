@@ -28,7 +28,6 @@ export const apiSlice = createApi({
   baseQuery: baseQueryWithInterceptor,
   tagTypes: ["Users", "Products"],
   endpoints: (builder) => ({
-    // Your endpoints here
   }),
 });
 

@@ -12,10 +12,22 @@ export const productApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ["Products"],
+      async onQueryStarted(arg, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (err) {
+          console.error("Error adding product:", err);
+        }
+      },
     }),
     getAllProducts: builder.query({
-      query: () => ({
-        url: `${ADMIN_URL}/product`,
+      query: ({
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "desc",
+      } = {}) => ({
+        url: `${ADMIN_URL}/product?page=${page}&limit=${limit}&sortBy=${sortBy}&order=${order}`,
         method: "GET",
       }),
       providesTags: ["Products"],
@@ -39,7 +51,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
         url: `${ADMIN_URL}/product/${productId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Products"],
+      invalidatesTags: ["Products", "ProductDetail"],
     }),
     updateProduct: builder.mutation({
       query: ({ productId, data }) => ({
@@ -47,7 +59,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["ProductDetail"],
+      invalidatesTags: ["Products", "ProductDetail"],
     }),
     updateProductImage: builder.mutation({
       query: ({ productId, uploadedUrl, deleteQueue }) => ({
@@ -58,7 +70,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
           deleteQueue,
         },
       }),
-      invalidatesTags: ["ProductDetail"],
+      invalidatesTags: ["Products", "ProductDetail"],
     }),
   }),
 });
