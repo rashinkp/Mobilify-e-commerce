@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "../../components/user/ProductCard";
 import SearchBar from "../../components/SearchBar";
 import Footer from "../../components/user/Footer";
@@ -7,9 +7,44 @@ import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import useProductApi from "../../hooks/useProductApi";
 import { RotatingLines } from "react-loader-spinner";
 import BrudCrump from "../../components/BrudCrump";
+import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice";
+import Pagination from "../../components/Pagination";
 
 const Products = () => {
-  const { products, isLoading } = useProductApi();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8; 
+  const [filter, setFilter] = useState("all");
+  const [totalPages, setTotalPages] = useState(1);
+
+
+  const { data, isLoading, isError, error } = useGetAllProductsQuery({
+    page: currentPage || 1,
+    limit: pageSize,
+    sortBy: 'CreatedAt',
+    filterBy: filter,
+    order:'desc'
+  })
+
+
+  if (isError) return <div>Error: {error.message}</div>;
+
+  const { products = [], totalCount = 0 } = data || {};
+  
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  }
+
+  useEffect(() => {
+    if (totalCount) {
+      setTotalPages(Math.ceil(totalCount / pageSize));
+    }
+  },[totalCount])
+
+
+
   const [searchTerm, setSearchTerm] = useState("");
   const displayedProduct =
     searchTerm.trim() === ""
@@ -132,7 +167,15 @@ const Products = () => {
           ))}
         </div>
 
-        <div className="mt-20 w-full max-w-7xl px-4">
+        <div className="mt-16">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+
+        <div className="mt-10 w-full max-w-7xl px-4">
           <Footer />
         </div>
       </div>
