@@ -12,6 +12,8 @@ import ProductDetails from "../pages/user/ProductDetails.jsx";
 import Checkout from "../pages/user/Checkout.jsx";
 import ContactUs from "../pages/user/ContactUs.jsx";
 import Navbar from "../components/Navbar.jsx";
+import UserProfile from "../pages/user/UserProfile.jsx";
+import UserProfileDashboard from "../pages/user/UserProfile.jsx";
 
 
 const UserRoutes = () => {
@@ -33,6 +35,7 @@ const UserRoutes = () => {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/email-verification/:id" element={<VerifyOtp />} />
+        <Route path="/profile" element={<UserProfileDashboard />} />
       </Routes>
     </>
   );

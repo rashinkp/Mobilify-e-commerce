@@ -14,6 +14,7 @@ import QunatityManage from "../../components/admin/QunatityManage";
 
 const ProductManagement = () => {
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
+  const [isSoftDelModalOpen, setIsSoftDelModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { productId } = useParams();
   const { deleteProduct, updateProduct } = useProductApi();
@@ -38,18 +39,18 @@ const ProductManagement = () => {
   if (isLoading) {
     return (
       <div>
-          <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-            <RotatingLines
-              visible={true}
-              height="50"
-              width="50"
-              color="grey"
-              strokeColor="#fff"
-              strokeWidth="2"
-              animationDuration="8"
-              ariaLabel="rotating-lines-loading"
-            />
-          </div>
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
       </div>
     );
   }
@@ -81,19 +82,18 @@ const ProductManagement = () => {
             : "Successfully recovered"
         }`
       );
+      setIsSoftDelModalOpen(false);
     } catch (error) {
       errorToast(
         error?.data?.message || error.message || "Failed to update product"
       );
+      setIsSoftDelModalOpen(false);
     }
   };
 
   const handleMangeImages = () => {
     navigate(`/admin/manage-image/${product._id}`);
   };
-
-
- 
 
   return (
     <>
@@ -111,6 +111,35 @@ const ProductManagement = () => {
             {
               text: "Delete",
               action: handleDelete,
+              style:
+                "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
+            },
+          ]}
+        />
+      )}
+
+      {isSoftDelModalOpen && (
+        <Modal
+          title={
+            product.isSoftDelete
+              ? "Are you sure to recover this product?"
+              : "Are you sure to delete this product?"
+          }
+          description={
+            product.isSoftDelete
+              ? "This product will be restored and accessible for users again."
+              : "Make sure before doing this process. This product won't be accessible for the user after that"
+          }
+          controles={[
+            {
+              text: "Cancel",
+              action: () => setIsSoftDelModalOpen(false),
+              style:
+                "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
+            },
+            {
+              text: product.isSoftDelete ? "Recover" : "Delete",
+              action: handleSoftDelete,
               style:
                 "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
             },
@@ -143,7 +172,7 @@ const ProductManagement = () => {
                 Model: {product.model || "Model not available"}
               </p>
               <p className="text-sm">Brand: related</p>
-              <p className="text-sm">Category: { product.category}</p>
+              <p className="text-sm">Category: {product.category}</p>
 
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
                 ₹{product.price || "N/A"}
@@ -251,13 +280,14 @@ const ProductManagement = () => {
                 className="me-3"
               />
             }
-            text="Soft Delete"
-            action={handleSoftDelete}
+            text={product.isSoftDelete ? "Recover Product" : "Soft Delete"}
+            action={() => setIsSoftDelModalOpen(true)}
           />
           <Button
             icon={<FontAwesomeIcon icon="fa-solid fa-trash" className="me-3" />}
             text="Delete Permanantly"
             action={() => setIsDelModalOpen(true)}
+            isDisabled={true}
           />
         </div>
       </div>

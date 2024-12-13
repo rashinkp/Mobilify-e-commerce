@@ -31,9 +31,9 @@ const CategoryEditForm = ({ category, onClose }) => {
     }
   };
 
-  const handleSubmit = (data) => {
+  const handleSubmit = async(data) => {
     try {
-      editCategory({categoryId:category._id, data}).unwrap();
+      await editCategory({categoryId:category._id, data}).unwrap();
       successToast("Category updated successfully");
       onClose();
     } catch (error) {
