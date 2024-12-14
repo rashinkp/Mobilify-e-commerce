@@ -113,7 +113,7 @@ export const signWithGoogle = asyncHandler(async (req, res) => {
 
 
 export const getUser = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { userId:id } = req.user;
   if (!id) {
     return res.status(400).json({ message: "User ID is required" });
   }

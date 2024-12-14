@@ -14,8 +14,7 @@ import { profileValidationSchema } from "../validationSchemas";
 
 const MyProfile = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const { userInfo } = useSelector((state) => state.userAuth);
-  const { data, isLoading, isError, error } = useGetUserQuery(userInfo.id);
+  const { data, isLoading, isError, error } = useGetUserQuery();
   const { user } = data || {};
   const [updateUser] = useUpdateUserMutation();
 
@@ -111,7 +110,6 @@ const MyProfile = () => {
                 <Briefcase className="mr-3 text-gray-500" size={24} />
                 <p>{user.occupation || "No occupation specified"}</p>
               </div>
-
               <div className="flex items-center">
                 <LifeBuoyIcon className="mr-3 text-gray-500" size={24} />
                 <p>{user.bio || "No bio specified"}</p>

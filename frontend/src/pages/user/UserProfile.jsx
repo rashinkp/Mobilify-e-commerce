@@ -22,7 +22,7 @@ import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
 import { RotatingLines } from "react-loader-spinner";
 import noImage from '../../assets/noImage.png'
-// import MyEmail from "../../components/user/MyEmail";
+import MyEmail from "../../components/user/MyEmail";
 
 const UserProfileDashboard = () => {
   const { userInfo } = useSelector((state) => state.userAuth);
@@ -152,7 +152,7 @@ const UserProfileDashboard = () => {
         <div className="md:col-span-2 bg-white dark:bg-black dark:text-white rounded-xl shadow-lg p-6">
           {activeSection === "profile" && <MyProfile />}
           {activeSection === "address" && <MyAddress />}
-          {/* {activeSection === "email" && <MyEmail />} */}
+          {activeSection === "email" && <MyEmail />}
         </div>
       </div>
     </div>

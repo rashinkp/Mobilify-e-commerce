@@ -55,8 +55,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       },
     }),
     getUser: builder.query({
-      query: (userId) => ({
-        url: `${USERS_URL}/user/${userId}`,
+      query: () => ({
+        url: `${USERS_URL}/profile`,
         method: "GET",
       }),
       providesTags: ["User"],
@@ -68,14 +68,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ["User"],
-    }),
-    verifyOtp: builder.mutation({
-      query: (data) => ({
-        url: `${USERS_URL}/verifyOtp`,
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags:['Users'],
     }),
   }),
 });
