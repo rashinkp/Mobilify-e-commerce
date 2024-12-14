@@ -84,3 +84,39 @@ export const deleteAddress = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Failed to remove address" });
   }
 });
+
+
+export const updateAddress = asyncHandler(async (req, res) => {
+  const { id } = req.params; 
+  const { userId } = req.user; 
+  const data = req.body; 
+
+
+  if (!id) {
+    return res.status(400).json({ message: "Address ID not found" });
+  }
+
+  if (!data) {
+    return res.status(400).json({ message: "Address data is missing" });
+  }
+
+  try {
+    const newAddress = await User.updateOne(
+      { _id: userId, "addresses._id": id },
+      {
+        $set: Object.keys(data).reduce((acc, key) => {
+          acc[`addresses.$.${key}`] = data[key];
+          return acc;
+        }, {}),
+      }
+    );
+
+    if (newAddress.matchedCount === 0) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    return res.status(200).json({ message: "Address updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error updating address", error });
+  }
+});

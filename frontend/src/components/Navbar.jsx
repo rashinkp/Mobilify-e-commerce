@@ -223,7 +223,10 @@ const Navbar = () => {
                   <ul className="flex flex-col gap-4 px-4 py-3">
                     {profile.list.map((item, index) => (
                       <Link key={index} to={item.path}>
-                        <li className={`cursor-pointer hover:text-primary`}>
+                        <li
+                          onClick={() => setDropdownOpen(false)}
+                          className={`cursor-pointer hover:text-primary`}
+                        >
                           {item.text.toUpperCase()}
                         </li>
                       </Link>

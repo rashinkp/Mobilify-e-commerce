@@ -1,8 +1,6 @@
+import { apiSlice } from "./apiSlices";
 
-import { apiSlice } from './apiSlices'
-
-
-const USERS_URL = '/api/user';
+const USERS_URL = "/api/user";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,14 +20,26 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Address"],
     }),
     deleteAddress: builder.mutation({
-      query: ( addressId ) => ({
+      query: (addressId) => ({
         url: `${USERS_URL}/address/${addressId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Address"],
     }),
+    updateAddress: builder.mutation({
+      query: ({addressId,data}) => ({
+        url: `${USERS_URL}/address/${addressId}`,
+        method: 'PUT',
+        body:data
+      }),
+      invalidatesTags: ['Address'],
+    }),
   }),
 });
 
-
-export const { useAddAddressMutation , useGetAddressQuery,  useDeleteAddressMutation } = usersApiSlice;
+export const {
+  useAddAddressMutation,
+  useGetAddressQuery,
+  useDeleteAddressMutation,
+  useUpdateAddressMutation
+} = usersApiSlice;

@@ -14,6 +14,7 @@ import { addressValidationSchema } from "../../validationSchemas";
 import { useGetUserQuery } from "../../redux/slices/userApiSlices.js";
 import { RotatingLines } from "react-loader-spinner";
 import Modal from "../Modal.jsx";
+import AddressEditForm from "./AddressEditForm.jsx";
 
 // Validation schema using yup
 
@@ -25,6 +26,7 @@ const MyAddress = () => {
   const [currentAddress, setCurrentAddress] = useState(null);
   const [deleteAddress] = useDeleteAddressMutation();
   const [addAddress] = useAddAddressMutation();
+  const [isEditModalOpen , setIsEditModalOpen]  = useState(false)
 
   const { data, isLoading, isError, error } = useGetAddressQuery(userInfo.id);
   const { addresses } = data || {};
@@ -88,7 +90,8 @@ const MyAddress = () => {
 
 
   const handleDeleteAddress = async () => {
-    const addressId = currentAddress
+    const { _id: addressId } = currentAddress;
+
     try {
       await deleteAddress(addressId);
       successToast("Address deleted successfully");
@@ -102,7 +105,8 @@ const MyAddress = () => {
       );
       setIsDelModalOpen(false);
     }
-};
+  };
+  
 
 
 
@@ -127,6 +131,10 @@ const MyAddress = () => {
             },
           ]}
         />
+      )}
+
+      {isEditModalOpen && (
+        <AddressEditForm address={currentAddress} onClose={() => setIsEditModalOpen(false)}/>
       )}
       <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
         <div className="flex justify-between items-center mb-4">
@@ -260,6 +268,8 @@ const MyAddress = () => {
           </form>
         )}
 
+
+
         {addresses.map((address, i) => (
           <div
             key={i}
@@ -275,11 +285,14 @@ const MyAddress = () => {
             </div>
             <div className="flex space-x-2">
               <button className="text-blue-600 hover:text-blue-700">
-                <Edit size={16} />
+                <Edit size={16} onClick={() => {
+                  setCurrentAddress(address);
+                  setIsEditModalOpen(true);
+                }} />
               </button>
               <button
                 onClick={() => {
-                  setCurrentAddress(address._id);
+                  setCurrentAddress(address);
                   setIsDelModalOpen(true);
                 }}
                 className="text-red-600 hover:text-red-700"

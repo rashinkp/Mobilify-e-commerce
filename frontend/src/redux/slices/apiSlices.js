@@ -1,6 +1,6 @@
 // apiSlice.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { adminLogout } from "./authAdmin.js"; // Import your logout action
+import { adminLogout } from "./authAdmin.js"; 
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:4000",
