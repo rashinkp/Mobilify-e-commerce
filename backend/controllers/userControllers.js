@@ -3,7 +3,7 @@ import User from "../models/userSchema.js";
 import generateToken from "../utils/generateToken.js";
 import { OTP } from "../models/otpSchema.js";
 import { OAuth2Client } from "google-auth-library";
-import jwt from 'jsonwebtoken'
+import otpGenerator from "otp-generator";
 const client = new OAuth2Client(
   "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com"
 );
@@ -135,3 +135,46 @@ export const getUser = asyncHandler(async (req, res) => {
 });
 
 
+export const updateUser = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  const { name, occupation, bio, phoneNumber, dateOfBirth } = req.body;
+
+
+  if (!userId) {
+    return res.status(400).json({ message: "User id is not found" });
+  }
+
+  // Remove the incorrect `!data` check as `data` is not defined
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // Update user fields only if they are provided
+  if (name) user.name = name;
+  if (occupation) user.occupation = occupation;
+  if (bio) user.bio = bio;
+  if (phoneNumber) user.phoneNumber = phoneNumber;
+  if (dateOfBirth) user.dateOfBirth = dateOfBirth;
+
+  try {
+    // Save the updated user document
+    const updatedUser = await user.save();
+
+    // Respond with the updated user, excluding sensitive information
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      occupation: updatedUser.occupation,
+      bio: updatedUser.bio,
+      phoneNumber: updatedUser.phoneNumber,
+      dateOfBirth: updatedUser.dateOfBirth,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Error updating user",
+      error: error.message,
+    });
+  }
+});

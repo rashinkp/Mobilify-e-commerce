@@ -10,6 +10,7 @@ import {
   LogOut,
   Camera,
   MapPinHouse,
+  Mail,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetUserQuery, useLogoutMutation } from "../../redux/slices/userApiSlices";
@@ -21,6 +22,7 @@ import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
 import { RotatingLines } from "react-loader-spinner";
 import noImage from '../../assets/noImage.png'
+// import MyEmail from "../../components/user/MyEmail";
 
 const UserProfileDashboard = () => {
   const { userInfo } = useSelector((state) => state.userAuth);
@@ -117,13 +119,14 @@ const UserProfileDashboard = () => {
 
           <div className="space-y-2">
             <MenuSection icon={User} title="My Profile" section="profile" />
+            <MenuSection icon={Mail} title="My Email" section="email" />
             <MenuSection
               icon={ShoppingBag}
               title="My Orders"
               section="orders"
             />
             <MenuSection icon={Wallet} title="My Wallet" section="wallet" />
-            <MenuSection icon={ShoppingCart} title="My Cart" section="cart" />
+
             <MenuSection icon={Heart} title="Wishlist" section="wishlist" />
             <MenuSection
               icon={MapPinHouse}
@@ -149,6 +152,7 @@ const UserProfileDashboard = () => {
         <div className="md:col-span-2 bg-white dark:bg-black dark:text-white rounded-xl shadow-lg p-6">
           {activeSection === "profile" && <MyProfile />}
           {activeSection === "address" && <MyAddress />}
+          {/* {activeSection === "email" && <MyEmail />} */}
         </div>
       </div>
     </div>

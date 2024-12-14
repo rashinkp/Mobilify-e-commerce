@@ -35,7 +35,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
           url: `${USERS_URL}/resendotp`,
           method: "POST",
           body: data,
-        }
+        };
       },
     }),
     logout: builder.mutation({
@@ -46,23 +46,39 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     googleSign: builder.mutation({
       query: (data) => {
-        console.log(data)
-        return({
-        url: `${USERS_URL}/googlesign`,
-        method: 'POST',
-        body: data
-      })
-      }
+        console.log(data);
+        return {
+          url: `${USERS_URL}/googlesign`,
+          method: "POST",
+          body: data,
+        };
+      },
     }),
     getUser: builder.query({
       query: (userId) => ({
         url: `${USERS_URL}/user/${userId}`,
-        method:'GET',
+        method: "GET",
       }),
-      providesTags: ['User']
+      providesTags: ["User"],
+    }),
+    updateUser: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/profile`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    verifyOtp: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/verifyOtp`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags:['Users'],
     }),
   }),
 });
 
 
-export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery } = usersApiSlice;
+export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useVerifyOtpMutation } = usersApiSlice;

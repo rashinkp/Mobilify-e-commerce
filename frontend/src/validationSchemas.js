@@ -177,3 +177,20 @@ export const addressValidationSchema = Yup.object().shape({
   country: Yup.string().required("Country is required"),
 });
 
+export const profileValidationSchema = Yup.object().shape({
+  dateOfBirth: Yup.date()
+    .max(new Date(), "Date of birth cannot be in the future")
+    .nullable()
+    .required("Date of birth is required"),
+  phoneNumber: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
+    .required("Phone number is required"),
+  name: Yup.string()
+    .required("Username is required")
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be at most 20 characters"),
+  bio: Yup.string().max(500, "Bio must be at most 500 characters").nullable(),
+  occupation: Yup.string()
+    .max(100, "Occupation must be at most 100 characters")
+    .nullable(),
+});

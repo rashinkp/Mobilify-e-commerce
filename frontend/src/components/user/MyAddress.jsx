@@ -153,7 +153,7 @@ const MyAddress = () => {
           <form
             onSubmit={handleSubmit(handleAddAddress)}
             className="bg-white dark:bg-black p-4 rounded-lg dark:border-none border mb-4"
-          >
+        >
             <Controller
               name="label"
               control={control}
