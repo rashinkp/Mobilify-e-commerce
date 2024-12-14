@@ -2,11 +2,9 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userSchema.js";
 import generateToken from "../utils/generateToken.js";
 import { OTP } from "../models/otpSchema.js";
-import { OAuth2Client } from "google-auth-library";
-import otpGenerator from "otp-generator";
-const client = new OAuth2Client(
-  "1082671163898-isei5ie78erkjd5434c5i9umc4n18lom.apps.googleusercontent.com"
-);
+import bcrypt from 'bcrypt';
+
+
 
 export const registerUser = asyncHandler(async (req, res) => {
   const { otp } = req.body.data;
@@ -198,3 +196,37 @@ export const uploadProfileUrl = asyncHandler(async (req, res) => {
   });
 
 }) 
+
+
+export const changePassword = asyncHandler(async (req, res) => {
+  const { userId } = req.user; 
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const oldPassword = user.password;
+
+  const isMatch = await bcrypt.compare(currentPassword, oldPassword);
+
+  if (!isMatch) {
+    return res.status(401).json({ error: "Current password is incorrect" });
+  }
+
+  const isSameAsOld = await bcrypt.compare(newPassword, oldPassword);
+  if (isSameAsOld) {
+    return res
+      .status(400)
+      .json({
+        error: "New password cannot be the same as the current password",
+      });
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({ message: "Password changed successfully" });
+});

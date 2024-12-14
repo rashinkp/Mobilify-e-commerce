@@ -27,9 +27,10 @@ import noImage from "../../assets/noImage.png";
 import MyEmail from "../../components/user/MyEmail";
 
 import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
+import ChangePassword from "../../components/ChangePassword";
 
 const UserProfileDashboard = () => {
-  const { data, isLoading, isError, error } = useGetUserQuery();
+  const { data, isLoading, isError, error,refetch } = useGetUserQuery();
   const { user } = data || {};
   const imageRef = useRef();
   const [isUploading, setIsUploading] = useState(false);
@@ -52,6 +53,7 @@ const UserProfileDashboard = () => {
        await uploadImgUrl(data);
        setIsUploading(false);
        successToast('Image updated successfully');
+       refetch()
      }
    } catch (error) {
      console.error("Update error:", error);
@@ -159,7 +161,7 @@ const UserProfileDashboard = () => {
             <MenuSection
               icon={Lock}
               title="Change Password"
-              section="password"
+              section="changePassword"
             />
             <button
               className="flex items-center w-full p-3 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
@@ -176,6 +178,7 @@ const UserProfileDashboard = () => {
           {activeSection === "profile" && <MyProfile />}
           {activeSection === "address" && <MyAddress />}
           {activeSection === "email" && <MyEmail />}
+          {activeSection === "changePassword" && <ChangePassword />}
         </div>
       </div>
       <input

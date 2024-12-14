@@ -194,3 +194,27 @@ export const profileValidationSchema = Yup.object().shape({
     .max(100, "Occupation must be at most 100 characters")
     .nullable(),
 });
+
+
+export const passwordSchema = Yup.object().shape({
+    currentPassword: Yup.string().required("Current password is required"),
+    newPassword: Yup
+      .string()
+      .required("New password is required")
+      .min(6, "Password must be at least 6 characters")
+      // .matches(/[A-Z]/, "Password must include an uppercase letter")
+      // .matches(/[a-z]/, "Password must include a lowercase letter")
+      // .matches(/[0-9]/, "Password must include a number")
+      // .matches(
+      //   /[!@#$%^&*(),.?":{}|<>]/,
+      //   "Password must include a special character"
+      // )
+      .notOneOf(
+        [Yup.ref("currentPassword")],
+        "New password must be different from current password"
+      ),
+    confirmNewPassword: Yup
+      .string()
+      .required("Please confirm your new password")
+      .oneOf([Yup.ref("newPassword")], "Passwords must match"),
+  });
