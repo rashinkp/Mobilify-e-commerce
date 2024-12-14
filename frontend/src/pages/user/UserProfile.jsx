@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   User,
   ShoppingBag,
   Wallet,
-  ShoppingCart,
   Heart,
-  Settings,
   Lock,
   LogOut,
   Camera,
@@ -13,7 +11,11 @@ import {
   Mail,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetUserQuery, useLogoutMutation } from "../../redux/slices/userApiSlices";
+import {
+  useGetUserQuery,
+  useLogoutMutation,
+  useUploadUserProfileMutation,
+} from "../../redux/slices/userApiSlices";
 import { userLogout } from "../../redux/slices/authUser";
 import { googleLogout } from "@react-oauth/google";
 import { successToast } from "../../components/toast";
@@ -21,20 +23,42 @@ import { useNavigate } from "react-router";
 import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
 import { RotatingLines } from "react-loader-spinner";
-import noImage from '../../assets/noImage.png'
+import noImage from "../../assets/noImage.png";
 import MyEmail from "../../components/user/MyEmail";
 
-const UserProfileDashboard = () => {
-  const { userInfo } = useSelector((state) => state.userAuth);
-  const {data, isLoading ,isError, error} = useGetUserQuery(userInfo.id)
-  const { user } = data || {}
-  
+import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
 
+const UserProfileDashboard = () => {
+  const { data, isLoading, isError, error } = useGetUserQuery();
+  const { user } = data || {};
+  const imageRef = useRef();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadImgUrl] = useUploadUserProfileMutation()
 
   const [activeSection, setActiveSection] = useState("profile");
 
-  const handleProfileImageChange = () => {
-    alert("Image upload functionality to be implemented");
+  const handleImageChange = (e) => {
+    imageRef.current.click();
+  };
+
+
+  //handling image uploading and sending url
+  const handleProfileImageChange = async(e) => {
+    setIsUploading(true)
+    const file = e.target.files[0];
+   try {
+     if (file) {
+       const data = await uploadImageToCloudinary(file);
+       await uploadImgUrl(data);
+       setIsUploading(false);
+       successToast('Image updated successfully');
+     }
+   } catch (error) {
+     console.error("Update error:", error);
+    setIsUploading(false);
+   }
+
+    
   };
 
   const MenuSection = ({ icon: Icon, title, section }) => (
@@ -70,24 +94,23 @@ const UserProfileDashboard = () => {
 
   if (isError) return <div>Error: {error.message}</div>;
 
-
-   if (isLoading ) {
-     return (
-       <div>
-         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-           <RotatingLines
-             visible={true}
-             height="50"
-             width="50"
-             color="grey"
-             strokeColor="#fff"
-             strokeWidth="2"
-             animationDuration="8"
-             ariaLabel="rotating-lines-loading"
-           />
-         </div>
-       </div>
-     );
+  if (isLoading || isUploading) {
+    return (
+      <div>
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -98,12 +121,12 @@ const UserProfileDashboard = () => {
           <div className="flex flex-col items-center mb-6">
             <div className="relative">
               <img
-                src={user.picture || noImage}
+                src={user?.picture?.secure_url || noImage}
                 alt="Profile"
                 className="w-24 h-24 rounded-full object-cover border-4 border-blue-50"
               />
               <button
-                onClick={handleProfileImageChange}
+                onClick={handleImageChange}
                 className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors"
               >
                 <Camera size={16} />
@@ -155,6 +178,13 @@ const UserProfileDashboard = () => {
           {activeSection === "email" && <MyEmail />}
         </div>
       </div>
+      <input
+        type="file"
+        ref={imageRef}
+        accept="image/*"
+        onChange={handleProfileImageChange}
+        hidden
+      />
     </div>
   );
 };

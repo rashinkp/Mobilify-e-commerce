@@ -93,7 +93,7 @@ export const signWithGoogle = asyncHandler(async (req, res) => {
       user = await User.create({
         email,
         name,
-        picture,
+        picture: {secure_url:picture},
       });
     }
 
@@ -178,3 +178,23 @@ export const updateUser = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+export const uploadProfileUrl = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  const data = req.body;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({ error: "user not found" });
+  }
+
+  const updatedUser = await User.updateOne({ _id: userId }, { $set: { picture: data } });
+
+  res.status(200).json({
+    message: "Images updated successfully",
+    product: updatedUser,
+  });
+
+}) 

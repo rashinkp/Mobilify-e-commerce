@@ -69,8 +69,16 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    uploadUserProfile: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/profileImage`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags:['Users'],
+    })
   }),
 });
 
 
-export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useVerifyOtpMutation } = usersApiSlice;
+export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useUploadUserProfileMutation } = usersApiSlice;

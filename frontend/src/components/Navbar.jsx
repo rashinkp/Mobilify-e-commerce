@@ -6,16 +6,23 @@ import { faChevronDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/slices/themeSlice.js";
 import { Link, useLocation, useNavigate } from "react-router";
-import { useLogoutMutation } from "../redux/slices/userApiSlices.js";
+import { useGetUserQuery, useLogoutMutation } from "../redux/slices/userApiSlices.js";
 import { userLogout } from "../redux/slices/authUser.js";
 import { successToast } from "./toast/index.js";
 import { googleLogout } from "@react-oauth/google";
-import BrudCrump from "./BrudCrump.jsx";
+import { RotatingLines } from "react-loader-spinner";
+import noImage from '../assets/noImage.png'
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
+
+  const { data, isLoading, isError, error } = useGetUserQuery();
+  const { user } = data || {};
+  const { picture } = user || {};
+
+  console.log(data)
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.theme);
@@ -46,7 +53,6 @@ const Navbar = () => {
   };
 
   const profile = {
-    img: "https://via.placeholder.com/150",
     list: [
       {
         text: "Profile",
@@ -158,6 +164,31 @@ const Navbar = () => {
     };
   }, [dropdownOpen]);
 
+
+
+
+   if (isError) return <div>Error: {error.message}</div>;
+     
+       if (isLoading) {
+         return (
+           <div>
+             <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+               <RotatingLines
+                 visible={true}
+                 height="50"
+                 width="50"
+                 color="grey"
+                 strokeColor="#fff"
+                 strokeWidth="2"
+                 animationDuration="8"
+                 ariaLabel="rotating-lines-loading"
+               />
+             </div>
+           </div>
+         );
+       }
+
+
   return (
     <>
       <div className="fixed z-10 top-0 left-0 right-0 flex items-center justify-between px-8 py-4 lg:px-16 lg:py-5 font-medium bg-lightBackground dark:bg-darkBackground">
@@ -203,7 +234,7 @@ const Navbar = () => {
             <div className="flex items-center gap-2 cursor-pointer relative">
               <div className="w-8 h-8 bg-lightBackground rounded-full overflow-hidden">
                 <img
-                  src={profile.img}
+                  src={picture?.secure_url || noImage}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />

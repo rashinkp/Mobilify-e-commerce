@@ -122,8 +122,6 @@ export const updateImages = asyncHandler(async (req, res) => {
   const { uploadedUrl: images, deleteQueue } = req.body;
 
 
-  console.log(deleteQueue);
-
   if (!Array.isArray(images)) {
     return res
       .status(400)

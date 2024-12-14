@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     picture: {
-      type: String,
+      type: Object,
     },
     otpId: {
       type: mongoose.Schema.Types.ObjectId,
