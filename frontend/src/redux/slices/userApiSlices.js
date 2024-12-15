@@ -106,8 +106,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    resendOtpEmail: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/resendOtpEmail`,
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
 
-export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useUploadUserProfileMutation, useChangePasswordMutation, useOtpToEmailMutation, useOtpVerifcationMutation,  useForgotPasswordMutation } = usersApiSlice;
+export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useUploadUserProfileMutation, useChangePasswordMutation, useOtpToEmailMutation, useOtpVerifcationMutation,  useForgotPasswordMutation , useResendOtpEmailMutation } = usersApiSlice;

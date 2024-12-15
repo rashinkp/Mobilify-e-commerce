@@ -1,6 +1,6 @@
 import express from 'express';
 import { changePassword, forgotPassword, getUser, logoutUser, registerUser, signWithGoogle, updateUser, uploadProfileUrl, userLogin } from '../controllers/userControllers.js';
-import {resendOTP, sendOTP, sendOTPToEmail, verifyOtp} from "../controllers/otpController.js";
+import {resendOTP, resendOtpEamil, sendOTP, sendOTPToEmail, verifyOtp} from "../controllers/otpController.js";
 import protect from '../middlewares/protect.js';
 import { addAddress, deleteAddress, getAddress, updateAddress } from '../controllers/addressController.js';
 
@@ -32,7 +32,8 @@ router.route("/address/:id").post(addAddress).get(getAddress).delete(protect('us
 router.post('/otpToEmail', sendOTPToEmail);
 router.post('/verifyOtp', verifyOtp);
 
-router.put('/forgotPassword',  forgotPassword)
+router.put('/forgotPassword', forgotPassword)
+router.post("/resendOtpEmail", resendOtpEamil);
 
 
 

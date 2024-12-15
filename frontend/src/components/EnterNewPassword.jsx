@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { errorToast, successToast } from "./toast";
 import Form from "./Form";
-import {  useForgotPasswordMutation } from "../redux/slices/userApiSlices.js";
-import { passwordSchemaWithoutCurr, passwordValidation } from "../validationSchemas";
+import { useForgotPasswordMutation } from "../redux/slices/userApiSlices.js";
+import {
+  passwordSchemaWithoutCurr,
+  passwordValidation,
+} from "../validationSchemas";
 
 const EnterNewPassword = () => {
-  const [changePassword] = useForgotPasswordMutation(); 
+  const [changePassword] = useForgotPasswordMutation();
   const navigate = useNavigate();
 
-  const handlePasswordSubmit = async ( {newPassword:password} ) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location?.state?.access) {
+      navigate(-1);
+    }
+  }, [location, navigate]);
+
+  const handlePasswordSubmit = async ({ newPassword: password }) => {
     try {
-      await changePassword( {password} ).unwrap();
+      await changePassword({ password }).unwrap();
       successToast("Password changed successfully");
       navigate("/user/login");
     } catch (error) {

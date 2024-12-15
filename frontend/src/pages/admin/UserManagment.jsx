@@ -109,8 +109,8 @@ const UserManagement = () => {
       key: "createdAt",
       label: "Join date",
       render: (value) => {
-        const date = new Date(value); // Ensure it's a Date object
-        return date.toLocaleString(); // Return formatted date
+        const date = new Date(value);
+        return date.toLocaleString(); 
       },
     },
     {

@@ -208,3 +208,44 @@ export const verifyOtp = async (req, res) => {
     });
   }
 };
+
+
+export const resendOtpEamil = asyncHandler(async (req, res) => {
+  const email = req.session.email;
+  
+  if (!email) {
+    res.status(404).json({message:'email not found please enter email again'})
+  }
+
+  try {
+    let otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    let result = await OTP.findOne({ otp: otp });
+
+    while (result) {
+      otp = otpGenerator.generate(6, {
+        upperCaseAlphabets: false,
+      });
+      result = await OTP.findOne({ otp: otp });
+    }
+
+
+    const otpPayload = { otp, email };
+    const otpBody = await OTP.create(otpPayload);
+
+    const otpId = otpBody._id;
+
+    res.status(200).json({
+      success: true,
+      message: "OTP resend successfully",
+      otpId,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+})

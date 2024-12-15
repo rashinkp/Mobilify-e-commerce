@@ -8,11 +8,12 @@ import {
 } from "../validationSchemas";
 import { errorToast, successToast } from "./toast";
 import Form from "./Form";
-import { useOtpVerifcationMutation } from "../redux/slices/userApiSlices";
+import { useOtpVerifcationMutation, useResendOtpEmailMutation } from "../redux/slices/userApiSlices";
 import { RotatingLines } from "react-loader-spinner";
 
 const EnterOtp = () => {
   const [verifyOtp] = useOtpVerifcationMutation();
+  const [resendOtp] = useResendOtpEmailMutation()
   const [timeLeft, setTimeLeft] = useState(30);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +46,7 @@ const EnterOtp = () => {
       try {
         await verifyOtp(otp).unwrap();
         successToast("otp verified");
-        navigate("/user/forgotPassword");
+        navigate("/user/forgotPassword", {state:{access:true}});
       } catch (error) {
         console.error("Error changing password:", error);
         errorToast(error?.message || error?.data?.message || "Error occurred");
@@ -57,9 +58,10 @@ const EnterOtp = () => {
   const handleResend = async () => {
       setIsLoading(true);
       try {
-        const result = await resendOtp({ id });
+        const result = await resendOtp();
+        console.log(result)
         successToast("OTP resent successfully");
-        setTimeLeft(295);
+        setTimeLeft(60);
       } catch (error) {
         const errorMessage =
           error?.response?.data?.message ||
