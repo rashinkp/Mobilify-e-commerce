@@ -19,8 +19,16 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['Cart']
+    }),
+    deleteFromCart: builder.mutation({
+      query: (data) => ({
+        url: `${USER_URL}/cart`,
+        method: 'PUT',
+        body:data
+      }),
+      invalidatesTags: ['Cart']
     })
   }),
 });
 
-export const {useAddToCartMutation , useGetCartQuery} = cartApiSlice;
+export const {useAddToCartMutation , useGetCartQuery, useDeleteFromCartMutation} = cartApiSlice;

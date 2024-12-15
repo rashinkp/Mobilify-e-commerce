@@ -77,6 +77,8 @@ export const getCart = asyncHandler(async (req, res) => {
       },
     },
 
+    
+
     //add product details directly to cartItems
     {
       $addFields: {
@@ -94,6 +96,13 @@ export const getCart = asyncHandler(async (req, res) => {
         updatedAt: { $first: "$updatedAt" },
       },
     },
+
+    //getting the size of total products
+    {
+      $addFields: {
+        totalProducts: {$sum: '$cartItems.quantity'}
+      }
+    }
   ]);
 
   if (!cart || cart.length === 0) {
@@ -107,3 +116,35 @@ export const getCart = asyncHandler(async (req, res) => {
 
   res.status(200).json(cart[0]);
 });
+
+
+export const deleteFromCart = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  const { productId } = req.body;
+  
+  if (!userId || !productId) {
+    return res.status(400).json({ message: 'did not get proper data, please try again' });
+  }
+
+  const cart = await Cart.findOne({ userId })
+  
+  if (!cart) {
+    return res.status(404).json({ message: 'could not find such a cart' });
+  }
+
+  const updatedCart = await Cart.updateOne(
+    { userId },
+    {$pull : {cartItems: {productId}}}
+  )
+
+  if (updatedCart.modifiedCount === 0) {
+    return res
+      .status(400)
+      .json({ message: "Product not found in cart or not removed" });
+  }
+
+  const updatedCartDetails = await Cart.findOne({ userId });
+  return res.status(200).json(updatedCartDetails);
+
+
+})

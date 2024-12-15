@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Plus, Minus } from "lucide-react";
-import { useGetCartQuery } from "../../redux/slices/cartApiSlice";
+import { useDeleteFromCartMutation, useGetCartQuery } from "../../redux/slices/cartApiSlice";
 import { RotatingLines } from "react-loader-spinner";
+import { Link } from "react-router";
+import { errorToast, successToast } from "../../components/toast";
 
 const ShoppingCart = () => {
   const { data = {}, isLoading, isError, error, refetch } = useGetCartQuery();
+  const [deletItem] = useDeleteFromCartMutation();
   const cartItems = data?.cartItems || [];
 
   const [products, setProducts] = useState([]);
@@ -15,7 +18,9 @@ const ShoppingCart = () => {
     }
   }, [cartItems]);
 
-  console.log(products);
+
+  console.log(data)
+
 
 
   const [promoCode, setPromoCode] = useState("");
@@ -31,10 +36,13 @@ const ShoppingCart = () => {
     );
   };
 
-  const removeProduct = (id) => {
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => product.id !== id)
-    );
+  const removeProduct = async(productId) => {
+    try {
+      await deletItem({ productId })
+      successToast('Product removed from cart')
+    } catch (error) {
+      errorToast(error?.message || error?.data || 'Couldnt remove item from cart');
+    }
   };
 
   // Ensure products is always an array when calling reduce
@@ -81,7 +89,7 @@ const ShoppingCart = () => {
         {/* Left Column: Cart Items */}
         <div className="md:col-span-2">
           <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
-            Shopping Cart
+            Shopping Cart <span>({data.totalProducts})</span>
           </h1>
 
           {products.map((product) => (
@@ -102,12 +110,14 @@ const ShoppingCart = () => {
                 <p className="text-gray-500 dark:text-gray-300">
                   {product?.productDetails?.model}
                 </p>
-                <p className="text-primary font-bold">${product?.productDetails?.price}</p>
+                <p className="text-primary font-bold">
+                  ${product?.productDetails?.price}
+                </p>
               </div>
 
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => updateQuantity(product.id, -1)}
+                  onClick={() => updateQuantity(product.productId, -1)}
                   className="p-2 bg-gray-200 dark:bg-slate-800 rounded-full"
                 >
                   <Minus size={20} />
@@ -116,14 +126,14 @@ const ShoppingCart = () => {
                 <span className="font-bold">{product.quantity}</span>
 
                 <button
-                  onClick={() => updateQuantity(product.id, 1)}
+                  onClick={() => updateQuantity(product.productId, 1)}
                   className="p-2 bg-gray-200 rounded-full dark:bg-slate-800"
                 >
                   <Plus size={20} />
                 </button>
 
                 <button
-                  onClick={() => removeProduct(product.id)}
+                  onClick={() => removeProduct(product.productId)}
                   className="p-2 text-red-500 hover:bg-red-50 rounded-full"
                 >
                   <Trash2 size={20} />
@@ -132,11 +142,11 @@ const ShoppingCart = () => {
             </div>
           ))}
 
-          <div className="mt-6">
+          <Link to="/user/products" className="mt-6">
             <button className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
               Continue Shopping
             </button>
-          </div>
+          </Link>
         </div>
 
         {/* Right Column: Order Summary */}
