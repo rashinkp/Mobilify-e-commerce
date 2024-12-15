@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   User,
   ShoppingBag,
@@ -18,7 +18,7 @@ import {
 } from "../../redux/slices/userApiSlices";
 import { userLogout } from "../../redux/slices/authUser";
 import { googleLogout } from "@react-oauth/google";
-import { successToast } from "../../components/toast";
+import { errorToast, successToast } from "../../components/toast";
 import { useNavigate } from "react-router";
 import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
@@ -30,17 +30,22 @@ import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
 import ChangePassword from "../../components/ChangePassword";
 
 const UserProfileDashboard = () => {
-  const { data, isLoading, isError, error,refetch } = useGetUserQuery();
+  const { data, isLoading, isError, error, refetch } = useGetUserQuery();
   const { user } = data || {};
   const imageRef = useRef();
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadImgUrl] = useUploadUserProfileMutation()
-
+  const [uploadImgUrl] = useUploadUserProfileMutation();
   const [activeSection, setActiveSection] = useState("profile");
 
-  const handleImageChange = (e) => {
+  const handleImageChange = () => {
     imageRef.current.click();
   };
+
+  useEffect(() => {
+    if (data) {
+      refetch();
+    }
+  }, [data, refetch]);
 
 
   //handling image uploading and sending url
@@ -56,7 +61,7 @@ const UserProfileDashboard = () => {
        refetch()
      }
    } catch (error) {
-     console.error("Update error:", error);
+     errorToast("Update error:", error);
     setIsUploading(false);
    }
 

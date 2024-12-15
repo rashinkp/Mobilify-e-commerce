@@ -230,3 +230,28 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "Password changed successfully" });
 });
+
+
+
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const email = req.session.email;
+
+  if (!email) {
+    return res.status(400).json({ message: "No email found in session" });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.password = password;
+  await user.save();
+
+
+  delete req.session.password;
+
+  res.status(200).json({ message: "Password changed successfully" });
+});

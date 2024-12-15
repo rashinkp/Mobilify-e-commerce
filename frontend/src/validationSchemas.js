@@ -4,6 +4,11 @@ export const emailValidation = Yup.string()
   .email("Invalid email format")
   .required("Email is required");
 
+
+export const emailForm = Yup.object().shape({
+  email: emailValidation
+})
+
 export const passwordValidation = Yup.string()
   .required("Password is required")
   .min(6, "Password must be at least 6 characters");
@@ -217,4 +222,18 @@ export const passwordSchema = Yup.object().shape({
       .string()
       .required("Please confirm your new password")
       .oneOf([Yup.ref("newPassword")], "Passwords must match"),
-  });
+});
+  
+
+export const passwordSchemaWithoutCurr = Yup.object().shape({
+  newPassword: Yup.string()
+    .required("New password is required")
+    .min(6, "Password must be at least 6 characters")
+    .notOneOf(
+      [Yup.ref("currentPassword")],
+      "New password must be different from current password"
+    ),
+  confirmNewPassword: Yup.string()
+    .required("Please confirm your new password")
+    .oneOf([Yup.ref("newPassword")], "Passwords must match"),
+});

@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
-import { emailValidation } from '../validationSchemas';
-import { errorToast, successToast } from './toast';
-import Form from './Form';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { emailForm, emailValidation } from "../validationSchemas";
+import { errorToast, successToast } from "./toast";
+import Form from "./Form";
+import { useOtpToEmailMutation } from "../redux/slices/userApiSlices";
+import { RotatingLines } from "react-loader-spinner";
 
 const EnterEamil = () => {
-  
+  const [sendOtp] = useOtpToEmailMutation()
+  const [isLoading , setIsLoading ] = useState(false)
   const loginFields = [
     {
       name: "email",
@@ -18,6 +21,7 @@ const EnterEamil = () => {
   ];
 
 
+    
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,28 +35,33 @@ const EnterEamil = () => {
 
   // const [login, { isLoading }] = useLoginMutation();
 
-  const handleLogin = async ({ email, password }) => {
- 
+  const handleLogin = async ({ email }) => {
+    setIsLoading(true)
     try {
-    
-    } catch (err) {
-   
+      await sendOtp({ email }).unwrap();
+      successToast('Otp send to email');
+      navigate("/user/forgotPassword/otp");
+    } catch (error) {
+       console.error("Error changing password:", error);
+      errorToast(error?.message || error?.data?.message || "Error occurred");
+    } finally {
+      setIsLoading(false)
     }
-
-    
   };
+
   return (
     <>
-      <div>
+      <div className="h-[70vh] flex items-center">
         <Form
           title="Enter you email"
           fields={loginFields}
           onSubmit={handleLogin}
           buttonText="Next"
-          validationRules={emailValidation}
+          validationRules={emailForm}
+          
         />
 
-        {/* {isLoading && (
+        {isLoading && (
           <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
             <RotatingLines
               visible={true}
@@ -67,10 +76,10 @@ const EnterEamil = () => {
               wrapperClass=""
             />
           </div>
-        )} */}
+        )}
       </div>
     </>
   );
-}
+};
 
-export default EnterEamil
+export default EnterEamil;

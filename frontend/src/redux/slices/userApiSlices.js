@@ -85,8 +85,29 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Users"],
     }),
+    otpToEmail: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/otpToEmail`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    otpVerifcation: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/verifyOtp`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/forgotPassword`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
 
-export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useUploadUserProfileMutation, useChangePasswordMutation } = usersApiSlice;
+export const { useLoginMutation, useRegisterMutation,useLogoutMutation, useSendOtpMutation,useResendotpMutation, useGoogleSignMutation,  useGetUserQuery , useUpdateUserMutation,useUploadUserProfileMutation, useChangePasswordMutation, useOtpToEmailMutation, useOtpVerifcationMutation,  useForgotPasswordMutation } = usersApiSlice;

@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import adminRoutes from './routes/adminRouter.js'
 import userRoutes from './routes/userRouter.js'
 import cookieParser from "cookie-parser";
+import session from "express-session";
 dotenv.config(); 
 
 const app = express();
@@ -22,6 +23,16 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+app.use(
+  session({
+    secret: "your-secret-key", 
+    resave: false, 
+    saveUninitialized: true, 
+    cookie: { secure: false }, 
+  })
+);
 
 
 
