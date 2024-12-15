@@ -39,7 +39,7 @@ const Login = () => {
     },
     {
       linkText: `forgot password?`,
-      path: "/user/forgotpassword",
+      path: "/user/forgotPassword/email",
     },
   ];
 

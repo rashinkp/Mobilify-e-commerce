@@ -6,27 +6,34 @@ import { faChevronDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/slices/themeSlice.js";
 import { Link, useLocation, useNavigate } from "react-router";
-import { useGetUserQuery, useLogoutMutation } from "../redux/slices/userApiSlices.js";
+import {
+  useGetUserQuery,
+  useLogoutMutation,
+} from "../redux/slices/userApiSlices.js";
 import { userLogout } from "../redux/slices/authUser.js";
 import { successToast } from "./toast/index.js";
 import { googleLogout } from "@react-oauth/google";
 import { RotatingLines } from "react-loader-spinner";
-import noImage from '../assets/noImage.png'
+import noImage from "../assets/noImage.png";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
 
-  const { data, isLoading, isError, error } = useGetUserQuery();
+  const { userInfo } = useSelector((state) => state.userAuth);
+
+  //skips api calling if the userinfo does not exist
+  const { data, isLoading, isError, error, refetch } =
+    useGetUserQuery(undefined,{ skip: !userInfo });
+  
   const { user } = data || {};
   const { picture } = user || {};
 
-  console.log(data)
+  
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.theme);
-
 
   const navigate = useNavigate();
   const icons = {
@@ -36,12 +43,10 @@ const Navbar = () => {
 
   const [logoutApiCall] = useLogoutMutation();
 
-  const {userInfo} = useSelector((state) => state.userAuth)
-
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      setDropdownOpen(false)
+      setDropdownOpen(false);
       await logoutApiCall().unwrap();
       dispatch(userLogout());
       googleLogout();
@@ -129,9 +134,6 @@ const Navbar = () => {
     },
   ];
 
-
-  
-
   // Close the menu when the screen size is increased beyond a certain breakpoint
   useEffect(() => {
     const handleResize = () => {
@@ -164,30 +166,26 @@ const Navbar = () => {
     };
   }, [dropdownOpen]);
 
+  if (isError) return <div>Error: {error.message}</div>;
 
-
-
-   if (isError) return <div>Error: {error.message}</div>;
-     
-       if (isLoading) {
-         return (
-           <div>
-             <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-               <RotatingLines
-                 visible={true}
-                 height="50"
-                 width="50"
-                 color="grey"
-                 strokeColor="#fff"
-                 strokeWidth="2"
-                 animationDuration="8"
-                 ariaLabel="rotating-lines-loading"
-               />
-             </div>
-           </div>
-         );
-       }
-
+  if (isLoading) {
+    return (
+      <div>
+        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

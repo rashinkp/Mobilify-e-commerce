@@ -30,8 +30,8 @@ router.route('/category').post(protect('admin'),addCategory).get(protect('admin'
 router.route('/category/:id').delete(protect('admin'),deleteCategory).put(protect('admin'),updateCategory);
 
 //product related routes
-router.route("/product").post(protect('admin'),addProduct).get(protect('admin'),getAllProducts);
-router.route("/product/:id").get(protect('admin'),getProduct).delete(protect('admin'),deleteProduct).put(protect('admin'),updateProduct);
+router.route("/product").post(protect('admin'),addProduct).get(getAllProducts);
+router.route("/product/:id").get(getProduct).delete(protect('admin'),deleteProduct).put(protect('admin'),updateProduct);
 
 router.route("/product-images/:id").put(protect('admin'),updateImages);
 

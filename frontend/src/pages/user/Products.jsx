@@ -26,7 +26,7 @@ const Products = () => {
   })
 
 
-  if (isError) return <div>Error: {error.message}</div>;
+  
 
   const { products = [], totalCount = 0 } = data || {};
   
@@ -52,7 +52,10 @@ const Products = () => {
       : products?.filter(
           (product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        ) || [];
+      ) || [];
+  
+  
+  if (isError) return <div>Error: {error.message}</div>;
   
   
   if (isLoading) {

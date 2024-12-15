@@ -14,6 +14,7 @@ import ContactUs from "../pages/user/ContactUs.jsx";
 import Navbar from "../components/Navbar.jsx";
 import UserProfile from "../pages/user/UserProfile.jsx";
 import UserProfileDashboard from "../pages/user/UserProfile.jsx";
+import EnterEamil from "../components/EnterEamil.jsx";
 
 
 const UserRoutes = () => {
@@ -36,6 +37,7 @@ const UserRoutes = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/email-verification/:id" element={<VerifyOtp />} />
         <Route path="/profile" element={<UserProfileDashboard />} />
+        <Route path="/forgotPassword/email" element={<EnterEamil />} />
       </Routes>
     </>
   );
