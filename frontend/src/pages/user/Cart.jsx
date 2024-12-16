@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, Plus, Minus } from "lucide-react";
+import { Trash2, Plus, Minus, AlertOctagon } from "lucide-react";
 import { useDeleteFromCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "../../redux/slices/cartApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router";
@@ -45,6 +45,7 @@ const ShoppingCart = () => {
     try {
       await updateCartQuantity({ productId, updatedQuantity }).unwrap();
     } catch (error) {
+      errorToast(error?.message || error?.data?.message || 'error occured while updating data');
       console.log(error);
     }
   }
@@ -93,16 +94,13 @@ const decrementQuantity = async (productId) => {
       )
     : 0;
 
-  const deliveryCharge = products.length>0 ? (subtotal > 500 ? 0 : 15) : 0;
+  const deliveryCharge = products.length>0 ? (subtotal > 1000000 ? 0 : 15) : 0;
   const total = subtotal + deliveryCharge - discount;
 
-  const applyPromoCode = () => {
-    if (promoCode.toUpperCase() === "SAVE20") {
-      setDiscount(Math.min(subtotal * 0.2, 50));
-    } else {
-      setDiscount(0);
-    }
-  };
+
+   const isAnyProductOutOfStock = products.some(
+     (product) => product?.productDetails?.stock < 1
+   );
 
 
   const handleProceed = () => {
@@ -137,60 +135,101 @@ const decrementQuantity = async (productId) => {
             Shopping Cart <span>({data.totalProducts})</span>
           </h1>
 
-          {products.length < 1 ? (<span className="block text-center dark:text-white mb-10">No products</span>) : (products.map((product) => (
-            <div
-              key={product.productId}
-              className="bg-white dark:bg-black dark:text-white shadow-md rounded-lg p-4 mb-4 flex items-center"
-            >
-              <img
-                src={product?.productDetails?.images[0]?.secure_url}
-                alt="Product image is not available"
-                className="w-24 h-24 object-cover mr-6 rounded"
-              />
+          {products.length < 1 ? (
+            <span className="block text-center dark:text-white mb-10">
+              No products
+            </span>
+          ) : (
+            products.map((product) => (
+              <div
+                key={product.productId}
+                className="bg-white dark:bg-black dark:text-white shadow-md rounded-lg p-4 mb-4 flex items-center relative overflow-hidden"
+              >
+                {product?.productDetails?.stock < 1 && (
+                  <div className="absolute inset-0 z-10 backdrop-blur-sm bg-white/50 dark:bg-black/50 flex flex-col items-center justify-center space-y-4">
+                    <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center">
+                      <AlertOctagon className="mr-2" size={20} />
+                      Out of Stock
+                    </span>
+                    <button
+                      onClick={() => removeProduct(product.productId)}
+                      className="bg-red-100 text-red-600 px-4 py-2 rounded-full hover:bg-red-200 transition-colors flex items-center space-x-2"
+                    >
+                      <Trash2 size={16} />
+                      <span>Remove from Cart</span>
+                    </button>
+                  </div>
+                )}
 
-              <div className="flex-grow">
-                <h2 className="text-xl font-semibold">
-                  {product?.productDetails?.name}
-                </h2>
-                <p className="text-gray-500 dark:text-gray-300">
-                  {product?.productDetails?.model}
-                </p>
-                <p className="text-primary font-bold">
-                  ${product?.productDetails?.price}
-                </p>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => decrementQuantity(product.productId)}
-                  disabled={product.quantity === 1} 
-                  className={`p-2 rounded-full ${
-                    product.quantity === 1
-                      ? "bg-gray-300 dark:bg-slate-700 cursor-not-allowed"
-                      : "bg-gray-200 dark:bg-slate-800"
+                <img
+                  src={product?.productDetails?.images[0]?.secure_url}
+                  alt="Product image is not available"
+                  className={`w-24 h-24 object-cover mr-6 rounded ${
+                    product?.productDetails?.stock < 1 ? "opacity-50" : ""
                   }`}
-                >
-                  <Minus size={20} />
-                </button>
+                />
 
-                <span className="font-bold">{product.quantity}</span>
+                <div className="flex-grow">
+                  <h2 className="text-xl font-semibold">
+                    {product?.productDetails?.name}
+                  </h2>
+                  <p className="text-gray-500 dark:text-gray-300">
+                    {product?.productDetails?.model}
+                  </p>
+                  <p className="text-primary font-bold">
+                    ${product?.productDetails?.price}
+                  </p>
+                  {product?.productDetails?.stock < 1 && (
+                    <p className="text-red-500 font-semibold mt-2">
+                      Currently Unavailable
+                    </p>
+                  )}
+                </div>
 
-                <button
-                  onClick={() => incrementQuantity(product.productId)}
-                  className="p-2 bg-gray-200 rounded-full dark:bg-slate-800"
-                >
-                  <Plus size={20} />
-                </button>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => decrementQuantity(product.productId)}
+                    disabled={
+                      product.quantity === 1 ||
+                      product?.productDetails?.stock < 1
+                    }
+                    className={`p-2 rounded-full ${
+                      product.quantity === 1 ||
+                      product?.productDetails?.stock < 1
+                        ? "bg-gray-300 dark:bg-slate-700 cursor-not-allowed"
+                        : "bg-gray-200 dark:bg-slate-800"
+                    }`}
+                  >
+                    <Minus size={20} />
+                  </button>
 
-                <button
-                  onClick={() => removeProduct(product.productId)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-full"
-                >
-                  <Trash2 size={20} />
-                </button>
+                  <span className="font-bold">{product.quantity}</span>
+
+                  <button
+                    onClick={() => incrementQuantity(product.productId)}
+                    disabled={
+                      product?.productDetails?.stock < 1 ||
+                      product.quantity >= 10
+                    }
+                    className={`p-2 rounded-full disabled:cursor-not-allowed disabled: dark:bg-slate-700 ${
+                      product?.productDetails?.stock < 1
+                        ? "bg-gray-300 dark:bg-slate-700 cursor-not-allowed"
+                        : "bg-gray-200 dark:bg-slate-800"
+                    }`}
+                  >
+                    <Plus size={20} />
+                  </button>
+
+                  <button
+                    onClick={() => removeProduct(product.productId)}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
               </div>
-            </div>
-          )))}
+            ))
+          )}
 
           <Link to="/user/products" className="mt-6">
             <button className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
@@ -206,7 +245,10 @@ const decrementQuantity = async (productId) => {
 
             <div className="flex justify-between mb-2">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>
+                {`${"\u20B9"}`}
+                {subtotal.toFixed(2)}
+              </span>
             </div>
 
             <div className="flex justify-between mb-2">
@@ -214,14 +256,14 @@ const decrementQuantity = async (productId) => {
               <span>
                 {deliveryCharge === 0
                   ? "Free"
-                  : `$${deliveryCharge.toFixed(2)}`}
+                  : `${"\u20B9"}${deliveryCharge.toFixed(2)}`}
               </span>
             </div>
 
             {discount > 0 && (
               <div className="flex justify-between mb-2 text-green-600">
                 <span>Coupon Discount</span>
-                <span>-${discount.toFixed(2)}</span>
+                <span>-&#x20b9;{discount.toFixed(2)}</span>
               </div>
             )}
 
@@ -229,26 +271,17 @@ const decrementQuantity = async (productId) => {
 
             <div className="flex justify-between font-bold text-xl">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>
+                {"\u20B9"}
+                {total.toFixed(2)}
+              </span>
             </div>
 
-            <div className="mt-4 flex">
-              <input
-                type="text"
-                placeholder="Enter promo code"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                className="flex-grow p-2 border rounded-l dark:bg-slate-800 dark:border-none"
-              />
-              <button
-                onClick={applyPromoCode}
-                className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
-              >
-                Apply
-              </button>
-            </div>
-
-            <button className={`w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`} disabled={products.length < 1} onClick={handleProceed}>
+            <button
+              className={`w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`}
+              disabled={products.length < 1 || isAnyProductOutOfStock}
+              onClick={handleProceed}
+            >
               Proceed to Checkout
             </button>
           </div>

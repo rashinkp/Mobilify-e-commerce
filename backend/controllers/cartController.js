@@ -20,6 +20,10 @@ export const addToCart = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
+  if (product.stock < 1) {
+    return res.status(400).json({ message: 'Product is out of stock' });
+  }
+
   // Check if the user already has a cart
   let cart = await Cart.findOne({ userId });
 
@@ -36,8 +40,11 @@ export const addToCart = asyncHandler(async (req, res) => {
     );
 
     if (itemIndex > -1) {
-      // If product exists in cart, update the quantity
-      cart.cartItems[itemIndex].quantity += quantity;
+      if (cart.cartItems[itemIndex].quantity >= 10) {
+        return res.status(400).json({message:'Maximum limit to cart reached'})
+      }
+        // If product exists in cart, update the quantity
+        cart.cartItems[itemIndex].quantity += quantity;
     } else {
       // If product doesn't exist, add it to the cart
       cart.cartItems.push({ productId, quantity });
@@ -170,6 +177,18 @@ export const updateCartQuantity = asyncHandler(async (req, res) => {
 
   if (cartItemIndex === -1) {
     return res.status(404).json({ message: "Product not found in cart" });
+  }
+
+  const product = await Product.findById(productId);
+
+  if (product.stock < quantity) {
+    return res.status(400).json({ message: 'Don not have enough stock. Sorry!' });
+  }
+
+  if (quantity > 10) {
+    return res
+      .status(400)
+      .json({ message: "Maximum limit to cart reached" });
   }
 
   // Update the quantity

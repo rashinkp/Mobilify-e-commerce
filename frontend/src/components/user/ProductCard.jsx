@@ -59,7 +59,7 @@ const ProductCard = ({ product }) => {
               </span>
               <span className="text-darkGray ml-2">(156)</span>
             </div>
-            <AddCartButton productId={product._id} />
+            <AddCartButton productId={product._id} disabled={product.stock === 0} />
           </div>
         </div>
       </div>
