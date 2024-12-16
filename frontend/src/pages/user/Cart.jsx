@@ -13,11 +13,18 @@ const ShoppingCart = () => {
 
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    if (cartItems && cartItems.length > 0) {
-      setProducts(cartItems);
-    }
-  }, [cartItems]);
+
+ useEffect(() => {
+   if (cartItems && cartItems.length > 0) {
+     const filteredItems = cartItems.filter(
+       (item) => Object.keys(item).length > 0
+     );
+     setProducts(filteredItems);
+   } else {
+     setProducts([]);
+   }
+ }, [cartItems]);
+
 
 
 
@@ -84,7 +91,7 @@ const decrementQuantity = async (productId) => {
       )
     : 0;
 
-  const deliveryCharge = subtotal > 500 ? 0 : 15;
+  const deliveryCharge = products.length>0 ? (subtotal > 500 ? 0 : 15) : 0;
   const total = subtotal + deliveryCharge - discount;
 
   const applyPromoCode = () => {
@@ -123,7 +130,7 @@ const decrementQuantity = async (productId) => {
             Shopping Cart <span>({data.totalProducts})</span>
           </h1>
 
-          {products.map((product) => (
+          {products.length < 1 ? (<span className="block text-center dark:text-white mb-10">No products</span>) : (products.map((product) => (
             <div
               key={product.productId}
               className="bg-white dark:bg-black dark:text-white shadow-md rounded-lg p-4 mb-4 flex items-center"
@@ -176,7 +183,7 @@ const decrementQuantity = async (productId) => {
                 </button>
               </div>
             </div>
-          ))}
+          )))}
 
           <Link to="/user/products" className="mt-6">
             <button className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
@@ -234,7 +241,7 @@ const decrementQuantity = async (productId) => {
               </button>
             </div>
 
-            <button className="w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold">
+            <button className={`w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`} disabled={products.length < 1}>
               Proceed to Checkout
             </button>
           </div>
