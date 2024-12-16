@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
   {
@@ -86,7 +86,8 @@ const OrderSchema = new mongoose.Schema(
     },
 
     shipping: {
-      method: {
+      id: { type: String , required:true },
+      name: {
         type: String,
         enum: [
           "Standard Shipping",
@@ -96,6 +97,7 @@ const OrderSchema = new mongoose.Schema(
         ],
         required: true,
       },
+      time: {type:String , required:true},
       trackingNumber: {
         type: String,
         trim: true,
@@ -130,12 +132,6 @@ const OrderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Coupon",
     },
-
-    customerNotes: {
-      type: String,
-      trim: true,
-      maxlength: 500,
-    },
   },
   {
     timestamps: true,
@@ -147,4 +143,6 @@ const OrderSchema = new mongoose.Schema(
 OrderSchema.index({ user: 1, orderDate: -1 });
 OrderSchema.index({ orderNumber: 1 }, { unique: true });
 
-module.exports = mongoose.model("Order", OrderSchema);
+const Order = mongoose.model("Order", OrderSchema);
+
+export default Order;

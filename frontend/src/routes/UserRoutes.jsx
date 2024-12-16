@@ -18,6 +18,7 @@ import EnterEamil from "../components/EnterEamil.jsx";
 import EnterOtp from '../components/EnterOtp.jsx'
 import EnterNewPassword from "../components/EnterNewPassword.jsx";
 import CheckoutPage from "../pages/user/Checkout.jsx";
+import OrderSuccessPage from "../pages/user/SuccessfulOrder.jsx";
 
 const UserRoutes = () => {
   
@@ -42,6 +43,7 @@ const UserRoutes = () => {
         <Route path="/forgotPassword/email" element={<EnterEamil />} />
         <Route path="/forgotPassword/otp" element={<EnterOtp />} />
         <Route path="/forgotPassword" element={<EnterNewPassword />} />
+        <Route path="/orderSuccess" element={<OrderSuccessPage />} />
       </Routes>
     </>
   );

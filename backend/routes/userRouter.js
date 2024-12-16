@@ -4,6 +4,7 @@ import {resendOTP, resendOtpEamil, sendOTP, sendOTPToEmail, verifyOtp} from "../
 import protect from '../middlewares/protect.js';
 import { addAddress, deleteAddress, getAddress, updateAddress } from '../controllers/addressController.js';
 import { addToCart, deleteFromCart, getCart, updateCartQuantity } from '../controllers/cartController.js';
+import { addOrder } from '../controllers/orderController.js';
 
 const router = express.Router();
 
@@ -43,7 +44,12 @@ router.put('/forgotPassword', forgotPassword)
 router.post("/resendOtpEmail", resendOtpEamil);
 
 
-router.route('/cart').post(protect('user'), addToCart).get(protect('user') , getCart).put(protect('user'),deleteFromCart).patch(protect('user') , updateCartQuantity);
+router.route('/cart').post(protect('user'), addToCart).get(protect('user'), getCart).put(protect('user'), deleteFromCart).patch(protect('user'), updateCartQuantity);
+
+
+//order related routes
+
+router.route('/order').post(protect('user'),addOrder)
 
 
 

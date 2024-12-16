@@ -6,9 +6,14 @@ import {
   Check,
   PercentIcon,
   ShoppingCart,
+  IndianRupee,
 } from "lucide-react";
 import { RotatingLines } from "react-loader-spinner";
 import { useGetAddressQuery } from "../../redux/slices/addressApiSlice";
+import { useGetCartQuery } from "../../redux/slices/cartApiSlice";
+import { usePlaceOrderMutation } from "../../redux/slices/orderApiSlice";
+import { errorToast, successToast } from "../../components/toast";
+import { useNavigate } from "react-router";
 
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -17,43 +22,38 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
 
+  const navigate = useNavigate();
+
+  const [placeOrder] = usePlaceOrderMutation()
+
   //api calling
+
+  // Address API response
   const {
-    data,
-    isLoading,
-    isError,
-    error,
+    data: addressData,
+    isLoading: isAddressLoading,
+    isError: isAddressError,
+    error: addressError,
   } = useGetAddressQuery(null);
 
-  const {addresses} = data || {};
+  // Cart API response
+  const {
+    data: cartData = {},
+    isLoading: isCartLoading,
+    isError: isCartError,
+    error: cartError,
+    refetch: refetchCart,
+  } = useGetCartQuery();
 
+  const { addresses } = addressData || {};
+
+  const products = cartData.cartItems || [];
 
   useEffect(() => {
     if (addresses && addresses.length > 0) {
-      setSelectedAddress(addresses[0])
+      setSelectedAddress(addresses[0]);
     }
-  }, [addresses])
-  
-
-
-  const products = [
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      model: "Pro Max X2000",
-      price: 199.99,
-      image: "/api/placeholder/100/100",
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      model: "Ultra Series 3",
-      price: 249.99,
-      image: "/api/placeholder/100/100",
-      quantity: 1,
-    },
-  ];
+  }, [addresses]);
 
   const shippingMethods = [
     {
@@ -72,9 +72,15 @@ const CheckoutPage = () => {
 
   const calculateSubtotal = () => {
     return products.reduce(
-      (total, product) => total + product.price * product.quantity,
+      (total, product) =>
+        total + product?.productDetails?.price * product.quantity,
       0
     );
+  };
+
+  const calculateTax = () => {
+    const subtotal = calculateSubtotal();
+    return subtotal * 0.02;
   };
 
   const handleCouponApply = () => {
@@ -89,30 +95,59 @@ const CheckoutPage = () => {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
+    const tax = calculateTax()
     const shippingCost = selectedShipping ? selectedShipping.price : 0;
     const couponDiscount = appliedCoupon
       ? subtotal * appliedCoupon.discount
       : 0;
 
-    return subtotal + shippingCost - couponDiscount;
+    return subtotal + tax + shippingCost - couponDiscount;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
+    const orderItems = products.map((product) => ({
+      product: product._id,
+      quantity:product.quantity,
+    }))
+    //calculating the bill
+     const subtotal = calculateSubtotal();
+     const tax = calculateTax();
+     const shippingCost = selectedShipping ? selectedShipping.price : 0;
+     const couponDiscount = appliedCoupon
+       ? subtotal * appliedCoupon.discount
+       : 0;
+
+    const total = subtotal + shippingCost + tax - couponDiscount;
+    
+
     const orderData = {
-      selectedAddress,
-      selectedShipping,
-      selectedPayment,
-      products,
+      shippingAddress: selectedAddress._id,
+      shipping: selectedShipping,
+      paymentMethod: selectedPayment,
+      orderItems: orderItems,
       couponCode: appliedCoupon ? appliedCoupon.code : null,
-      total: calculateTotal(),
+      pricing: {
+        subtotal,
+        shippingCost,
+        tax,
+        total,
+      },
     };
+
+
+    try {
+      await placeOrder(orderData).unwrap();
+      successToast('Order placed successfully');
+      navigate('/user/orderSuccess')
+    } catch (error) {
+      errorToast(error.message || error.data || 'Error while placing order')
+      console.log(error)
+    }
 
     console.log("Order Data:", orderData);
   };
 
-
-  
-  if (isLoading) {
+  if (isAddressLoading || isCartLoading) {
     return (
       <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
         <RotatingLines
@@ -130,7 +165,6 @@ const CheckoutPage = () => {
       </div>
     );
   }
-  
 
   return (
     <div className="container mx-auto p-4 dark:text-white max-w-4xl">
@@ -166,24 +200,26 @@ const CheckoutPage = () => {
         </h2>
         {products.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="flex items-center justify-between p-4 border-b"
           >
             <div className="flex items-center space-x-4">
               <img
-                src={product.image}
-                alt={product.name}
+                src={product?.productDetails?.images[0]?.secure_url}
+                alt={product?.productDetails?.name}
                 className="w-16 h-16 object-cover"
               />
               <div>
                 <h3 className="font-semibold">{product.name}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Model: {product.model}
+                  Model: {product?.productDetails?.model}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="font-bold">${product.price.toFixed(2)}</p>
+              <p className="font-bold">
+                &#x20b9;{product?.productDetails?.price}
+              </p>
               <p className="text-gray-600 dark:text-gray-400">
                 Qty: {product.quantity}
               </p>
@@ -238,7 +274,7 @@ const CheckoutPage = () => {
                   {method.time}
                 </p>
               </div>
-              <p className="font-bold">${method.price.toFixed(2)}</p>
+              <p className="font-bold">&#x20b9;{method.price.toFixed(2)}</p>
             </div>
           </div>
         ))}
@@ -270,25 +306,32 @@ const CheckoutPage = () => {
       <section className="mb-6 bg-gray-100 dark:bg-transparent p-4 rounded-lg">
         <div className="flex justify-between mb-2">
           <span>Subtotal</span>
-          <span>${calculateSubtotal().toFixed(2)}</span>
+          <span>&#x20b9;{calculateSubtotal().toFixed(2)}</span>
         </div>
         {selectedShipping && (
           <div className="flex justify-between mb-2">
             <span>Shipping ({selectedShipping.name})</span>
-            <span>${selectedShipping.price.toFixed(2)}</span>
+            <span>&#x20b9;{selectedShipping.price.toFixed(2)}</span>
           </div>
         )}
         {appliedCoupon && (
           <div className="flex justify-between mb-2 text-green-600">
             <span>Coupon Discount</span>
             <span>
-              -${(calculateSubtotal() * appliedCoupon.discount).toFixed(2)}
+              -&#x20b9;
+              {(calculateSubtotal() * appliedCoupon.discount).toFixed(2)}
             </span>
           </div>
         )}
+
+        <div className="flex justify-between mb-2">
+          <span>Tax</span>
+          <span>&#x20b9;{calculateTax().toFixed(2)}</span>
+        </div>
+
         <div className="flex justify-between font-bold text-lg border-t pt-2">
           <span>Total</span>
-          <span>${calculateTotal().toFixed(2)}</span>
+          <span>&#x20b9;{calculateTotal().toFixed(2)}</span>
         </div>
       </section>
 
@@ -304,9 +347,6 @@ const CheckoutPage = () => {
       >
         <Check className="inline mr-2" /> Complete Order
       </button>
-
-
-       
     </div>
   );
 };
