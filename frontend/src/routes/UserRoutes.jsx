@@ -17,6 +17,7 @@ import UserProfileDashboard from "../pages/user/UserProfile.jsx";
 import EnterEamil from "../components/EnterEamil.jsx";
 import EnterOtp from '../components/EnterOtp.jsx'
 import EnterNewPassword from "../components/EnterNewPassword.jsx";
+import CheckoutPage from "../pages/user/Checkout.jsx";
 
 const UserRoutes = () => {
   
@@ -33,7 +34,7 @@ const UserRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/email-verification/:id" element={<VerifyOtp />} />

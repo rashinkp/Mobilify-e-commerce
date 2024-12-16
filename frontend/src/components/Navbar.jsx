@@ -15,6 +15,7 @@ import { successToast } from "./toast/index.js";
 import { googleLogout } from "@react-oauth/google";
 import { RotatingLines } from "react-loader-spinner";
 import noImage from "../assets/noImage.png";
+import { Heart, ShoppingCart, SunMoon } from "lucide-react";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -100,36 +101,17 @@ const Navbar = () => {
   const rightSection = [
     {
       text: "Wish List",
-      icon: (
-        <FontAwesomeIcon
-          icon={["far", "heart"]}
-          size="xl"
-          className="cursor-pointer dark:text-lightText hover:text-primary"
-        />
-      ),
+      icon: <Heart className="text-black dark:text-white" />,
       path: "/user/wishlist",
     },
     {
       text: "My Cart",
-      icon: (
-        <FontAwesomeIcon
-          icon={["fas", "cart-shopping"]}
-          size="xl"
-          className="cursor-pointer dark:text-lightText hover:text-primary"
-        />
-      ),
+      icon: <ShoppingCart className="text-black dark:text-white" />,
       path: "/user/cart",
     },
     {
       text: "Toggle Theme",
-      icon: (
-        <FontAwesomeIcon
-          size="xl"
-          onClick={() => dispatch(toggleTheme())}
-          icon="fa-solid fa-moon"
-          className="cursor-pointer  hover:text-primary dark:text-lightText dark:hover:text-primary"
-        />
-      ),
+      icon: <SunMoon className="text-black dark:text-white" />,
       onClick: () => dispatch(toggleTheme()),
     },
   ];
@@ -224,7 +206,7 @@ const Navbar = () => {
             {/* Updated icons to prevent errors and ensure they appear */}
             {rightSection &&
               rightSection.map((link, index) => (
-                <Link key={index} to={link.path}>
+                <Link key={index} to={link.path} onClick={link.onClick}>
                   {link.icon}
                 </Link>
               ))}
@@ -322,10 +304,9 @@ const Navbar = () => {
               ))}
               {userInfo ? (
                 <div className="flex items-center gap-3 mt-2">
-                  {/* Updated icons to prevent errors and ensure they appear */}
 
                   {rightSection.map((link, index) => (
-                    <Link to={link.path}>
+                    <Link to={link.path} onClick={link.onClick} key={index}>
                       <li>{link.icon}</li>
                     </Link>
                   ))}

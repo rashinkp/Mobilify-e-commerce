@@ -1,3 +1,4 @@
+import { data } from "react-router";
 import { apiSlice } from "./apiSlices";
 
 const USERS_URL = "/api/user";
@@ -5,16 +6,16 @@ const USERS_URL = "/api/user";
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     addAddress: builder.mutation({
-      query: ({ userId, data }) => ({
-        url: `${USERS_URL}/address/${userId}`,
+      query: ({data }) => ({
+        url: `${USERS_URL}/address`,
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["Address"],
     }),
     getAddress: builder.query({
-      query: (userId) => ({
-        url: `${USERS_URL}/address/${userId}`,
+      query: (data) => ({
+        url: `${USERS_URL}/address`,
         method: "GET",
       }),
       providesTags: ["Address"],
@@ -28,9 +29,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     updateAddress: builder.mutation({
       query: ({addressId,data}) => ({
-        url: `${USERS_URL}/address/${addressId}`,
+        url: `${USERS_URL}/address`,
         method: 'PUT',
-        body:data
+        body:{data,addressId}
       }),
       invalidatesTags: ['Address'],
     }),

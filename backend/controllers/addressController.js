@@ -3,7 +3,7 @@ import User from "../models/userSchema.js";
 import asyncHandler from 'express-async-handler'
 
 export const addAddress = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { userId:id } = req.user;
   const address = req.body;
 
   if (!id) {
@@ -36,7 +36,7 @@ export const addAddress = asyncHandler(async (req, res) => {
 });
 
 export const getAddress = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { userId:id } = req.user;
   if (!id) {
     return res.status(400).json({ message: "User ID is required" });
   }
@@ -87,9 +87,8 @@ export const deleteAddress = asyncHandler(async (req, res) => {
 
 
 export const updateAddress = asyncHandler(async (req, res) => {
-  const { id } = req.params; 
   const { userId } = req.user; 
-  const data = req.body; 
+  const {data, addressId:id} = req.body; 
 
 
   if (!id) {

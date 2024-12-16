@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useDeleteFromCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "../../redux/slices/cartApiSlice";
 import { RotatingLines } from "react-loader-spinner";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { errorToast, successToast } from "../../components/toast";
 
 const ShoppingCart = () => {
@@ -12,6 +12,8 @@ const ShoppingCart = () => {
   const cartItems = data?.cartItems || [];
 
   const [products, setProducts] = useState([]);
+
+  const navigate = useNavigate();
 
 
  useEffect(() => {
@@ -101,6 +103,11 @@ const decrementQuantity = async (productId) => {
       setDiscount(0);
     }
   };
+
+
+  const handleProceed = () => {
+    navigate("/user/checkout");
+  }
 
   return (
     <div className="container mx-auto p-6 bg-gray-50 dark:bg-darkBackground min-h-screen">
@@ -241,7 +248,7 @@ const decrementQuantity = async (productId) => {
               </button>
             </div>
 
-            <button className={`w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`} disabled={products.length < 1}>
+            <button className={`w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`} disabled={products.length < 1} onClick={handleProceed}>
               Proceed to Checkout
             </button>
           </div>
