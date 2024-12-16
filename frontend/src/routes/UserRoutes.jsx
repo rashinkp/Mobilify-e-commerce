@@ -43,7 +43,7 @@ const UserRoutes = () => {
         <Route path="/forgotPassword/email" element={<EnterEamil />} />
         <Route path="/forgotPassword/otp" element={<EnterOtp />} />
         <Route path="/forgotPassword" element={<EnterNewPassword />} />
-        <Route path="/orderSuccess" element={<OrderSuccessPage />} />
+        <Route path="/orderSuccess/:id" element={<OrderSuccessPage />} />
       </Routes>
     </>
   );

@@ -1,35 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Check, Package, MapPin, CreditCard } from "lucide-react";
+import { useNavigate, useParams } from "react-router";
+import { useGetOrderQuery } from "../../redux/slices/orderApiSlice";
+import { RotatingLines } from "react-loader-spinner";
 
 const OrderSuccessPage = ({ orderDetails }) => {
   const [isAnimating, setIsAnimating] = useState(true);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  // Sample order details if not provided
-  const defaultOrderDetails = {
-    orderNumber: "ORD-12345",
-    totalAmount: 299.99,
-    estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    shippingAddress: {
-      name: "John Doe",
-      street: "123 Main St",
-      city: "Anytown",
-      state: "CA",
-      zip: "12345",
-    },
-    items: [
-      {
-        name: "Wireless Headphones",
-        quantity: 1,
-        price: 199.99,
-      },
-      {
-        name: "Wireless Charger",
-        quantity: 1,
-        price: 49.99,
-      },
-    ],
-  };
+  const { data, isLoading, isError, error, refetch } = useGetOrderQuery({
+    orderId: id,
+  });
 
+  const defaultOrderDetails = data || {};
   const details = orderDetails || defaultOrderDetails;
 
   useEffect(() => {
@@ -40,12 +24,73 @@ const OrderSuccessPage = ({ orderDetails }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  
+    if (isLoading) {
+      return (
+        <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <RotatingLines
+            visible={true}
+            height="50"
+            width="50"
+            color="grey"
+            strokeColor="#fff"
+            strokeWidth="2"
+            animationDuration="8"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
+      );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-darkBackground text-center p-8 rounded-lg">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">
+            Order Not Found
+          </h1>
+          <p className="text-gray-700 dark:text-gray-300">
+            Sorry, we couldn't find the order you're looking for.
+          </p>
+          <button
+            onClick={() => navigate("/user/products")}
+            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
+          >
+            Go to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+
+  if (!details || Object.keys(details).length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-darkBackground text-center p-8 rounded-lg">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">
+            No Order Details
+          </h1>
+          <p className="text-gray-700 dark:text-gray-300">
+            Please check your order history or try again later.
+          </p>
+          <button
+            onClick={() => navigate("/user/products")}
+            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen  dark:bg-darkBackground flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-black dark:text-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
+    <div className="min-h-screen dark:bg-darkBackground flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-black dark:text-white rounded-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
         {/* Animated Verification Mark */}
         <div
-          className={`absolute inset-0 z-10 flex items-center justify-center dark:bg-darkBackground bg-white transition-all duration-500 ${
+          className={`absolute inset-0 z-2 flex items-center justify-center dark:bg-darkBackground bg-white transition-all duration-500 ${
             isAnimating ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
@@ -76,69 +121,81 @@ const OrderSuccessPage = ({ orderDetails }) => {
           <div className="space-y-4">
             {/* Order Number */}
             <div className="bg-gray-100 dark:bg-darkBackground p-3 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-300">Order Number</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Order Number
+              </p>
               <p className="font-semibold">{details.orderNumber}</p>
             </div>
 
             {/* Order Summary */}
             <div className="border-b pb-4">
               <h2 className="text-xl font-semibold mb-2">Order Summary</h2>
-              {details.items.map((item, index) => (
+              {details.orderItems.map((item, index) => (
                 <div
                   key={index}
                   className="flex justify-between items-center py-2"
                 >
                   <div>
-                    <p>{item.name}</p>
+                    <p>Product ID: {item.product}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Qty: {item.quantity}
+                      Quantity: {item.quantity}
                     </p>
                   </div>
-                  <p className="font-semibold">${item.price.toFixed(2)}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Pricing Details */}
+            <div className="bg-gray-50 dark:bg-darkBackground p-4 rounded-lg space-y-2">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>&#x20b9;{details.pricing.subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Shipping Cost</span>
+                <span>&#x20b9;{details.pricing.shippingCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tax</span>
+                <span>&#x20b9;{details.pricing.tax.toFixed(2)}</span>
+              </div>
             </div>
 
             {/* Total Amount */}
             <div className="flex justify-between font-bold text-xl">
               <span>Total</span>
-              <span>${details.totalAmount.toFixed(2)}</span>
+              <span>&#x20b9;{details.pricing.total.toFixed(2)}</span>
             </div>
 
-            {/* Shipping Details */}
-            <div className="bg-gray-50 dark:bg-darkBackground p-4 rounded-lg space-y-2">
-              <div className="flex items-center">
-                <MapPin className="mr-2 text-green-600" />
-                <h3 className="font-semibold">Shipping Address</h3>
+            {/* Payment & Shipping Details */}
+            <div className="bg-blue-50 dark:bg-darkBackground p-4 rounded-lg space-y-2">
+              <div className="flex justify-between">
+                <span>Payment Method</span>
+                <span>{details.paymentMethod}</span>
               </div>
-              <p>{details.shippingAddress.name}</p>
-              <p>{details.shippingAddress.street}</p>
-              <p>
-                {details.shippingAddress.city},{details.shippingAddress.state}
-                {details.shippingAddress.zip}
-              </p>
+              <div className="flex justify-between">
+                <span>Payment Status</span>
+                <span>{details.paymentStatus}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Shipping Method</span>
+                <span>{details.shipping.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Estimated Delivery</span>
+                <span>{details.shipping.time}</span>
+              </div>
             </div>
 
-            {/* Estimated Delivery */}
-            <div className="flex items-center justify-center bg-blue-50 dark:bg-darkBackground p-3 rounded-lg">
-              <Package className="mr-2 text-blue-600" />
-              <p>
-                Estimated Delivery:{" "}
-                <span className="font-semibold">
-                  {details.estimatedDelivery.toLocaleDateString()}
-                </span>
-              </p>
+            {/* Action Buttons */}
+            <div className="mt-6 flex space-x-4">
+              <button className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition">
+                View Order Details
+              </button>
+              <button className="flex-1 bg-gray-200 dark:bg-darkBackground dark:text-white text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition" onClick={() => navigate('/user/products')}>
+                Continue Shopping
+              </button>
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-6 flex space-x-4">
-            <button className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition">
-              View Order Details
-            </button>
-            <button className="flex-1 bg-gray-200 dark:bg-darkBackground dark:text-white text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition">
-              Continue Shopping
-            </button>
           </div>
         </div>
       </div>

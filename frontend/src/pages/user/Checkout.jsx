@@ -136,9 +136,9 @@ const CheckoutPage = () => {
 
 
     try {
-      await placeOrder(orderData).unwrap();
+      const {orderId} = await placeOrder(orderData).unwrap();
       successToast('Order placed successfully');
-      navigate('/user/orderSuccess')
+      navigate(`/user/orderSuccess/${orderId}`);
     } catch (error) {
       errorToast(error.message || error.data || 'Error while placing order')
       console.log(error)

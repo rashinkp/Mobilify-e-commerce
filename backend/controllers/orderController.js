@@ -17,7 +17,21 @@ export const addOrder = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     message: 'Order place successfully',
-    order: saveOrder,
+    orderId: saveOrder._id,
   })
+
+})
+
+export const getOrder = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  const { id:orderId } = req.params;
+
+  const order = await Order.findOne({ _id: orderId, user: userId });
+
+  if (!order) {
+    return res.status(404).json({ message: 'Order not found' });
+  }
+
+  res.status(200).json(order)
 
 })
