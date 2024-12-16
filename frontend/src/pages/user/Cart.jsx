@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Plus, Minus } from "lucide-react";
-import { useDeleteFromCartMutation, useGetCartQuery } from "../../redux/slices/cartApiSlice";
+import { useDeleteFromCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "../../redux/slices/cartApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { Link } from "react-router";
 import { errorToast, successToast } from "../../components/toast";
@@ -8,6 +8,7 @@ import { errorToast, successToast } from "../../components/toast";
 const ShoppingCart = () => {
   const { data = {}, isLoading, isError, error, refetch } = useGetCartQuery();
   const [deletItem] = useDeleteFromCartMutation();
+  const [updateCartQuantity] = useUpdateProductQuantityMutation();
   const cartItems = data?.cartItems || [];
 
   const [products, setProducts] = useState([]);
@@ -19,33 +20,63 @@ const ShoppingCart = () => {
   }, [cartItems]);
 
 
-  console.log(data)
-
-
 
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
 
-  const updateQuantity = (id, change) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === id
-          ? { ...product, quantity: Math.max(1, product.quantity + change) }
-          : product
-      )
+  const incrementQuantity = async (productId) => {
+    const updatedQuantity = data?.cartItems?.reduce((quantity, product) => {
+      if (product.productId === productId) {
+         quantity = product.quantity + 1
+      }
+      return quantity
+    },null)
+
+
+    try {
+      await updateCartQuantity({ productId, updatedQuantity }).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+const decrementQuantity = async (productId) => {
+  const product = data?.cartItems?.find((item) => item.productId === productId);
+
+  if (!product) {
+    errorToast("Product not found in cart.");
+    return;
+  }
+
+  if (product.quantity === 1) {
+    errorToast("Minimum cart count is 1. Cannot decrement further.");
+    return;
+  }
+
+  const updatedQuantity = product.quantity - 1;
+
+  try {
+    await updateCartQuantity({ productId, updatedQuantity }).unwrap();
+  } catch (error) {
+    errorToast(
+      error?.message || error?.data || "Could not update cart quantity"
     );
-  };
+    console.error(error);
+  }
+};
+
 
   const removeProduct = async(productId) => {
     try {
       await deletItem({ productId })
       successToast('Product removed from cart')
+      
     } catch (error) {
       errorToast(error?.message || error?.data || 'Couldnt remove item from cart');
     }
   };
 
-  // Ensure products is always an array when calling reduce
+  
   const subtotal = Array.isArray(products)
     ? products.reduce(
         (total, product) => total + product?.productDetails?.price * product.quantity,
@@ -117,8 +148,13 @@ const ShoppingCart = () => {
 
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => updateQuantity(product.productId, -1)}
-                  className="p-2 bg-gray-200 dark:bg-slate-800 rounded-full"
+                  onClick={() => decrementQuantity(product.productId)}
+                  disabled={product.quantity === 1} 
+                  className={`p-2 rounded-full ${
+                    product.quantity === 1
+                      ? "bg-gray-300 dark:bg-slate-700 cursor-not-allowed"
+                      : "bg-gray-200 dark:bg-slate-800"
+                  }`}
                 >
                   <Minus size={20} />
                 </button>
@@ -126,7 +162,7 @@ const ShoppingCart = () => {
                 <span className="font-bold">{product.quantity}</span>
 
                 <button
-                  onClick={() => updateQuantity(product.productId, 1)}
+                  onClick={() => incrementQuantity(product.productId)}
                   className="p-2 bg-gray-200 rounded-full dark:bg-slate-800"
                 >
                   <Plus size={20} />

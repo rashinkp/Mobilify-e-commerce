@@ -148,3 +148,35 @@ export const deleteFromCart = asyncHandler(async (req, res) => {
 
 
 })
+
+
+export const updateCartQuantity = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  const { productId, updatedQuantity: quantity } = req.body;
+
+  if (!productId || !quantity || quantity <= 0) {
+    return res.status(400).json({ message: "Invalid product ID or quantity" });
+  }
+
+  const cart = await Cart.findOne({ userId });
+
+  if (!cart) {
+    return res.status(404).json({ message: "Cart not found" });
+  }
+
+  const cartItemIndex = cart.cartItems.findIndex(
+    (item) => item.productId.toString() === productId.toString()
+  );
+
+  if (cartItemIndex === -1) {
+    return res.status(404).json({ message: "Product not found in cart" });
+  }
+
+  // Update the quantity
+  cart.cartItems[cartItemIndex].quantity = quantity;
+
+  // Save the updated cart
+  await cart.save();
+
+  res.status(200).json(cart);
+});

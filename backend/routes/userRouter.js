@@ -3,7 +3,7 @@ import { changePassword, forgotPassword, getUser, logoutUser, registerUser, sign
 import {resendOTP, resendOtpEamil, sendOTP, sendOTPToEmail, verifyOtp} from "../controllers/otpController.js";
 import protect from '../middlewares/protect.js';
 import { addAddress, deleteAddress, getAddress, updateAddress } from '../controllers/addressController.js';
-import { addToCart, deleteFromCart, getCart } from '../controllers/cartController.js';
+import { addToCart, deleteFromCart, getCart, updateCartQuantity } from '../controllers/cartController.js';
 
 const router = express.Router();
 
@@ -37,7 +37,7 @@ router.put('/forgotPassword', forgotPassword)
 router.post("/resendOtpEmail", resendOtpEamil);
 
 
-router.route('/cart').post(protect('user'), addToCart).get(protect('user') , getCart).put(protect('user'),deleteFromCart);
+router.route('/cart').post(protect('user'), addToCart).get(protect('user') , getCart).put(protect('user'),deleteFromCart).patch(protect('user') , updateCartQuantity);
 
 
 
