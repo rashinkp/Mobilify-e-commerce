@@ -45,7 +45,8 @@ const ProductCard = ({ product }) => {
                 {name}
               </h3>
               <span className="text-darkText font-extrabold text-lg dark:text-lightText">
-                ${price}
+                {"\u20B9"}
+                {price}
               </span>
             </div>
             <p className="text-darkGray mb-2">{description}</p>
@@ -59,7 +60,10 @@ const ProductCard = ({ product }) => {
               </span>
               <span className="text-darkGray ml-2">(156)</span>
             </div>
-            <AddCartButton productId={product._id} disabled={product.stock === 0} />
+            <AddCartButton
+              productId={product._id}
+              disabled={product.stock === 0}
+            />
           </div>
         </div>
       </div>

@@ -44,7 +44,7 @@ const AddCartButton = ({ disabled = false, productId, quantity }) => {
               ${
                 disabled || isLoading
                   ? "text-gray-400"
-                  : "dark:text-lightText text-darkText"
+                  : "dark:text-lightText  text-darkText"
               }`}
           />
         </span>
@@ -54,7 +54,7 @@ const AddCartButton = ({ disabled = false, productId, quantity }) => {
       {disabled && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="absolute inset-0 bg-white/70 dark:bg-black/70 rounded-full"></div>
-          <div className="relative z-10 flex items-center space-x-2 text-red-600">
+          <div className="relative z-2 flex items-center space-x-2 text-red-600">
             <Ban className="w-5 h-5" />
             <span className="font-semibold text-sm">Out of Stock</span>
           </div>

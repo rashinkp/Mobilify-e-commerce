@@ -38,17 +38,19 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
   try {
     const products = await Product.find(filter)
-      .sort({ [sortBy]: order === "desc" ? -1 : 1 })
+      .collation({locale:'en', strength:2})
+      .sort({
+        [sortBy]: order === "desc" ? -1 : 1,
+      })
       .skip(Number(skip))
       .limit(Number(limit));
-    
+
     const totalCount = await Product.countDocuments(filter);
 
-
-    console.log(totalCount)
+    console.log(totalCount);
 
     if (products.length > 0) {
-      res.status(200).json({products,totalCount});
+      res.status(200).json({ products, totalCount });
     } else {
       res.status(404).json({ message: "Couldn't find any products" });
     }

@@ -15,15 +15,24 @@ const Products = () => {
   const pageSize = 8; 
   const [filter, setFilter] = useState("all");
   const [totalPages, setTotalPages] = useState(1);
+  const [sortBy, setSortBy] = useState("CreatedAt");
 
 
-  const { data, isLoading, isError, error } = useGetAllProductsQuery({
-    page: currentPage || 1,
-    limit: pageSize,
-    sortBy: 'CreatedAt',
-    filterBy: filter,
-    order:'desc'
-  })
+const { data, isLoading, isError, error } = useGetAllProductsQuery({
+  page: currentPage,
+  limit: pageSize,
+  sortBy:
+    sortBy === "priceLowToHigh"
+      ? "price"
+      : sortBy === "priceHighToLow"
+      ? "price"
+      : sortBy === "nameAsc" || sortBy === "nameDesc"
+      ? "name"
+      : "createdAt",
+  order: sortBy === "priceLowToHigh" || sortBy === "nameAsc" ? "asc" : "desc",
+  filterBy: filter,
+});
+
 
 
   
@@ -104,11 +113,13 @@ const Products = () => {
                 icon={faFilter}
                 className="text-gray-800 dark:text-lightText text-lg mr-2"
               />
-              <select className="px-1 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200">
-                <option value="">Brand</option>
-                <option value="brand1">Brand 1</option>
-                <option value="brand2">Brand 2</option>
-                <option value="brand3">Brand 3</option>
+              <select
+                className="px-1 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="active">All Products</option>
+                <option value="low stock">Low Stock</option>
               </select>
             </div>
 
@@ -155,11 +166,17 @@ const Products = () => {
               icon={faSort}
               className="text-gray-800 mr-2 dark:text-lightText text-lg"
             />
-            <select className="px-3 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200">
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
               <option value="latest">Latest</option>
               <option value="priceLowToHigh">Price: Low to High</option>
               <option value="priceHighToLow">Price: High to Low</option>
               <option value="rating">Rating</option>
+              <option value="nameAsc">A-Z</option>
+              <option value="nameDesc">Z-A</option>
             </select>
           </div>
         </div>

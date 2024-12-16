@@ -287,7 +287,7 @@ const ProductDetails = () => {
                   className={`font-semibold ${
                     product.stock === 0
                       ? "text-red-600"
-                      : product > 20
+                      : product.stock > 20
                       ? "text-green-600"
                       : "text-yellow-600"
                   }`}
