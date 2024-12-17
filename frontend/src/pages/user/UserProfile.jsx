@@ -28,6 +28,7 @@ import MyEmail from "../../components/user/MyEmail";
 
 import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
 import ChangePassword from "../../components/ChangePassword";
+import OrderListingPage from "../../components/MyOrders";
 
 const UserProfileDashboard = () => {
   const { data, isLoading, isError, error, refetch } = useGetUserQuery();
@@ -184,6 +185,7 @@ const UserProfileDashboard = () => {
           {activeSection === "address" && <MyAddress />}
           {activeSection === "email" && <MyEmail />}
           {activeSection === "changePassword" && <ChangePassword />}
+          {activeSection === "orders" && <OrderListingPage />}
         </div>
       </div>
       <input

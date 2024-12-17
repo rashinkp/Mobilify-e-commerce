@@ -21,9 +21,12 @@ const OrderSchema = new mongoose.Schema(
     },
 
     shippingAddress: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
+      street: { type: String, trim: true },
+      city: { type: String, trim: true },
+      state: { type: String, trim: true },
+      postalCode: { type: String, trim: true },
+      country: { type: String, trim: true },
+      label: { type: String, trim: true },
     },
 
     orderItems: [
@@ -86,7 +89,7 @@ const OrderSchema = new mongoose.Schema(
     },
 
     shipping: {
-      id: { type: String , required:true },
+      id: { type: String, required: true },
       name: {
         type: String,
         enum: [
@@ -97,7 +100,7 @@ const OrderSchema = new mongoose.Schema(
         ],
         required: true,
       },
-      time: {type:String , required:true},
+      time: { type: String, required: true },
       trackingNumber: {
         type: String,
         trim: true,

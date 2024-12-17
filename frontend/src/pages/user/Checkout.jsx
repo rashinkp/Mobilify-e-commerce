@@ -121,7 +121,7 @@ const CheckoutPage = () => {
     
 
     const orderData = {
-      shippingAddress: selectedAddress._id,
+      shippingAddress: selectedAddress,
       shipping: selectedShipping,
       paymentMethod: selectedPayment,
       orderItems: orderItems,
