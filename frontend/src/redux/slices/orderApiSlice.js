@@ -54,7 +54,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Order"],
+      invalidatesTags: ["Orders",'Order'],
     }),
   }),
 });

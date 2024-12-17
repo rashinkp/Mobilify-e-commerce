@@ -13,7 +13,6 @@ const OrderManagement = () => {
   const orders = data || [];
   1;
 
-  console.log(orders);
 
   const handleChange = (userId) => {
     console.log(`Changing order with ID: ${userId}`);

@@ -14,9 +14,13 @@ import {
   RefreshCcw,
   AlertTriangle,
 } from "lucide-react";
-import { useGetSingleOrderQuery } from "../../redux/slices/orderApiSlice";
+import {
+  useChangeOrderStatusMutation,
+  useGetSingleOrderQuery,
+} from "../../redux/slices/orderApiSlice";
 import { useParams } from "react-router";
 import { RotatingLines } from "react-loader-spinner";
+import { errorToast, successToast } from "../../components/toast";
 
 const OrderDetailsPage = () => {
   // State for managing order actions
@@ -29,9 +33,9 @@ const OrderDetailsPage = () => {
     orderId,
   });
 
-  const order = data || {};
+  const [changeStatus] = useChangeOrderStatusMutation();
 
-  console.log(order);
+  const order = data || {};
 
   // Dynamic order stages mapping
   const orderStageMapper = {
@@ -82,9 +86,28 @@ const OrderDetailsPage = () => {
     orderStageMapper[order.status] || orderStageMapper["Pending"];
 
   // Handler for cancel order
-  const handleCancelOrder = () => {
-    setOrderCancelled(true);
-    setShowCancelConfirmation(false);
+  const handleCancelOrder = async () => {
+    try {
+      await changeStatus({ newStatus: "Cancelled", orderId }).unwrap();
+
+      // Update the local state after successful API call
+      // setOrderItems((prevItems) =>
+      //   prevItems.map((item) =>
+      //     item.id === productId ? { ...item, status: newStatus } : item
+      //   )
+      // );
+
+      successToast("Order cancelled successfully");
+    } catch (error) {
+      errorToast(
+        error?.message ||
+          error?.data?.message ||
+          "Error while updating order status"
+      );
+      console.log(error);
+    } finally {
+      setShowCancelConfirmation(false);
+    }
   };
 
   // Determine if cancel and return buttons should be disabled

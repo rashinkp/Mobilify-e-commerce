@@ -45,6 +45,7 @@ const OrderDetails = () => {
           error?.data?.message ||
           "Error while updating order status"
       );
+      console.log(error);
     }
   };
 
