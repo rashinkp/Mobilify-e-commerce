@@ -141,19 +141,16 @@ const CheckoutPage = () => {
       paymentMethod: selectedPayment,
       orderItems: orderItems,
       couponCode: appliedCoupon ? appliedCoupon.code : null,
-      pricing: {
-        subtotal,
-        shippingCost,
-        tax,
-        total,
-      },
+    
     };
+
+    console.log(orderData);
 
 
     try {
       const {orderId} = await placeOrder(orderData).unwrap();
       successToast('Order placed successfully');
-      navigate(`/user/orderSuccess/${orderId}`);
+      navigate(`/user/orderSuccess/`);
     } catch (error) {
       errorToast(error.message || error.data || 'Error while placing order')
       console.log(error)

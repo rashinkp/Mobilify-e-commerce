@@ -59,7 +59,7 @@ router
   
 
   router.get(
-    "/order/:ordId/:prdId",
+    "/order/:ordId",
     protect("user"),
     getOrdersWithSingleProducts
   );

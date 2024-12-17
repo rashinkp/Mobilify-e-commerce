@@ -20,6 +20,7 @@ import EnterNewPassword from "../components/EnterNewPassword.jsx";
 import CheckoutPage from "../pages/user/Checkout.jsx";
 import OrderSuccessPage from "../pages/user/SuccessfulOrder.jsx";
 import OrderDetailsPage from "../pages/user/Order.jsx";
+import OrderListingPage from "../components/MyOrders.jsx";
 
 const UserRoutes = () => {
   
@@ -34,7 +35,7 @@ const UserRoutes = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/orders" element={<Orders />} />
+        <Route path="/orders" element={<OrderListingPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/contact" element={<ContactUs />} />
@@ -44,8 +45,8 @@ const UserRoutes = () => {
         <Route path="/forgotPassword/email" element={<EnterEamil />} />
         <Route path="/forgotPassword/otp" element={<EnterOtp />} />
         <Route path="/forgotPassword" element={<EnterNewPassword />} />
-        <Route path="/orderSuccess/:id" element={<OrderSuccessPage />} />
-        <Route path="/orderDetail/:ordId/:prdId" element={<OrderDetailsPage />} />
+        <Route path="/orderSuccess" element={<OrderSuccessPage />} />
+        <Route path="/orderDetail/:ordId" element={<OrderDetailsPage />} />
       </Routes>
     </>
   );

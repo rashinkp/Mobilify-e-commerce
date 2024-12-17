@@ -9,11 +9,11 @@ import { useNavigate } from "react-router";
 const OrderManagement = () => {
   const navigate = useNavigate();
   const { data, isLoading, isError, error, refetch } = useGetAllOrdersQuery();
-    
-    const orders = data || [];1
-  
+
+  const orders = data || [];
+  1;
+
   console.log(orders);
-  
 
   const handleChange = (userId) => {
     console.log(`Changing order with ID: ${userId}`);
@@ -38,10 +38,9 @@ const OrderManagement = () => {
     },
   ];
 
-
   const handleClick = (order) => {
-    navigate(`/admin/order/${order._id}`)
-  }
+    navigate(`/admin/order/${order._id}`);
+  };
 
   const orderColumns = [
     {
@@ -63,19 +62,66 @@ const OrderManagement = () => {
         }),
     },
     {
-      key: "orderItems",
+      key: "name",
       label: "Number of items",
-      render: (value) => {
-        return value.reduce((acc, cur) => {
-          return (acc += cur.quantity);
-        }, 0);
-      },
+      render: (value) => value,
     },
     {
-      key: "pricing",
-      label: "Total Price",
-      render: (value) => value.total,
+      key: "price",
+      label: "Price",
+      render: (value) => value,
     },
+    {
+      key: "status",
+      label: "Status",
+      render: (value) => {
+        let bgColor, textColor;
+
+        switch (value) {
+          case "Order placed":
+            bgColor = "bg-blue-200";
+            textColor = "text-blue-800";
+            break;
+          case "Processing":
+            bgColor = "bg-yellow-200";
+            textColor = "text-yellow-800";
+            break;
+          case "Shipped":
+            bgColor = "bg-purple-200";
+            textColor = "text-purple-800";
+            break;
+          case "Out for delivery":
+            bgColor = "bg-orange-200";
+            textColor = "text-orange-800";
+            break;
+          case "Delivered":
+            bgColor = "bg-green-200";
+            textColor = "text-green-800";
+            break;
+          case "Cancelled":
+            bgColor = "bg-red-200";
+            textColor = "text-red-800";
+            break;
+          case "Returned":
+            bgColor = "bg-gray-200";
+            textColor = "text-gray-800";
+            break;
+          default:
+            bgColor = "bg-gray-200";
+            textColor = "text-gray-800";
+            break;
+        }
+
+        return (
+          <span
+            className={`px-2 py-1 rounded-full text-sm ${bgColor} ${textColor}`}
+          >
+            {value}
+          </span>
+        );
+      },
+    },
+
     {
       key: "paymentStatus",
       label: "Payment Status",
@@ -112,23 +158,22 @@ const OrderManagement = () => {
     },
   ];
 
-
-   if (isLoading) {
-     return (
-       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-         <RotatingLines
-           visible={true}
-           height="50"
-           width="50"
-           color="grey"
-           strokeColor="#fff"
-           strokeWidth="2"
-           animationDuration="8"
-           ariaLabel="rotating-lines-loading"
-         />
-       </div>
-     );
-   }
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="pt-14">

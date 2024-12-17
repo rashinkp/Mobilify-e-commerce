@@ -4,23 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { useGetIndividualOrderQuery } from "../redux/slices/orderApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 
-
 const OrderListingPage = () => {
   const navigate = useNavigate();
 
+  const { data, isLoading, isError, error, refetch } =
+    useGetIndividualOrderQuery();
 
-
-  const { data, isLoading, isError, error, refetch } = useGetIndividualOrderQuery();
-  
   const orders = data || [];
 
   console.log(orders);
 
-
   // Function to handle navigation to order details
-  const handleOrderDetails = (orderId, productId) => {
-    console.log(orderId, productId);
-    navigate(`/user/orderDetail/${orderId}/${productId}`);
+  const handleOrderDetails = (orderId) => {
+    navigate(`/user/orderDetail/${orderId}`);
   };
 
   // Function to get status color and icon
@@ -54,24 +50,22 @@ const OrderListingPage = () => {
     }
   };
 
-
-
   if (isLoading) {
-          return (
-            <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-              <RotatingLines
-                visible={true}
-                height="50"
-                width="50"
-                color="grey"
-                strokeColor="#fff"
-                strokeWidth="2"
-                animationDuration="8"
-                ariaLabel="rotating-lines-loading"
-              />
-            </div>
-          );
-      }
+    return (
+      <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
@@ -83,8 +77,8 @@ const OrderListingPage = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               {/* Product Image */}
               <div className="w-24 h-24 flex-shrink-0">
-                <img1
-                  src={order.productImageUrl}
+                <img
+                  src={order.imageUrl}
                   alt="No image recieved"
                   className="w-full h-full object-contain rounded"
                 />
@@ -122,20 +116,17 @@ const OrderListingPage = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {React.createElement(
-                      getStatusDetails(order.productStatus).icon,
-                      {
-                        className: `w-4 h-4 ${
-                          getStatusDetails(order.productStatus).color
-                        }`,
-                      }
-                    )}
+                    {React.createElement(getStatusDetails(order.status).icon, {
+                      className: `w-4 h-4 ${
+                        getStatusDetails(order.status).color
+                      }`,
+                    })}
                     <span
                       className={`text-sm ${
-                        getStatusDetails(order.productStatus).color
+                        getStatusDetails(order.status).color
                       }`}
                     >
-                      {getStatusDetails(order.productStatus).text}
+                      {getStatusDetails(order.status).text}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -156,7 +147,7 @@ const OrderListingPage = () => {
               {/* Order Details Navigation */}
               <div className="absolute top-0 right-0">
                 <button
-                  onClick={() => handleOrderDetails(order._id, order.productId)}
+                  onClick={() => handleOrderDetails(order._id)}
                   className="text-gray-500 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Eye className="w-5 h-5 dark:text-gray-300" />

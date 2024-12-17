@@ -23,9 +23,9 @@ const OrderDetailsPage = () => {
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [orderCancelled, setOrderCancelled] = useState(false);
 
-  const { prdId: productId, ordId: orderId } = useParams();
+  const { ordId: orderId } = useParams();
+
   const { data, isLoading, isError, error, refetch } = useGetSingleOrderQuery({
-    productId,
     orderId,
   });
 
@@ -79,11 +79,10 @@ const OrderDetailsPage = () => {
 
   // Determine current order stages based on status
   const orderStages =
-    orderStageMapper[order.productStatus] || orderStageMapper["Pending"];
+    orderStageMapper[order.status] || orderStageMapper["Pending"];
 
   // Handler for cancel order
   const handleCancelOrder = () => {
-    // In a real app, this would call an API to cancel the order
     setOrderCancelled(true);
     setShowCancelConfirmation(false);
   };
@@ -116,7 +115,7 @@ const OrderDetailsPage = () => {
     <div className="container mx-auto p-6 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white dark:bg-black dark:text-white shadow-lg rounded-xl overflow-hidden">
         {/* Order Header with Action Buttons */}
-        <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
+        <div className="bg-black text-white p-4 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Order Details</h2>
             <p className="text-sm">Order ID: {order.orderNumber}</p>
@@ -213,7 +212,9 @@ const OrderDetailsPage = () => {
                 {index > 0 && (
                   <div
                     className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
-                      stage.completed ? "bg-green-500" : "bg-gray-300 dark:bg-white"
+                      stage.completed
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-white"
                     }`}
                     style={{ zIndex: 0 }}
                   />
@@ -239,7 +240,9 @@ const OrderDetailsPage = () => {
                 {index < orderStages.length - 1 && (
                   <div
                     className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
-                      stage.completed ? "bg-green-500" : "bg-gray-300 dark:bg-white"
+                      stage.completed
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-white"
                     }`}
                     style={{ zIndex: 0 }}
                   />
@@ -255,7 +258,7 @@ const OrderDetailsPage = () => {
           <div className="space-y-4">
             <div className="rounded-lg overflow-hidden">
               <img
-                src={order.productImageUrl}
+                src={order.imageUrl}
                 alt="No image found"
                 className="w-full h-48 object-contain"
               />
@@ -268,7 +271,7 @@ const OrderDetailsPage = () => {
               <div className="flex items-center mt-2">
                 <CreditCard className="mr-2 w-5 h-5 text-blue-600" />
                 <span className="font-bold text-xl">
-                  ${order.productPrice.toFixed(2)}
+                  ${order.price.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -328,14 +331,6 @@ const OrderDetailsPage = () => {
         </div>
 
         {/* Order Summary */}
-        <div className=" dark:bg-black p-6">
-          <div className="flex justify-between">
-            <span className="font-semibold">Total</span>
-            <span className="text-xl font-bold">
-              ${(order.productPrice - (order.coupon?.discount || 0)).toFixed(2)}
-            </span>
-          </div>
-        </div>
       </div>
       <div></div>
     </div>

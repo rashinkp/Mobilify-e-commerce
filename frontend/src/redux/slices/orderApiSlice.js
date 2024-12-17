@@ -28,8 +28,8 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Orders"],
     }),
     getSingleOrder: builder.query({
-      query: ({ productId, orderId }) => ({
-        url: `${USER_URL}/order/${orderId}/${productId}`,
+      query: ({ orderId }) => ({
+        url: `${USER_URL}/order/${orderId}`,
         method: "GET",
       }),
       providesTags: ["Orders"],

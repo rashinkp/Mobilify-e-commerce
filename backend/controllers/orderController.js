@@ -7,28 +7,60 @@ export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const data = req.body;
 
-  if (!userId || !data) {
-    res
-      .status(400)
-      .json({ message: "did not get required input, please try again" });
+  console.log(data);
+
+  // Check required inputs
+  if (!userId || !data || !data.orderItems) {
+    return res.status(400).json({
+      message: "Required inputs missing, please try again",
+    });
   }
 
-  data.userId = userId;
+  try {
+    // Destructure required fields
+    const { orderItems, shippingAddress, shipping, paymentMethod, couponCode } =
+      data;
 
-  const order = new Order(data);
-  const saveOrder = await order.save();
+    // Prepare and store each product as a separate order document
+    const orderDocuments = orderItems.map((item) => ({
+      userId: userId,
+      productId: item.productId,
+      name: item.name,
+      model: item.model,
+      price: item.price,
+      quantity: item.quantity,
+      imageUrl: item.imageUrl,
+      shipping: shipping,
+      paymentMethod: paymentMethod,
+      shippingAddress: shippingAddress,
+      couponCode: couponCode,
+      status: "Order placed",
+    }));
 
-  const cart = await Cart.findOne({ userId });
+    // Insert all orders into the database
+    const createdOrders = await Order.insertMany(orderDocuments);
 
-  cart.cartItems = [];
+    // Clear the user's cart
+    const cart = await Cart.findOne({ userId });
+    if (cart) {
+      cart.cartItems = [];
+      await cart.save();
+    }
 
-  await cart.save();
-
-  res.status(201).json({
-    message: "Order place successfully",
-    orderId: saveOrder._id,
-  });
+    const orderIds = createdOrders.map((order) => order._id);
+    res.status(201).json({
+      message: "Order placed successfully",
+      orderIds: orderIds,
+    });
+  } catch (error) {
+    console.error("Error placing order:", error);
+    res.status(500).json({
+      message: "Failed to place order",
+      error: error.message,
+    });
+  }
 });
+
 
 export const getOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
@@ -63,28 +95,6 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
       {
         $match: { userId: convertedUserId },
       },
-      {
-        $unwind: "$orderItems",
-      },
-      {
-        $project: {
-          productId: "$orderItems.productId",
-          productName: "$orderItems.name",
-          productModel: "$orderItems.model",
-          productPrice: "$orderItems.price",
-          productQuantity: "$orderItems.quantity",
-          productImageUrl: "$orderItems.imageUrl",
-          productStatus: "$orderItems.status",
-          orderNumber: 1,
-          shippingAddress: 1,
-          paymentMethod: 1,
-          paymentStatus: 1,
-          pricing: 1,
-          shipping: 1,
-          status: 1,
-          orderDate: 1,
-        },
-      },
     ]);
 
     if (!orders || orders.length === 0) {
@@ -102,7 +112,7 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
 
 export const getOrdersWithSingleProducts = async (req, res) => {
   const { userId } = req.user;
-  const { prdId: productId, ordId: orderId } = req.params;
+  const { ordId: orderId } = req.params;
 
   const convertedUserId = new mongoose.Types.ObjectId(userId);
   const convertedProductId = new mongoose.Types.ObjectId(productId);
@@ -114,31 +124,6 @@ export const getOrdersWithSingleProducts = async (req, res) => {
         $match: {
           userId: convertedUserId,
           _id: convertedOrderId,
-        },
-      },
-      {
-        $unwind: "$orderItems",
-      },
-      {
-        $match: { "orderItems.productId": convertedProductId },
-      },
-      {
-        $project: {
-          productId: "$orderItems.productId",
-          productName: "$orderItems.name",
-          productModel: "$orderItems.model",
-          productPrice: "$orderItems.price",
-          productQuantity: "$orderItems.quantity",
-          productImageUrl: "$orderItems.imageUrl",
-          productStatus: "$orderItems.status",
-          orderNumber: 1,
-          shippingAddress: 1,
-          paymentMethod: 1,
-          paymentStatus: 1,
-          pricing: 1,
-          shipping: 1,
-          status: 1,
-          orderDate: 1,
         },
       },
     ]);
@@ -176,22 +161,14 @@ export const getAllOrders = async (req, res) => {
 };
 
 export const updateOrderStatus = async (req, res) => {
-  const { productId, newStatus, orderId } = req.body;
+  const { newStatus, orderId } = req.body;
 
   const order = await Order.findById(orderId);
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }
 
-  const product = order.orderItems.find(
-    (item) => item.id.toString() === productId
-  );
-
-  if (!product) {
-    return res.status(404).json({ message: "Product not found in this order" });
-  }
-
-  product.status = newStatus;
+  order.status = newStatus;
 
   await order.save();
 
