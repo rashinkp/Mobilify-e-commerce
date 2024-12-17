@@ -49,6 +49,9 @@ const CheckoutPage = () => {
 
   const products = cartData.cartItems || [];
 
+  console.log(products);
+  
+
   useEffect(() => {
     if (addresses && addresses.length > 0) {
       setSelectedAddress(addresses[0]);
@@ -93,6 +96,7 @@ const CheckoutPage = () => {
     }
   };
 
+
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const tax = calculateTax()
@@ -105,11 +109,14 @@ const CheckoutPage = () => {
   };
 
   const handleSubmit = async() => {
-    const orderItems = products.map((product) => ({
-      product: product._id,
-      quantity:product.quantity,
-    }))
-    //calculating the bill
+   const orderItems = products.map((product) => ({
+     productId: product._id,
+     name: product?.productDetails?.name,
+     model: product?.productDetails?.model,
+     price: product?.productDetails?.price,
+     quantity: product.quantity,
+     imageUrl: product?.productDetails?.images[0]?.url,
+   }));
      const subtotal = calculateSubtotal();
      const tax = calculateTax();
      const shippingCost = selectedShipping ? selectedShipping.price : 0;
@@ -121,7 +128,15 @@ const CheckoutPage = () => {
     
 
     const orderData = {
-      shippingAddress: selectedAddress,
+      shippingAddress: {
+        addressId: selectedAddress._id,
+        street: selectedAddress.street,
+        city: selectedAddress.city,
+        state: selectedAddress.state,
+        postalCode: selectedAddress.postalCode,
+        country: selectedAddress.country,
+        label: selectedAddress.label,
+      },
       shipping: selectedShipping,
       paymentMethod: selectedPayment,
       orderItems: orderItems,

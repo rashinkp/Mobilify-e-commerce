@@ -21,6 +21,7 @@ const OrderSchema = new mongoose.Schema(
     },
 
     shippingAddress: {
+      addressId: { type: mongoose.Schema.Types.ObjectId, ref: "Address" },
       street: { type: String, trim: true },
       city: { type: String, trim: true },
       state: { type: String, trim: true },
@@ -31,20 +32,22 @@ const OrderSchema = new mongoose.Schema(
 
     orderItems: [
       {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        name: { type: String, required: true },
+        model: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true, min: 1 },
+        imageUrl: { type: String, trim: true },
       },
     ],
 
-    // Payment Method
+    pricing: {
+      subtotal: { type: Number, required: true, min: 0 },
+      shippingCost: { type: Number, default: 0, min: 0 },
+      tax: { type: Number, default: 0, min: 0 },
+      total: { type: Number, required: true, min: 0 },
+    },
+
     paymentMethod: {
       type: String,
       enum: [
@@ -56,36 +59,6 @@ const OrderSchema = new mongoose.Schema(
         "Bank Transfer",
       ],
       required: true,
-    },
-
-    // Payment Status
-    paymentStatus: {
-      type: String,
-      enum: ["Pending", "Paid", "Refunded", "Failed"],
-      default: "Pending",
-    },
-
-    pricing: {
-      subtotal: {
-        type: Number,
-        required: true,
-        min: 0,
-      },
-      shippingCost: {
-        type: Number,
-        default: 0,
-        min: 0,
-      },
-      tax: {
-        type: Number,
-        default: 0,
-        min: 0,
-      },
-      total: {
-        type: Number,
-        required: true,
-        min: 0,
-      },
     },
 
     shipping: {
@@ -101,13 +74,9 @@ const OrderSchema = new mongoose.Schema(
         required: true,
       },
       time: { type: String, required: true },
-      trackingNumber: {
-        type: String,
-        trim: true,
-      },
+      trackingNumber: { type: String, trim: true },
     },
 
-    // Order Status
     status: {
       type: String,
       enum: [
@@ -122,16 +91,10 @@ const OrderSchema = new mongoose.Schema(
       default: "Pending",
     },
 
-    orderDate: {
-      type: Date,
-      default: Date.now,
-    },
+    orderDate: { type: Date, default: Date.now },
+    expectedDeliveryDate: { type: Date },
 
-    expectedDeliveryDate: {
-      type: Date,
-    },
-
-    coupon: {
+    couponCode: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Coupon",
     },
