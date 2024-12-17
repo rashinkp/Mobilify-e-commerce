@@ -1,8 +1,7 @@
-import asyncHandler from 'express-async-handler'
-import Product from '../models/productSchema.js'
-import cloudinary from '../config/cloudinary.js'
-import mongoose from 'mongoose';
-
+import asyncHandler from "express-async-handler";
+import Product from "../models/productSchema.js";
+import cloudinary from "../config/cloudinary.js";
+import mongoose from "mongoose";
 
 export const addProduct = asyncHandler(async (req, res) => {
   const product = req.body;
@@ -14,8 +13,7 @@ export const addProduct = asyncHandler(async (req, res) => {
     console.log("Invalid product data");
     throw new Error("Invalid product data");
   }
-})
-
+});
 
 export const getAllProducts = asyncHandler(async (req, res) => {
   const {
@@ -23,22 +21,27 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     limit = 10,
     sortBy = "createdAt",
     order = "desc",
-    filterBy='All'
+    filterBy = "All",
+    searchTerm = "",
   } = req.query;
 
   const skip = (page - 1) * limit;
 
   let filter = {};
 
-  if (filterBy === 'active') {
+  if (filterBy === "active") {
     filter = { isSoftDelete: false };
-  } else if (filterBy === 'low stock') {
+  } else if (filterBy === "low stock") {
     filter = { stock: { $lt: 20 } };
+  }
+
+  if (searchTerm.trim() !== "") {
+    filter.name = { $regex: searchTerm, $options: "i" };
   }
 
   try {
     const products = await Product.find(filter)
-      .collation({locale:'en', strength:2})
+      .collation({ locale: "en", strength: 2 })
       .sort({
         [sortBy]: order === "desc" ? -1 : 1,
       })
@@ -47,12 +50,16 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
     const totalCount = await Product.countDocuments(filter);
 
-    console.log(totalCount);
-
     if (products.length > 0) {
       res.status(200).json({ products, totalCount });
-    } else {
-      res.status(404).json({ message: "Couldn't find any products" });
+    }
+
+    if (!products || products.length === 0) {
+      return res.status(200).json({
+        products: [],
+        totalCount: 0,
+        message: "No products found for the selected filters.",
+      });
     }
   } catch (error) {
     res
@@ -61,29 +68,25 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 export const getProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const product = await Product.findById(id);
   if (product) {
-    res.status(200).json(product)
+    res.status(200).json(product);
   } else {
     res.status(404).json({ message: 'Couldn"t find any product with the id' });
   }
-})
-
+});
 
 export const deleteProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const deletedProduct = await Product.findByIdAndDelete(productId);
   if (deletedProduct) {
-    res.status(200).json({ message: 'Product deleted successfully' });
+    res.status(200).json({ message: "Product deleted successfully" });
   } else {
-    res.status(404).json({message:'product not found'})
+    res.status(404).json({ message: "product not found" });
   }
-})
-
+});
 
 export const updateProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
@@ -102,7 +105,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       if (updateData[key] !== undefined) {
         if (key === "categoryId" && mongoose.isValidObjectId(updateData[key])) {
           // Convert categoryId to ObjectId
-          product[key] =new mongoose.Types.ObjectId(updateData[key]);
+          product[key] = new mongoose.Types.ObjectId(updateData[key]);
         } else {
           product[key] = updateData[key];
         }
@@ -113,16 +116,14 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
     res.status(200).json(updatedProduct);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 });
 
-
 export const updateImages = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const { uploadedUrl: images, deleteQueue } = req.body;
-
 
   if (!Array.isArray(images)) {
     return res
@@ -144,7 +145,7 @@ export const updateImages = asyncHandler(async (req, res) => {
         const imageToDelete = product.images[index];
         if (imageToDelete) {
           // Delete the image from Cloudinary
-          const publicId = imageToDelete.public_id; 
+          const publicId = imageToDelete.public_id;
           await cloudinary.uploader.destroy(publicId);
 
           // Remove the image from the product

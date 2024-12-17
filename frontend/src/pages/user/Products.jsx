@@ -16,6 +16,9 @@ const Products = () => {
   const [filter, setFilter] = useState("all");
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState("CreatedAt");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  console.log(searchTerm)
 
 
 const { data, isLoading, isError, error } = useGetAllProductsQuery({
@@ -31,6 +34,7 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
       : "createdAt",
   order: sortBy === "priceLowToHigh" || sortBy === "nameAsc" ? "asc" : "desc",
   filterBy: filter,
+  searchTerm:searchTerm
 });
 
 
@@ -54,14 +58,14 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
 
 
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const displayedProduct =
-    searchTerm.trim() === ""
-      ? products || []
-      : products?.filter(
-          (product) =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) || [];
+
+  // const displayedProduct =
+  //   searchTerm.trim() === ""
+  //     ? products || []
+  //     : products?.filter(
+  //         (product) =>
+  //           product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //     ) || [];
   
   
   if (isError) return <div>Error: {error.message}</div>;
@@ -122,42 +126,6 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
                 <option value="low stock">Low Stock</option>
               </select>
             </div>
-
-            <div className="flex items-center">
-              <select className="px-3 py-2 border border-gray-300 dark:bg-darkBackground rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200">
-                <option value="">Storage</option>
-                <option value="64GB">64GB</option>
-                <option value="128GB">128GB</option>
-                <option value="256GB">256GB</option>
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <select className="px-3 py-2 border border-gray-300 dark:bg-darkBackground rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200">
-                <option value="">RAM</option>
-                <option value="4GB">4GB</option>
-                <option value="6GB">6GB</option>
-                <option value="8GB">8GB</option>
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <select className="px-3 py-2 border border-gray-300 dark:bg-darkBackground rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200">
-                <option value="">Color</option>
-                <option value="black">Black</option>
-                <option value="white">White</option>
-                <option value="blue">Blue</option>
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <select className="px-3 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200">
-                <option value="">Size</option>
-                <option value="6.1">6.1"</option>
-                <option value="6.7">6.7"</option>
-                <option value="7.0">7.0"</option>
-              </select>
-            </div>
           </div>
 
           {/* Sort */}
@@ -182,7 +150,7 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
         </div>
 
         <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 5xl:grid-cols-5 justify-center px-4">
-          {displayedProduct.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

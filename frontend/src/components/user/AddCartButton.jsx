@@ -44,7 +44,7 @@ const AddCartButton = ({ disabled = false, productId, quantity }) => {
               ${
                 disabled || isLoading
                   ? "text-gray-400"
-                  : "dark:text-lightText  text-darkText"
+                  : "dark:text-lightText  text-black"
               }`}
           />
         </span>
