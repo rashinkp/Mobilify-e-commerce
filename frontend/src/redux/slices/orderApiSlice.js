@@ -28,13 +28,27 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Orders"],
     }),
     getSingleOrder: builder.query({
-      query: ({ productId , orderId }) => ({
+      query: ({ productId, orderId }) => ({
         url: `${USER_URL}/order/${orderId}/${productId}`,
         method: "GET",
       }),
       providesTags: ["Orders"],
     }),
+    getAllOrders: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/order`,
+        method: "GET",
+      }),
+      providesTags: ["All Orders"],
+    }),
+    getAOrder: builder.query({
+      query: ({orderId}) => ({
+        url: `${ADMIN_URL}/order/${orderId}`,
+        method: "GET",
+      }),
+      providesTags: ["Order"],
+    }),
   }),
 });
 
-export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery} = orderApiSlice;
+export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery} = orderApiSlice;

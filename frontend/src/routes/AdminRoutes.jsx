@@ -16,6 +16,7 @@ import { useLocation } from "react-router";
 import BrandManagement from "../pages/admin/BrandManagement.jsx";
 import ManageImage from "../pages/admin/ManageImage.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import OrderDetail from "../pages/admin/OrderDetail.jsx";
 
 const AdminRoutes = () => {
   const location = useLocation();
@@ -32,6 +33,7 @@ const AdminRoutes = () => {
             <Route path="/manage-products" element={<ProductManagement />} />
             <Route path="/product/:productId" element={<ProductDetail />} />
             <Route path="/manage-orders" element={<OrderManagement />} />
+            <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/manage-brands" element={<BrandManagement />} />
             <Route path="/manage-coupon" element={<CouponManagement />} />
             <Route path="/manage-sales" element={<SalesManagement />} />

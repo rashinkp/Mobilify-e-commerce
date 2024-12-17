@@ -211,7 +211,7 @@ const OrderDetailsPage = () => {
                 {index > 0 && (
                   <div
                     className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
-                      stage.completed ? "bg-green-500" : "bg-gray-300"
+                      stage.completed ? "bg-green-500" : "bg-gray-300 dark:bg-white"
                     }`}
                     style={{ zIndex: 0 }}
                   />
@@ -222,7 +222,7 @@ const OrderDetailsPage = () => {
                   className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
                     stage.completed
                       ? "bg-green-500 text-white"
-                      : "bg-gray-300 text-gray-600"
+                      : "bg-gray-300 dark:bg-white text-gray-600"
                   }`}
                 >
                   <stage.Icon className="w-6 h-6" />
@@ -237,7 +237,7 @@ const OrderDetailsPage = () => {
                 {index < orderStages.length - 1 && (
                   <div
                     className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
-                      stage.completed ? "bg-green-500" : "bg-gray-300"
+                      stage.completed ? "bg-green-500" : "bg-gray-300 dark:bg-white"
                     }`}
                     style={{ zIndex: 0 }}
                   />
@@ -251,7 +251,7 @@ const OrderDetailsPage = () => {
         <div className="grid md:grid-cols-2 gap-6 p-6">
           {/* Product Details */}
           <div className="space-y-4">
-            <div className="border rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden">
               <img
                 src={order.productImageUrl}
                 alt="No image found"

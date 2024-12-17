@@ -38,6 +38,19 @@ const OrderSchema = new mongoose.Schema(
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },
         imageUrl: { type: String, trim: true },
+        status: {
+          type: String,
+          enum: [
+            "Order placed",
+            "Processing",
+            "Shipped",
+            "Out for delivery",
+            "Delivered",
+            "Cancelled",
+            "Returned",
+          ],
+          default: "Order placed",
+        },
       },
     ],
 
@@ -63,11 +76,7 @@ const OrderSchema = new mongoose.Schema(
 
     paymentStatus: {
       type: String,
-      enum: [
-        "Pending",
-        "Success",
-        "Refunded",
-      ],
+      enum: ["Pending", "Success", "Refunded"],
       default: "Pending",
     },
 
@@ -85,20 +94,6 @@ const OrderSchema = new mongoose.Schema(
       },
       time: { type: String, required: true },
       trackingNumber: { type: String, trim: true },
-    },
-
-    status: {
-      type: String,
-      enum: [
-        "Order placed",
-        "Processing",
-        "Shipped",
-        "Out for delivery",
-        "Delivered",
-        "Cancelled",
-        "Returned",
-      ],
-      default: "Order placed",
     },
 
     orderDate: { type: Date, default: Date.now },

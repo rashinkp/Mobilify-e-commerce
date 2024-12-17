@@ -24,8 +24,8 @@ const OrderListingPage = () => {
   };
 
   // Function to get status color and icon
-  const getStatusDetails = (status) => {
-    switch (status) {
+  const getStatusDetails = (productStatus) => {
+    switch (productStatus) {
       case "Delivered":
         return { color: "text-green-600", icon: Check, text: "Delivered" };
       case "Processing":
@@ -33,7 +33,11 @@ const OrderListingPage = () => {
       case "Shipped":
         return { color: "text-yellow-600", icon: Package, text: "Shipped" };
       default:
-        return { color: "text-gray-600", icon: Package, text: status };
+        return {
+          color: "text-gray-600 dark:text-gray-300",
+          icon: Package,
+          text: productStatus,
+        };
     }
   };
 
@@ -79,7 +83,7 @@ const OrderListingPage = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               {/* Product Image */}
               <div className="w-24 h-24 flex-shrink-0">
-                <img
+                <img1
                   src={order.productImageUrl}
                   alt="No image recieved"
                   className="w-full h-full object-contain rounded"
@@ -118,17 +122,20 @@ const OrderListingPage = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {React.createElement(getStatusDetails(order.status).icon, {
-                      className: `w-4 h-4 ${
-                        getStatusDetails(order.status).color
-                      }`,
-                    })}
+                    {React.createElement(
+                      getStatusDetails(order.productStatus).icon,
+                      {
+                        className: `w-4 h-4 ${
+                          getStatusDetails(order.productStatus).color
+                        }`,
+                      }
+                    )}
                     <span
                       className={`text-sm ${
-                        getStatusDetails(order.status).color
+                        getStatusDetails(order.productStatus).color
                       }`}
                     >
-                      {getStatusDetails(order.status).text}
+                      {getStatusDetails(order.productStatus).text}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -149,7 +156,7 @@ const OrderListingPage = () => {
               {/* Order Details Navigation */}
               <div className="absolute top-0 right-0">
                 <button
-                  onClick={() => handleOrderDetails(order._id ,order.productId)}
+                  onClick={() => handleOrderDetails(order._id, order.productId)}
                   className="text-gray-500 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Eye className="w-5 h-5 dark:text-gray-300" />
