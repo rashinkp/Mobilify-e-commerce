@@ -28,6 +28,8 @@ const OrderListingPage = () => {
         return { color: "text-blue-600", icon: Clock, text: "Processing" };
       case "Shipped":
         return { color: "text-yellow-600", icon: Package, text: "Shipped" };
+      case "Cancelled":
+        return { color: "text-red-600", icon: Package, text: "Cancelled" };
       default:
         return {
           color: "text-gray-600 dark:text-gray-300",

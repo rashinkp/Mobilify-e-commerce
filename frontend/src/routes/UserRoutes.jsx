@@ -21,6 +21,7 @@ import CheckoutPage from "../pages/user/Checkout.jsx";
 import OrderSuccessPage from "../pages/user/SuccessfulOrder.jsx";
 import OrderDetailsPage from "../pages/user/Order.jsx";
 import OrderListingPage from "../components/MyOrders.jsx";
+import ProtectUser from "../pages/user/UserProtect.jsx";
 
 const UserRoutes = () => {
   
@@ -30,23 +31,28 @@ const UserRoutes = () => {
         <Navbar />
       </div>
       <Routes>
+        <Route element={<ProtectUser />}>
+        
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/orders" element={<OrderListingPage />} />
+        <Route path="/profile" element={<UserProfileDashboard />} />
+        <Route path="/orderSuccess" element={<OrderSuccessPage />} />
+        <Route path="/orderDetail/:ordId" element={<OrderDetailsPage />} />
+        
+        </Route>
+
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<Products />} />
         <Route path="/about" element={<AboutUs />} />
-        <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/orders" element={<OrderListingPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/email-verification/:id" element={<VerifyOtp />} />
-        <Route path="/profile" element={<UserProfileDashboard />} />
         <Route path="/forgotPassword/email" element={<EnterEamil />} />
         <Route path="/forgotPassword/otp" element={<EnterOtp />} />
         <Route path="/forgotPassword" element={<EnterNewPassword />} />
-        <Route path="/orderSuccess" element={<OrderSuccessPage />} />
-        <Route path="/orderDetail/:ordId" element={<OrderDetailsPage />} />
       </Routes>
     </>
   );
