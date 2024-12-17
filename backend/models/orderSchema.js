@@ -90,13 +90,15 @@ const OrderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
+        "Order placed",
         "Processing",
         "Shipped",
+        "Out for delivery",
         "Delivered",
         "Cancelled",
         "Returned",
       ],
-      default: "Processing",
+      default: "Order placed",
     },
 
     orderDate: { type: Date, default: Date.now },

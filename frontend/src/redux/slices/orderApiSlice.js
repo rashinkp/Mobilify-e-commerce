@@ -27,7 +27,14 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["Orders"],
     }),
+    getSingleOrder: builder.query({
+      query: ({ productId , orderId }) => ({
+        url: `${USER_URL}/order/${orderId}/${productId}`,
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
+    }),
   }),
 });
 
-export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery} = orderApiSlice;
+export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery} = orderApiSlice;

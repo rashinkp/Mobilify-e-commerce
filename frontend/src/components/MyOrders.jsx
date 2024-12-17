@@ -16,9 +16,11 @@ const OrderListingPage = () => {
 
   console.log(orders);
 
+
   // Function to handle navigation to order details
-  const handleOrderDetails = (orderId) => {
-    navigate(`/order/${orderId}`);
+  const handleOrderDetails = (orderId, productId) => {
+    console.log(orderId, productId);
+    navigate(`/user/orderDetail/${orderId}/${productId}`);
   };
 
   // Function to get status color and icon
@@ -65,7 +67,7 @@ const OrderListingPage = () => {
               />
             </div>
           );
-        }
+      }
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
@@ -80,7 +82,7 @@ const OrderListingPage = () => {
                 <img
                   src={order.productImageUrl}
                   alt="No image recieved"
-                  className="w-full h-full object-cover rounded"
+                  className="w-full h-full object-contain rounded"
                 />
               </div>
 
@@ -91,20 +93,22 @@ const OrderListingPage = () => {
                     <h2 className="font-semibold text-lg">
                       {order.productName}
                     </h2>
-                    <p className="text-gray-600 text-sm">sample description</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      sample description
+                    </p>
                   </div>
                 </div>
 
                 {/* Order Metadata */}
                 <div className="mt-2 flex flex-wrap gap-4">
                   <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-gray-500" />
+                    <Package className="w-4 h-4 text-gray-500 dark:text-gray-300" />
                     <span className="text-sm">
                       Order ID: {order.orderNumber}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-gray-500" />
+                    <CreditCard className="w-4 h-4 text-gray-500 dark:text-gray-300" />
                     <span
                       className={`text-sm ${getPaymentStatusColor(
                         order.paymentStatus
@@ -128,7 +132,7 @@ const OrderListingPage = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-300">
                       {new Date(order.orderDate).toLocaleString("en-IN", {
                         day: "2-digit",
                         month: "short",
@@ -145,10 +149,10 @@ const OrderListingPage = () => {
               {/* Order Details Navigation */}
               <div className="absolute top-0 right-0">
                 <button
-                  onClick={() => handleOrderDetails(order.orderId)}
+                  onClick={() => handleOrderDetails(order._id ,order.productId)}
                   className="text-gray-500 hover:text-blue-600 transition-colors duration-200"
                 >
-                  <Eye className="w-5 h-5" />
+                  <Eye className="w-5 h-5 dark:text-gray-300" />
                 </button>
               </div>
             </div>

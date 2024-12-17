@@ -45,7 +45,7 @@ const UserRoutes = () => {
         <Route path="/forgotPassword/otp" element={<EnterOtp />} />
         <Route path="/forgotPassword" element={<EnterNewPassword />} />
         <Route path="/orderSuccess/:id" element={<OrderSuccessPage />} />
-        <Route path="/orderDetail" element={<OrderDetailsPage />} />
+        <Route path="/orderDetail/:ordId/:prdId" element={<OrderDetailsPage />} />
       </Routes>
     </>
   );

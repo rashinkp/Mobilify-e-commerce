@@ -89,3 +89,65 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
+
+
+
+export const getOrdersWithSingleProducts = async (req, res) => {
+  const { userId } = req.user;
+  const { prdId: productId, ordId: orderId } = req.params;
+
+  const convertedUserId = new mongoose.Types.ObjectId(userId);
+  const convertedProductId = new mongoose.Types.ObjectId(productId);
+  const convertedOrderId = new mongoose.Types.ObjectId(orderId);
+
+  try {
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          userId: convertedUserId, 
+          _id: convertedOrderId, 
+        },
+      },
+      {
+        $unwind: "$orderItems", 
+      },
+      {
+        $match: { "orderItems.productId": convertedProductId }, 
+      },
+      {
+        $project: {
+          productId: "$orderItems.productId",
+          productName: "$orderItems.name",
+          productModel: "$orderItems.model",
+          productPrice: "$orderItems.price",
+          productQuantity: "$orderItems.quantity",
+          productImageUrl: "$orderItems.imageUrl",
+          orderNumber: 1,
+          shippingAddress: 1,
+          paymentMethod: 1,
+          paymentStatus: 1,
+          pricing: 1,
+          shipping: 1,
+          status: 1,
+          orderDate: 1,
+        },
+      },
+    ]);
+
+
+    if (!orders || orders.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No matching order found for this product" });
+    }
+
+    return res.status(200).json(orders[0]); 
+  } catch (error) {
+    console.error("Error fetching single order with product:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+

@@ -4,7 +4,7 @@ import {resendOTP, resendOtpEamil, sendOTP, sendOTPToEmail, verifyOtp} from "../
 import protect from '../middlewares/protect.js';
 import { addAddress, deleteAddress, getAddress, updateAddress } from '../controllers/addressController.js';
 import { addToCart, deleteFromCart, getCart, updateCartQuantity } from '../controllers/cartController.js';
-import { addOrder, getAllOrdersWithEachProducts, getOrder } from '../controllers/orderController.js';
+import { addOrder, getAllOrdersWithEachProducts, getOrder, getOrdersWithSingleProducts } from '../controllers/orderController.js';
 
 const router = express.Router();
 
@@ -54,7 +54,15 @@ router
   .post(protect("user"), addOrder)
   .get(protect("user"), getAllOrdersWithEachProducts);
 
-router.get('/order/:id', protect('user'), getOrder);
+router
+  .get("/order/:id", protect("user"), getOrder)
+  
+
+  router.get(
+    "/order/:ordId/:prdId",
+    protect("user"),
+    getOrdersWithSingleProducts
+  );
 
 
 
