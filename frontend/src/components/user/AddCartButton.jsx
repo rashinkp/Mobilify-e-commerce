@@ -32,7 +32,7 @@ const AddCartButton = ({ disabled = false, productId, quantity }) => {
           ${
             disabled || isLoading
               ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
-              : "border-darkText text-darkText dark:text-lightText dark:border-lightText hover:bg-darkText hover:text-lightText"
+              : "border-darkText text-darkText dark:text-lightText dark:border-lightText"
           }`}
         disabled={disabled || isLoading}
       >

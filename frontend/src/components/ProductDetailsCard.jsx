@@ -196,7 +196,7 @@ const ProductDetails = () => {
                     {product.offerPercent}% OFF Applied
                   </p>
                 </div>
-                <AddCartButton disabled={product.stock === 0} />
+                <AddCartButton productId={product._id} disabled={product.stock === 0} />
               </div>
             </div>
           </div>
@@ -296,7 +296,7 @@ const ProductDetails = () => {
                     ? "Out of Stock"
                     : product.stock > 20
                     ? "In Stock"
-                    : "Low Stock"}
+                    : `Only ${product.stock} left`}
                 </p>
               </div>
 

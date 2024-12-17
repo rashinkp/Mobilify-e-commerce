@@ -33,6 +33,8 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     filter = { isSoftDelete: false };
   } else if (filterBy === "low stock") {
     filter = { stock: { $lt: 20 } };
+  } else if (filterBy === 'high stock') {
+    filter = {stock: {$gt :20}}
   }
 
   if (searchTerm.trim() !== "") {

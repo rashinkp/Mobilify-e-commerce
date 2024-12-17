@@ -123,7 +123,7 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
                 onChange={(e) => setFilter(e.target.value)}
               >
                 <option value="active">All Products</option>
-                <option value="low stock">Low Stock</option>
+                <option value="high stock">High Stock</option>
               </select>
             </div>
           </div>
