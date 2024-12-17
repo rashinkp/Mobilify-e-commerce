@@ -3,13 +3,11 @@ import { useState } from "react";
 import { useGetUserQuery } from "../../redux/slices/userApiSlices";
 
 const MyEmail = () => {
-
   const { data, isLoading, isError, error } = useGetUserQuery();
   const { user } = data || {};
-  
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [email, setEmail] = useState(user.email); 
+  const [email, setEmail] = useState(user.email);
   const [newEmail, setNewEmail] = useState(email);
 
   const handleSave = (e) => {
@@ -35,13 +33,13 @@ const MyEmail = () => {
             <h2 className="text-lg font-semibold dark:text-white text-gray-700">
               Personal Information
             </h2>
-            <button
+            {/* <button
               onClick={() => setIsEditingProfile(!isEditingProfile)}
               className="text-blue-600 hover:text-blue-700 flex items-center"
             >
               <Edit size={16} className="mr-2" />
               {isEditingProfile ? "Cancel" : "Edit"}
-            </button>
+            </button> */}
           </div>
 
           {!isEditingProfile ? (

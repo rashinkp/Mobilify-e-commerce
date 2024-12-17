@@ -12,8 +12,6 @@ const OrderListingPage = () => {
 
   const orders = data || [];
 
-  console.log(orders);
-
   // Function to handle navigation to order details
   const handleOrderDetails = (orderId) => {
     navigate(`/user/orderDetail/${orderId}`);
@@ -51,6 +49,10 @@ const OrderListingPage = () => {
         return "text-gray-600";
     }
   };
+
+  if (orders.length < 1) {
+    return <div className="text-center">No Orders yet</div>;
+  }
 
   if (isLoading) {
     return (
