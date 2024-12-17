@@ -16,11 +16,18 @@ export const orderApiSlice = apiSlice.injectEndpoints({
     getOrder: builder.query({
       query: ({ orderId }) => ({
         url: `${USER_URL}/order/${orderId}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['Order'],
-    })
+      providesTags: ["Order"],
+    }),
+    getIndividualOrder: builder.query({
+      query: () => ({
+        url: `${USER_URL}/order`,
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
+    }),
   }),
 });
 
-export const {usePlaceOrderMutation , useGetOrderQuery} = orderApiSlice;
+export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery} = orderApiSlice;

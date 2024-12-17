@@ -13,6 +13,8 @@ const OrderSuccessPage = ({ orderDetails }) => {
     orderId: id,
   });
 
+
+
   const defaultOrderDetails = data || {};
   const details = orderDetails || defaultOrderDetails;
 
@@ -24,6 +26,8 @@ const OrderSuccessPage = ({ orderDetails }) => {
     return () => clearTimeout(timer);
   }, []);
 
+
+  console.log(details);
   
     if (isLoading) {
       return (
@@ -136,7 +140,7 @@ const OrderSuccessPage = ({ orderDetails }) => {
                   className="flex justify-between items-center py-2"
                 >
                   <div>
-                    <p>Product ID: {item.product}</p>
+                    <p>Product ID: {item.productId}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                       Quantity: {item.quantity}
                     </p>
@@ -175,7 +179,7 @@ const OrderSuccessPage = ({ orderDetails }) => {
               </div>
               <div className="flex justify-between">
                 <span>Payment Status</span>
-                <span>{details.paymentStatus}</span>
+                <span>{details.status}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping Method</span>

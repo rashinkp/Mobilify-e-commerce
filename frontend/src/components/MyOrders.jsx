@@ -1,55 +1,20 @@
 import React from "react";
 import { Package, CreditCard, Check, Clock, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGetIndividualOrderQuery } from "../redux/slices/orderApiSlice";
+import { RotatingLines } from "react-loader-spinner";
 
-// Sample order data (you would typically fetch this from an API)
-const sampleOrders = [
-  {
-    orderId: "ORD-2024-001",
-    orderDate: "2024-01-15",
-    products: [
-      {
-        id: "PROD-001",
-        name: "Wireless Noise-Canceling Headphones",
-        description: "Over-ear headphones with advanced noise cancellation",
-        image: "/api/placeholder/100/100",
-      },
-    ],
-    paymentStatus: "Paid",
-    orderStatus: "Delivered",
-  },
-  {
-    orderId: "ORD-2024-002",
-    orderDate: "2024-02-20",
-    products: [
-      {
-        id: "PROD-002",
-        name: "Smart Fitness Tracker",
-        description: "Advanced health and activity monitoring device",
-        image: "/api/placeholder/100/100",
-      },
-    ],
-    paymentStatus: "Pending",
-    orderStatus: "Processing",
-  },
-  {
-    orderId: "ORD-2024-003",
-    orderDate: "2024-03-10",
-    products: [
-      {
-        id: "PROD-003",
-        name: "Ergonomic Office Chair",
-        description: "Comfortable and adjustable workspace chair",
-        image: "/api/placeholder/100/100",
-      },
-    ],
-    paymentStatus: "Paid",
-    orderStatus: "Shipped",
-  },
-];
 
 const OrderListingPage = () => {
   const navigate = useNavigate();
+
+
+
+  const { data, isLoading, isError, error, refetch } = useGetIndividualOrderQuery();
+  
+  const orders = data || [];
+
+  console.log(orders);
 
   // Function to handle navigation to order details
   const handleOrderDetails = (orderId) => {
@@ -83,22 +48,38 @@ const OrderListingPage = () => {
     }
   };
 
+
+
+  if (isLoading) {
+          return (
+            <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+              <RotatingLines
+                visible={true}
+                height="50"
+                width="50"
+                color="grey"
+                strokeColor="#fff"
+                strokeWidth="2"
+                animationDuration="8"
+                ariaLabel="rotating-lines-loading"
+              />
+            </div>
+          );
+        }
+
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
       <h1 className="text-2xl font-bold mb-6">My Orders</h1>
 
       <div className="space-y-4">
-        {sampleOrders.map((order) => (
-          <div
-            key={order.orderId}
-            className="border-b pb-4 last:border-b-0 relative"
-          >
+        {orders.map((order, index) => (
+          <div key={index} className="border-b pb-4 last:border-b-0 relative">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               {/* Product Image */}
               <div className="w-24 h-24 flex-shrink-0">
                 <img
-                  src={order.products[0].image}
-                  alt={order.products[0].name}
+                  src={order.productImageUrl}
+                  alt="No image recieved"
                   className="w-full h-full object-cover rounded"
                 />
               </div>
@@ -108,11 +89,9 @@ const OrderListingPage = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="font-semibold text-lg">
-                      {order.products[0].name}
+                      {order.productName}
                     </h2>
-                    <p className="text-gray-600 text-sm">
-                      {order.products[0].description}
-                    </p>
+                    <p className="text-gray-600 text-sm">sample description</p>
                   </div>
                 </div>
 
@@ -120,7 +99,9 @@ const OrderListingPage = () => {
                 <div className="mt-2 flex flex-wrap gap-4">
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">Order ID: {order.orderId}</span>
+                    <span className="text-sm">
+                      Order ID: {order.orderNumber}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-gray-500" />
@@ -133,25 +114,29 @@ const OrderListingPage = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {React.createElement(
-                      getStatusDetails(order.orderStatus).icon,
-                      {
-                        className: `w-4 h-4 ${
-                          getStatusDetails(order.orderStatus).color
-                        }`,
-                      }
-                    )}
+                    {React.createElement(getStatusDetails(order.status).icon, {
+                      className: `w-4 h-4 ${
+                        getStatusDetails(order.status).color
+                      }`,
+                    })}
                     <span
                       className={`text-sm ${
-                        getStatusDetails(order.orderStatus).color
+                        getStatusDetails(order.status).color
                       }`}
                     >
-                      {getStatusDetails(order.orderStatus).text}
+                      {getStatusDetails(order.status).text}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500">
-                      {order.orderDate}
+                      {new Date(order.orderDate).toLocaleString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
                     </span>
                   </div>
                 </div>

@@ -19,6 +19,7 @@ import EnterOtp from '../components/EnterOtp.jsx'
 import EnterNewPassword from "../components/EnterNewPassword.jsx";
 import CheckoutPage from "../pages/user/Checkout.jsx";
 import OrderSuccessPage from "../pages/user/SuccessfulOrder.jsx";
+import OrderDetailsPage from "../pages/user/Order.jsx";
 
 const UserRoutes = () => {
   
@@ -44,6 +45,7 @@ const UserRoutes = () => {
         <Route path="/forgotPassword/otp" element={<EnterOtp />} />
         <Route path="/forgotPassword" element={<EnterNewPassword />} />
         <Route path="/orderSuccess/:id" element={<OrderSuccessPage />} />
+        <Route path="/orderDetail" element={<OrderDetailsPage />} />
       </Routes>
     </>
   );
