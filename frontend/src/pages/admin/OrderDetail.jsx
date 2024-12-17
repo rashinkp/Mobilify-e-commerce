@@ -1,57 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Package,
   Truck,
   CreditCard,
   MapPin,
   Tag,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
 } from "lucide-react";
 import { useParams } from "react-router";
-import { useGetAOrderQuery } from "../../redux/slices/orderApiSlice";
+import {
+  useChangeOrderStatusMutation,
+  useGetAOrderQuery,
+} from "../../redux/slices/orderApiSlice";
 import { RotatingLines } from "react-loader-spinner";
+import { errorToast, successToast } from "../../components/toast";
 
 const OrderDetails = () => {
-
   const { id: orderId } = useParams();
 
-  const { data, isLoading, isError, error, refetch } = useGetAOrderQuery({ orderId })
-  
-  const order = data || {};
+  // Fetch order data
+  const { data, isLoading, refetch } = useGetAOrderQuery({ orderId });
+  const [changeStatus] = useChangeOrderStatusMutation();
 
+  const [orderItems, setOrderItems] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setOrderItems(data.orderItems); 
+    }
+  }, [data]);
 
   // Status options for product status dropdown
-  const statusOptions = ["Processing", "Shipped", "Delivered", "Cancelled"];
+  const statusOptions = [
+    "Order placed",
+    "Processing",
+    "Shipped",
+    "Out for delivery",
+    "Delivered",
+    "Cancelled",
+    "Returned",
+  ];
 
   // Function to update product status
-  const updateProductStatus = (productId, newStatus) => {
-    setOrder((prevOrder) => ({
-      ...prevOrder,
-      products: prevOrder.products.map((product) =>
-        product.id === productId ? { ...product, status: newStatus } : product
-      ),
-    }));
+  const updateProductStatus = async (productId, newStatus) => {
+    try {
+      await changeStatus({ productId, newStatus , orderId }).unwrap();
+
+      // Update the local state after successful API call
+      setOrderItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === productId ? { ...item, status: newStatus } : item
+        )
+      );
+
+      successToast("Product status changed");
+    } catch (error) {
+      errorToast(
+        error?.message ||
+          error?.data?.message ||
+          "Error while updating order status"
+      );
+    }
   };
 
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
+  }
 
-   if (isLoading) {
-     return (
-       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-         <RotatingLines
-           visible={true}
-           height="50"
-           width="50"
-           color="grey"
-           strokeColor="#fff"
-           strokeWidth="2"
-           animationDuration="8"
-           ariaLabel="rotating-lines-loading"
-         />
-       </div>
-     );
-   }
 
   return (
     <div className="max-w-4xl  mx-auto  bg-white shadow-lg rounded-lg overflow-hidden">
@@ -60,20 +87,17 @@ const OrderDetails = () => {
         <div className="flex items-center space-x-2">
           <Package className="text-blue-600" />
           <h2 className="text-xl font-bold text-gray-800">
-            Order {order.orderId}
+            Order {data.orderId}
           </h2>
         </div>
         <span
-          className={`
-          px-3 py-1 rounded-full text-sm font-medium
-          ${
-            order.paymentStatus === "Paid"
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            data.paymentStatus === "Paid"
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
-          }
-        `}
+          }`}
         >
-          {order.paymentStatus}
+          {data.paymentStatus}
         </span>
       </div>
 
@@ -84,30 +108,28 @@ const OrderDetails = () => {
           <h3 className="font-semibold text-gray-700 flex items-center">
             <MapPin className="mr-2 text-blue-600" /> Shipping Address
           </h3>
-          <p>{order.shippingAddress.name}</p>
-          <p>{order.shippingAddress.street}</p>
+          <p>{data.shippingAddress.name}</p>
+          <p>{data.shippingAddress.street}</p>
           <p>
-            {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-            {order.shippingAddress.zip}
+            {data.shippingAddress.city}, {data.shippingAddress.state}{" "}
+            {data.shippingAddress.zip}
           </p>
-          <p>{order.shippingAddress.country}</p>
+          <p>{data.shippingAddress.country}</p>
         </div>
 
         {/* Shipping & Payment Info */}
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Truck className="text-blue-600" />
-            <span className="font-semibold">
-              Shipping: {order.shippingType}
-            </span>
+            <span className="font-semibold">Shipping: {data.shippingType}</span>
           </div>
           <div className="flex items-center space-x-2">
             <CreditCard className="text-blue-600" />
-            <span>{order.paymentMethod}</span>
+            <span>{data.paymentMethod}</span>
           </div>
           <div className="flex items-center space-x-2">
             <Tag className="text-blue-600" />
-            <span>Coupon: {order.couponCode || "No coupon applied"}</span>
+            <span>Coupon: {data.couponCode || "No coupon applied"}</span>
           </div>
         </div>
       </div>
@@ -118,27 +140,27 @@ const OrderDetails = () => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <span>Subtotal</span>
-            <span>${order?.pricing?.subtotal.toFixed(2)}</span>
+            <span>${data?.pricing?.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span>Shipping Cost</span>
-            <span>${order?.pricing?.shippingCost.toFixed(2)}</span>
+            <span>${data?.pricing?.shippingCost.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span>Tax</span>
-            <span>${order?.pricing?.tax.toFixed(2)}</span>
+            <span>${data?.pricing?.tax.toFixed(2)}</span>
           </div>
-          {order?.pricing?.couponDiscount < 0 && (
+          {data?.pricing?.couponDiscount < 0 && (
             <div className="flex justify-between text-green-600">
               <span>Coupon Discount</span>
               <span>
-                -${Math.abs(order?.pricing?.couponDiscount).toFixed(2)}
+                -${Math.abs(data?.pricing?.couponDiscount).toFixed(2)}
               </span>
             </div>
           )}
           <div className="flex justify-between font-bold text-lg border-t pt-2">
             <span>Total</span>
-            <span>${order?.pricing?.total.toFixed(2)}</span>
+            <span>${data?.pricing?.total.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -146,7 +168,7 @@ const OrderDetails = () => {
       {/* Product List */}
       <div className="p-6">
         <h3 className="font-semibold text-gray-700 mb-4">Order Items</h3>
-        {order.orderItems.map((product) => (
+        {orderItems.map((product) => (
           <div
             key={product.id}
             className="flex items-center space-x-4 py-4 border-b last:border-b-0"

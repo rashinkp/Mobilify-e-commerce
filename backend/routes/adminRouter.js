@@ -26,7 +26,7 @@ import {
 } from "../controllers/productControllers.js";
 import protect from "../middlewares/protect.js";
 import { getUser } from "../controllers/userControllers.js";
-import { getAllOrders, getAOrder } from "../controllers/orderController.js";
+import { getAllOrders, getAOrder, updateOrderStatus } from "../controllers/orderController.js";
 
 const router = express.Router();
 
@@ -71,8 +71,13 @@ router.route("/product-images/:id").put(protect("admin"), updateImages);
 
 //order related routes
 
-router.route("/order").get(protect("admin"), getAllOrders);
+router
+  .route("/order")
+  .get(protect("admin"), getAllOrders)
+  .patch(protect("admin"), updateOrderStatus);
 
 router.route("/order/:id").get(protect("admin"), getAOrder);
+
+
 
 export default router;

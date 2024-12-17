@@ -31,6 +31,8 @@ const OrderDetailsPage = () => {
 
   const order = data || {};
 
+  console.log(order);
+
   // Dynamic order stages mapping
   const orderStageMapper = {
     Pending: [
@@ -54,7 +56,7 @@ const OrderDetailsPage = () => {
       { label: "Out for Delivery", completed: false, Icon: Navigation },
       { label: "Delivered", completed: false, Icon: Home },
     ],
-    "Out for Delivery": [
+    "Out for delivery": [
       { label: "Order Placed", completed: true, Icon: ShoppingCart },
       { label: "Processing", completed: true, Icon: Settings },
       { label: "Shipped", completed: true, Icon: Plane },
@@ -77,7 +79,7 @@ const OrderDetailsPage = () => {
 
   // Determine current order stages based on status
   const orderStages =
-    orderStageMapper[order.status] || orderStageMapper["Pending"];
+    orderStageMapper[order.productStatus] || orderStageMapper["Pending"];
 
   // Handler for cancel order
   const handleCancelOrder = () => {

@@ -42,13 +42,21 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       providesTags: ["All Orders"],
     }),
     getAOrder: builder.query({
-      query: ({orderId}) => ({
+      query: ({ orderId }) => ({
         url: `${ADMIN_URL}/order/${orderId}`,
         method: "GET",
       }),
       providesTags: ["Order"],
     }),
+    changeOrderStatus: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/order`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Order"],
+    }),
   }),
 });
 
-export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery} = orderApiSlice;
+export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery,  useChangeOrderStatusMutation} = orderApiSlice;

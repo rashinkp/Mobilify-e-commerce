@@ -30,13 +30,11 @@ export const addOrder = asyncHandler(async (req, res) => {
   });
 });
 
-
-
 export const getOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const { id: orderId } = req.params;
 
-  const order = await Order.findOne({ _id: orderId, userId: userId  });
+  const order = await Order.findOne({ _id: orderId, userId: userId });
 
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
@@ -48,7 +46,6 @@ export const getOrder = asyncHandler(async (req, res) => {
 export const getAOrder = asyncHandler(async (req, res) => {
   const { id: orderId } = req.params;
 
-
   const order = await Order.findById(orderId);
 
   if (!order) {
@@ -57,7 +54,6 @@ export const getAOrder = asyncHandler(async (req, res) => {
 
   res.status(200).json(order);
 });
-
 
 export const getAllOrdersWithEachProducts = async (req, res) => {
   const { userId } = req.user;
@@ -104,9 +100,6 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
   }
 };
 
-
-
-
 export const getOrdersWithSingleProducts = async (req, res) => {
   const { userId } = req.user;
   const { prdId: productId, ordId: orderId } = req.params;
@@ -119,15 +112,15 @@ export const getOrdersWithSingleProducts = async (req, res) => {
     const orders = await Order.aggregate([
       {
         $match: {
-          userId: convertedUserId, 
-          _id: convertedOrderId, 
+          userId: convertedUserId,
+          _id: convertedOrderId,
         },
       },
       {
-        $unwind: "$orderItems", 
+        $unwind: "$orderItems",
       },
       {
-        $match: { "orderItems.productId": convertedProductId }, 
+        $match: { "orderItems.productId": convertedProductId },
       },
       {
         $project: {
@@ -137,7 +130,7 @@ export const getOrdersWithSingleProducts = async (req, res) => {
           productPrice: "$orderItems.price",
           productQuantity: "$orderItems.quantity",
           productImageUrl: "$orderItems.imageUrl",
-          productStatus:'$orderItems.status',
+          productStatus: "$orderItems.status",
           orderNumber: 1,
           shippingAddress: 1,
           paymentMethod: 1,
@@ -150,14 +143,13 @@ export const getOrdersWithSingleProducts = async (req, res) => {
       },
     ]);
 
-
     if (!orders || orders.length === 0) {
       return res
         .status(404)
         .json({ message: "No matching order found for this product" });
     }
 
-    return res.status(200).json(orders[0]); 
+    return res.status(200).json(orders[0]);
   } catch (error) {
     console.error("Error fetching single order with product:", error);
     return res
@@ -165,8 +157,6 @@ export const getOrdersWithSingleProducts = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
-
-
 
 export const getAllOrders = async (req, res) => {
   try {
@@ -185,4 +175,27 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
+export const updateOrderStatus = async (req, res) => {
+  const { productId, newStatus, orderId } = req.body;
 
+  const order = await Order.findById(orderId);
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  const product = order.orderItems.find(
+    (item) => item.id.toString() === productId
+  );
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found in this order" });
+  }
+
+  product.status = newStatus;
+
+  await order.save();
+
+   res
+     .status(200)
+     .json({ message: "Product status updated successfully", order });
+};
