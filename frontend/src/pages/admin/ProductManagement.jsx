@@ -93,64 +93,68 @@ const ProductManagement = () => {
   }
 
   return (
-    <div className="p-5 sm:p-10 flex flex-col gap-6 items-center h-full overflow-auto">
-      {/* Product Add Form */}
-      <ProductAddForm
-        isModalFormOpen={isModalFormOpen}
-        onClose={() => setIsModalFormOpen(false)}
-        onSubmit={handleAddProduct}
-      />
-
-      {/* Search Bar */}
-      <SearchBar searchTerm={setSearchTerm} />
-
-      <div className="flex justify-between w-full max-w-5xl items-center">
-        {/* Add Product Button */}
-        <Button
-          icon={<FontAwesomeIcon icon="fa-solid fa-plus" />}
-          text="Add Product"
-          action={() => setIsModalFormOpen(true)}
-        />
-
-        {/* Dropdown for Product Filter */}
-        <select
-          className="ml-4 p-2 border rounded-md shadow-md bg-white dark:bg-black dark:text-white dark:border-none"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="all">All Products</option>
-          <option value="active">Active Products</option>
-          <option value="low stock">Low Stock</option>
-        </select>
-      </div>
-
-      {/* Product List */}
-      <div className="w-full max-w-5xl mt-5">
-        <ProductList products={displayedProduct} icon="fa-solid fa-box" />
-      </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
-
-      {/* Loader Spinner */}
-      {isLoading && (
-        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-          <RotatingLines
-            visible={true}
-            height="50"
-            width="50"
-            color="grey"
-            strokeColor="#fff"
-            strokeWidth="2"
-            animationDuration="8"
-            ariaLabel="rotating-lines-loading"
+    <>
+      <div className="p-5 sm-p-10 ">
+        <SearchBar searchTerm={setSearchTerm} />
+        <div className="p-5 sm:p-10 gap-6 items-center h-full overflow-auto">
+          {/* Product Add Form */}
+          <ProductAddForm
+            isModalFormOpen={isModalFormOpen}
+            onClose={() => setIsModalFormOpen(false)}
+            onSubmit={handleAddProduct}
           />
+
+          {/* Search Bar */}
+
+          <div className="flex justify-between w-full max-w-5xl items-center">
+            {/* Add Product Button */}
+            <Button
+              icon={<FontAwesomeIcon icon="fa-solid fa-plus" />}
+              text="Add Product"
+              action={() => setIsModalFormOpen(true)}
+            />
+
+            {/* Dropdown for Product Filter */}
+            <select
+              className="ml-4 p-2 border rounded-md shadow-md bg-white dark:bg-black dark:text-white dark:border-none"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">All Products</option>
+              <option value="active">Active Products</option>
+              <option value="low stock">Low Stock</option>
+            </select>
+          </div>
+
+          {/* Product List */}
+          <div className="ms-20">
+            <ProductList products={displayedProduct} icon="fa-solid fa-box" />
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+
+          {/* Loader Spinner */}
+          {isLoading && (
+            <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+              <RotatingLines
+                visible={true}
+                height="50"
+                width="50"
+                color="grey"
+                strokeColor="#fff"
+                strokeWidth="2"
+                animationDuration="8"
+                ariaLabel="rotating-lines-loading"
+              />
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

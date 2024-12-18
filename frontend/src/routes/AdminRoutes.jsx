@@ -24,7 +24,7 @@ const AdminRoutes = () => {
   return (
     <>
       {location.pathname !== "/admin/login" && <Sidebar />}
-      <div className="ms-10 md:ms-20">
+      <div className="ms-64 p-6">
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />

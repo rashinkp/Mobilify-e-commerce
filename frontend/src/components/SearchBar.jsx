@@ -1,20 +1,40 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React from "react";
 
 const SearchBar = ({ searchTerm }) => {
   return (
-    <div className="bg-gray-200 dark:bg-darkBackground dark:border h-14 flex items-center px-4 gap-3 w-64 sm:w-[300px] md:w-[400px] lg:w-[500px] rounded-2xl shadow-md">
-      <FontAwesomeIcon
-        icon="fa-solid fa-magnifying-glass"
-        className="text-gray-500 dark:text-gray-400"
-      />
-      <input
-        type="text"
-        onChange={(e) => searchTerm(e.target.value)}
-        placeholder="Search..."
-        className="bg-transparent w-full h-full text-gray-700 dark:text-gray-300 placeholder-gray-500 dark:placeholder-gray-400 outline-none focus:ring-0"
-      />
-    </div>
+    <form className="flex items-center max-w-lg mx-auto">
+      <label htmlFor="voice-search" className="sr-only">
+        Search
+      </label>
+      <div className="relative w-full">
+        {/* Search Icon inside the input */}
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg
+            className="w-4 h-4 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+        {/* Input field */}
+        <input
+          type="text"
+          id="voice-search"
+          onChange={(e) => searchTerm(e.target.value)}
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:outline-none block w-full pl-10 pr-2.5 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          placeholder="Search something..."
+        />
+      </div>
+    </form>
   );
 };
 

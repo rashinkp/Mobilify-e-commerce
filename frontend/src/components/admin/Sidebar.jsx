@@ -1,177 +1,242 @@
-import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 import {
-  faTachometerAlt,
-  faUsers,
-  faBox,
-  faShoppingCart,
-  faChartLine,
-  faTags,
-  faUserCircle,
-  faCog,
-  faMoon,
-  faSun,
-  faLayerGroup,
-  faListUl,
-} from "@fortawesome/free-solid-svg-icons";
+  LayoutDashboard,
+  Users,
+  Box,
+  ShoppingCart,
+  BarChart3,
+  Tags,
+  User,
+  Settings,
+  LogOut,
+  Layers,
+  List,
+  Sun,
+  Moon
+} from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleTheme } from "../../redux/slices/themeSlice.js";
-import SideBarkLink from "./SideBarkLink.jsx";
-import { Link, useNavigate } from "react-router-dom";
-import { useAdminLogoutMutation } from "../../redux/slices/AdminApiSlices.js";
-import { adminLogout } from "../../redux/slices/authAdmin.js";
-import { successToast } from "../toast/index.js";
+import { toggleTheme } from "../../redux/slices/themeSlice";
+import { useAdminLogoutMutation } from "../../redux/slices/adminApiSlices";
+import { adminLogout } from "../../redux/slices/authAdmin";
+import { successToast } from "../toast/index";
+
+const SidebarLink = ({ icon: Icon, label, path }) => {
+  const location = useLocation();
+  const isActive = location.pathname === path;
+
+  return (
+    <div
+      className={`
+        group flex items-center 
+        px-4 py-3 
+        transition-colors duration-200 
+        ${
+          isActive
+            ? "  text-blue-600"
+            : "  text-gray-600 dark:text-gray-300"
+        }
+        rounded-lg
+        cursor-pointer
+      `}
+    >
+      <Icon
+        className={`
+          mr-3
+          ${isActive ? "text-blue-600" : "text-white dark:text-gray-400"}
+        `}
+        size={20}
+      />
+      <span
+        className={`
+          text-sm font-medium 
+          ${isActive ? "text-blue-600" : "text-white dark:text-gray-200"}
+        `}
+      >
+        {label}
+      </span>
+    </div>
+  );
+};
+
+
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const theme = useSelector((state) => state.theme.theme);
 
   const [logoutApiCall] = useAdminLogoutMutation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const theme = useSelector((state) => state.theme.theme);
 
   const handleLogout = async () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(adminLogout());
-      successToast("Logout successfull");
+      successToast("Logout successful");
       navigate("/admin/login");
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
+
+  const toggleThemeHandler = () => {
+    dispatch(toggleTheme());
+  };
+
+  const sidebarLinks = [
+    {
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      path: "/admin",
+    },
+    {
+      icon: Users,
+      label: "User Management",
+      path: "/admin/manage-users",
+    },
+    {
+      icon: Box,
+      label: "Product Management",
+      path: "/admin/manage-products",
+    },
+    {
+      icon: ShoppingCart,
+      label: "Order Management",
+      path: "/admin/manage-orders",
+    },
+    {
+      icon: Layers,
+      label: "Category Management",
+      path: "/admin/manage-category",
+    },
+    {
+      icon: List,
+      label: "Brand Management",
+      path: "/admin/manage-brands",
+    },
+    {
+      icon: BarChart3,
+      label: "Sales",
+      path: "/admin/manage-sales",
+    },
+    {
+      icon: Tags,
+      label: "Coupons",
+      path: "/admin/manage-coupon",
+    },
+    {
+      icon: User,
+      label: "Admin Profile",
+      path: "/admin/profile",
+    },
+  ];
+
   return (
     <div
-      className={`h-screen fixed pe-2 ${
-        isSidebarOpen ? "w-64" : "w-16"
-      } bg-gray-100 dark:bg-black dark:text-white text-darkText  flex flex-col`}
+      className={`
+        fixed 
+        left-0 
+        top-0 
+        h-screen 
+        w-64
+        bg-black 
+        text-white
+        dark:bg-gray-900 
+        flex 
+        flex-col 
+        dark:border-gray-800
+        ps-3
+        pt-4 
+        z-50
+      `}
     >
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700">
-        <h1 className={`text-lg font-bold ${!isSidebarOpen && "hidden"}`}>
+      <div
+        className="
+          flex 
+          items-center 
+          px-4 
+          py-4 
+          dark:border-gray-800
+        "
+      >
+        <h1
+          className="
+            text-xl 
+            font-bold 
+            text-white 
+            dark:text-white
+          "
+        >
           Admin Panel
         </h1>
-        <button
-          className="text-darkText hover:text-black dark:text-white"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          <FontAwesomeIcon icon="fa-solid fa-bars" />
-        </button>
       </div>
 
       {/* Sidebar Links */}
-      <div className="flex-1 px-2 space-y-2 mt-4">
-        <Link to="/admin" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faTachometerAlt}
-            label="Dashboard"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin"
-          />
-        </Link>
+      <nav className="flex-1 py-4">
+        <div className="space-y-2">
+          {sidebarLinks.map((link, index) => (
+            <Link key={index} to={link.path}>
+              <SidebarLink
+                icon={link.icon}
+                label={link.label}
+                path={link.path}
+              />
+            </Link>
+          ))}
+        </div>
+      </nav>
 
-        <Link to="/admin/manage-users" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faUsers}
-            label="User Management"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-users"
-          />
-        </Link>
-
-        <Link
-          to="/admin/manage-products"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          <SideBarkLink
-            icon={faBox}
-            label="Product Management"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-products"
-          />
-        </Link>
-
-        <Link to="/admin/manage-orders" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faShoppingCart}
-            label="Order Management"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-orders"
-          />
-        </Link>
-
-        <Link
-          to="/admin/manage-category"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          <SideBarkLink
-            icon={faLayerGroup}
-            label="Category Management"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-category"
-          />
-        </Link>
-
-        <Link to="/admin/manage-brands" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faListUl}
-            label="Brand Management"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-brands"
-          />
-        </Link>
-
-        <Link to="/admin/manage-sales" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faChartLine}
-            label="Sales"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-sales"
-          />
-        </Link>
-
-        <Link to="/admin/manage-coupon" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faTags}
-            label="Coupons"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/manage-coupon"
-          />
-        </Link>
-
-        <Link to="/admin/profile" onClick={() => setIsSidebarOpen(false)}>
-          <SideBarkLink
-            icon={faUserCircle}
-            label="Admin Profile"
-            isSidebarOpen={isSidebarOpen}
-            path="/admin/profile"
-          />
-        </Link>
-      </div>
-
-      {/* Settings Section */}
-      <div className="border-t border-gray-700 p-4">
-        <button
-          className="flex items-center justify-between w-full text-darkText dark:text-white "
-          onClick={toggleTheme}
+      {/* Settings and Logout Section */}
+      <div className=" dark:border-gray-800 p-4 space-y-3">
+        {/* Theme Toggle */}
+        <div
+          className={`
+            flex 
+            items-center 
+            justify-between
+            cursor-pointer
+            p-2 
+            rounded-lg
+          `}
+          onClick={toggleThemeHandler}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faCog} className="mr-2" />
-            <span className={`${!isSidebarOpen && "hidden"}`}>Settings</span>
+            <Settings
+              className="text-white dark:text-gray-400 mr-3"
+              size={20}
+            />
+            <span className="text-sm text-white dark:text-gray-300">
+              Settings
+            </span>
           </div>
-          <FontAwesomeIcon
-            icon={theme === "light" ? faSun : faMoon}
-            onClick={() => dispatch(toggleTheme())}
-          />
-        </button>
-      </div>
-      <div className="p-4">
+          {theme === "light" ? (
+            <Sun className="text-yellow-500" size={20} />
+          ) : (
+            <Moon className="text-indigo-500" size={20} />
+          )}
+        </div>
+
+        {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600`}
+          className={`
+            w-full 
+            flex 
+            px-4
+            py-2 
+            hover:text-red-600
+            text-white
+            dark:text-gray-300
+            rounded-lg 
+            dark:hover:text-red-600
+            transition-colors
+            items-center 
+            space-x-2
+          `}
         >
-          <FontAwesomeIcon icon="fa-solid fa-right-from-bracket" />
-          {isSidebarOpen && <span>Logout</span>}
+          <LogOut size={20} />
+          <span className="text-sm">Logout</span>
         </button>
       </div>
     </div>

@@ -1,23 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ChevronRight } from "lucide-react";
 
-const ListItem = ({
+const Table = ({
   title,
   items = [],
-  controles = () => [],
   columns,
-  icon,
+  icon: Icon,
   textColor,
   actions,
-  clickList,
+  clickRow,
 }) => {
   return (
-    <div className={`rounded-lg p-4 sm:p-8 ${textColor || "text-gray-800"}`}>
+    <div className={`p-4 ${textColor || "text-gray-800"}`}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div className="flex items-center mb-4 sm:mb-0">
-          {icon && <FontAwesomeIcon icon={icon} className="mr-2 text-xl" />}
+          {Icon && <Icon className="mr-2 text-xl text-gray-600" size={24} />}
           <h2 className="text-lg sm:text-xl font-semibold text-center sm:text-left">
             {title}
           </h2>
@@ -25,64 +24,92 @@ const ListItem = ({
         {actions && <div className="flex space-x-2">{actions}</div>}
       </div>
 
-      {/* List or No Users Found */}
+      {/* Table or No Data Found */}
       {items.length === 0 ? (
-        <p className="text-center text-white">No data found</p>
+        <p className="text-center text-gray-500">No data found</p>
       ) : (
-        <ul className="space-y-6">
-          {items.map((item, index) => (
-            <li
-              onClick={() => clickList(item)}
-              key={index}
-              className="p-4 border  dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer dark:text-white text-darkText"
-            >
-              <div className="flex flex-col md:flex-row justify-between items-start sm:items-center space-y-4 md:space-y-0">
-                {/* Render each column */}
-                <div className="flex justify-between lg:px-10 flex-col lg:flex-row sm:items-center lg:space-x-8 flex-grow">
+        <div className="w-full">
+          <table className="w-full text-sm text-left">
+            <thead>
+              <tr className="border-b">
+                {columns.map((column, index) => (
+                  <th
+                    key={index}
+                    className="px-4 py-3 text-gray-600 font-medium uppercase text-xs"
+                  >
+                    {column.label}
+                  </th>
+                ))}
+                {/* Action column */}
+                <th className="px-4 py-3 text-gray-600 font-medium uppercase text-xs">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr
+                  key={index}
+                  className="border-b hover:bg-gray-50 transition-colors"
+                  onClick={() => clickRow(item)}
+                >
                   {columns.map((column) => (
-                    <div
-                      key={column.key}
-                      className={`flex flex-col items-start text-center sm:text-left ${
-                        column.className || ""
-                      }`}
-                    >
-                      <span className="text-sm font-medium text-gray-500">
-                        {column.label && column.label}
-                      </span>
-                      <span className="font-bold text-md truncate max-w-[150px]">
-                        {column.render
-                          ? column.render(item[column.key])
-                          : item[column.key] || "N/A"}
-                      </span>
+                    <td key={column.key} className="px-4 py-4 text-gray-700">
+                      {column.render
+                        ? column.render(item[column.key])
+                        : item[column.key] || "N/A"}
+                    </td>
+                  ))}
+                  {/* Action Buttons */}
+                  <td className="px-4 py-4">
+                    <div className="flex items-center space-x-2">
+                      {item.actions &&
+                        item.actions.map((action, index) => (
+                          <button
+                            key={index}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              action.action();
+                            }}
+                            className={`
+                              ${
+                                action.style ||
+                                "text-gray-600 hover:text-blue-600"
+                              }
+                              flex items-center space-x-1
+                              text-sm
+                            `}
+                          >
+                            {action.icon && (
+                              <action.icon size={16} className="mr-1" />
+                            )}
+                            <span>{action.text}</span>
+                          </button>
+                        ))}
+                      <ChevronRight
+                        size={16}
+                        className="text-gray-400 ml-auto"
+                      />
                     </div>
-                  ))}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-4">
-                  {controles(item).map((control, index) => (
-                    <button
-                      key={index}
-                      onClick={control.action}
-                      className={`${control.style} text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-transform transform hover:scale-105 my-1`}
-                    >
-                      {control.icon && (
-                        <FontAwesomeIcon
-                          icon={control.icon}
-                          className="text-md"
-                        />
-                      )}
-                      <span>{control.text}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 };
 
-export default ListItem;
+Table.propTypes = {
+  title: PropTypes.string.isRequired,
+  items: PropTypes.array.isRequired,
+  columns: PropTypes.array.isRequired,
+  icon: PropTypes.elementType,
+  textColor: PropTypes.string,
+  actions: PropTypes.array,
+  clickRow: PropTypes.func.isRequired,
+};
+
+export default Table;

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import ListItem from "../admin/ListItem";
+import Table from "../admin/ListItem.jsx";
 import { useNavigate } from "react-router";
-import noImage from '../../assets/noImage.png'
+import noImage from "../../assets/noImage.png";
 
-const ProductList = ({ products, icon }) => {
+const ProductList = ({ products}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ const ProductList = ({ products, icon }) => {
   const productColumns = [
     {
       key: "images",
+      label: "Image",
       render: (img) => (
         <img
           src={img[0]?.secure_url || noImage}
@@ -19,10 +20,10 @@ const ProductList = ({ products, icon }) => {
         />
       ),
     },
-    { key: "name", label: "Name", render: (value) => value },
-    { key: "model", label: "Model", render: (value) => value },
-    { key: "price", label: "Price", render: (value) => value },
-    { key: "stock", label: "Stock", render: (value) => value },
+    { key: "name", label: "Name" },
+    { key: "model", label: "Model" },
+    { key: "price", label: "Price" },
+    { key: "stock", label: "Stock" },
     {
       key: "isSoftDelete",
       label: "Status",
@@ -38,15 +39,10 @@ const ProductList = ({ products, icon }) => {
     },
   ];
 
-
   const handleClick = (product) => {
     navigate(`/admin/product/${product._id}`);
   };
 
-
-
-
-    
   return (
     <>
       {isModalOpen && (
@@ -69,13 +65,11 @@ const ProductList = ({ products, icon }) => {
           ]}
         />
       )}
-      <ListItem
-        title="Product List"
+      <Table
         items={products || []}
         columns={productColumns}
-        icon={icon}
         textColor="text-skyBlue"
-        clickList={handleClick}
+        clickRow={handleClick}
       />
     </>
   );

@@ -105,11 +105,10 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
       <div className="ms-10">
         <BrudCrump list={brudCrumpList} />
       </div>
+      <div>
+        <SearchBar searchTerm={setSearchTerm} />
+      </div>
       <div className="flex flex-col items-center">
-        <div className="mb-8 w-full flex justify-center max-w-7xl px-4">
-          <SearchBar searchTerm={setSearchTerm} />
-        </div>
-
         <div className="flex flex-wrap justify-between w-full max-w-7xl mb-6 px-4 dark:text-lightText">
           <div className="flex flex-wrap gap-4 mb-4 md:mb-0 items-center w-full md:w-auto">
             <div className="flex items-center">
