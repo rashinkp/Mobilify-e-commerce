@@ -145,13 +145,19 @@ export const getOrdersWithSingleProducts = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find();
+    const { page = 1, limit = 3 } = req.query;
+
+    const skip = (page - 1) * limit;
+    
+    const orders = await Order.find().skip(Number(skip)).limit(Number(limit));
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found" });
     }
 
-    return res.status(200).json(orders);
+    const totalCount = await Order.countDocuments();
+
+    return res.status(200).json({orders , totalCount});
   } catch (error) {
     console.error("Error fetching all orders:", error);
     return res

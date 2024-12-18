@@ -1,26 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SearchBar from "../../components/SearchBar";
 import ListItem from "../../components/admin/ListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGetAllOrdersQuery } from "../../redux/slices/orderApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router";
+import Pagination from "../../components/Pagination";
 
 const OrderManagement = () => {
+   const pageSize = 10; 
   const navigate = useNavigate();
-  const { data, isLoading, isError, error, refetch } = useGetAllOrdersQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const { data, isLoading, isError, error, refetch } = useGetAllOrdersQuery({
+    page:currentPage || 1,
+    limit : pageSize,
+  });
 
-  const orders = data || [];
-  1;
+  const {orders , totalCount=0} = data || [];
+  
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  }
 
 
-  const handleChange = (userId) => {
-    console.log(`Changing order with ID: ${userId}`);
-  };
+   useEffect(() => {
+      if (totalCount) {
+        setTotalPages(Math.ceil(totalCount / pageSize))
+      }
+    }, [totalCount]);
 
-  const handleDelete = (userId) => {
-    console.log(`Deleting user with ID: ${userId}`);
-  };
+
+
+
+  // const handleChange = (userId) => {
+  //   console.log(`Changing order with ID: ${userId}`);
+  // };
+
+  // const handleDelete = (userId) => {
+  //   console.log(`Deleting user with ID: ${userId}`);
+  // };
 
   const orderControle = (userId) => [
     {
@@ -157,6 +179,8 @@ const OrderManagement = () => {
     },
   ];
 
+  console.log(totalPages , totalCount)
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -187,6 +211,13 @@ const OrderManagement = () => {
           icon="fa-cart-shopping"
           textColor="text-skyBlue"
           clickList={handleClick}
+        />
+      </div>
+      <div className="flex justify-center mb-20">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
         />
       </div>
     </div>

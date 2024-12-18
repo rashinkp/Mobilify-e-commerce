@@ -35,8 +35,8 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Orders"],
     }),
     getAllOrders: builder.query({
-      query: () => ({
-        url: `${ADMIN_URL}/order`,
+      query: ({page = 1 , limit =3}) => ({
+        url: `${ADMIN_URL}/order?page=${page}&limit=${limit}`,
         method: "GET",
       }),
       providesTags: ["All Orders"],
@@ -54,7 +54,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Orders",'Order'],
+      invalidatesTags: ["Orders",'Order','All Orders'],
     }),
   }),
 });
