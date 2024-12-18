@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight, Eye, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductAddForm from "../../components/product/ProductAddForm.jsx";
 import SearchBar from "../../components/SearchBar";
@@ -65,6 +65,9 @@ const ProductManagement = () => {
     }
   };
 
+
+  
+
   return (
     <div className="p-6">
       {/* Breadcrumbs */}
@@ -128,7 +131,7 @@ const ProductManagement = () => {
 
         {/* Product List */}
         <div>
-          <ProductList products={displayedProduct} icon="fa-solid fa-box" />
+          <ProductList products={displayedProduct} icon="fa-solid fa-box"  />
         </div>
 
         {/* Pagination */}

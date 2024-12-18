@@ -7,6 +7,8 @@ import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RotatingLines } from "react-loader-spinner";
 import { errorToast, successToast } from "../../components/toast/index.js";
+import { ChevronRight, Home } from "lucide-react";
+import { Link } from "react-router";
 
 const CategoryManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
@@ -18,8 +20,7 @@ const CategoryManagement = () => {
       ? categories
       : categories?.filter((category) =>
           category.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-  
+        );
 
   const handleAddCategory = async (data) => {
     try {
@@ -32,20 +33,43 @@ const CategoryManagement = () => {
   };
 
   return (
-    <div className="p-5 sm:p-10 flex flex-col gap-6 items-center">
+    <div className="">
+      <div className="flex items-center mb-6 text-sm text-gray-500">
+        <Link to="/admin" className="flex items-center hover:text-blue-600">
+          <Home size={16} className="mr-2" />
+          Dashboard
+        </Link>
+        <ChevronRight size={16} className="mx-2" />
+        <span className="text-gray-700">Category Management</span>
+      </div>
+
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Category Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
+          Manage and monitor your category
+        </p>
+      </div>
       <CategoryForm
         isModalFormOpen={isModalFormOpen}
         onClose={() => setIsModalFormOpen(false)}
         onSubmit={handleAddCategory}
       />
       <SearchBar searchTerm={setSearchTerm} />
-      <Button
-        icon={<FontAwesomeIcon icon="fa-solid fa-layer-group" />}
-        text="Add Category"
-        colorStyle="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
-        action={() => setIsModalFormOpen(true)}
-      />
-      <div className="w-full max-w-5xl">
+
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsModalFormOpen(true)}
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg flex items-center gap-2 transition duration-200"
+        >
+          <FontAwesomeIcon icon="fa-solid fa-plus" />
+          Add Category
+        </button>
+      </div>
+
+      <div className="">
         <CategoryList
           categories={displayedCategory}
           icon="fa-solid fa-layer-group"

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Table from "../admin/ListItem.jsx";
 import { useNavigate } from "react-router";
 import noImage from "../../assets/noImage.png";
+import { Eye } from "lucide-react";
 
 const ProductList = ({ products }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,9 +63,19 @@ const ProductList = ({ products }) => {
     },
   ];
 
-  const handleClick = (product) => {
-    navigate(`/admin/product/${product._id}`);
-  };
+
+   const getProductControls = (product) => {
+     return [
+       {
+         action: () => {
+           navigate(`/admin/product/${product._id}`);
+         },
+         style: "",
+         icon: <Eye className="text-gray-500 hover:text-blue-600" />,
+       },
+     ];
+   };
+
 
   return (
     <div className="w-full">
@@ -92,8 +103,8 @@ const ProductList = ({ products }) => {
         items={products || []}
         columns={productColumns}
         textColor="text-skyBlue"
-        clickRow={handleClick}
         className="w-full"
+        controles={getProductControls}
       />
     </div>
   );

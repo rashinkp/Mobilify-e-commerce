@@ -124,10 +124,8 @@ const CategoryList = ({ categories, icon }) => {
         />
       )}
       <ListItem
-        title="Category List"
         items={categories || []}
         columns={categoryColumns}
-        icon={icon}
         textColor="text-skyBlue"
         controles={getCategoryControles}
       />

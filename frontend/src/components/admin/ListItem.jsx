@@ -10,6 +10,7 @@ const Table = ({
   textColor,
   actions,
   clickRow,
+  controles,
 }) => {
   return (
     <div className={`p-4 ${textColor || "text-gray-800"}`}>
@@ -31,17 +32,17 @@ const Table = ({
         <div className="w-full">
           <table className="w-full text-sm text-left">
             <thead>
-              <tr className="border-b">
+              <tr className="border-b ">
                 {columns.map((column, index) => (
                   <th
                     key={index}
-                    className="px-4 py-3 text-gray-600 font-medium uppercase text-xs"
+                    className="px-4 py-3  text-gray-800 font-medium uppercase text-xs"
                   >
                     {column.label}
                   </th>
                 ))}
                 {/* Action column */}
-                <th className="px-4 py-3 text-gray-600 font-medium uppercase text-xs">
+                <th className="px-4 py-3 text-gray-800 font-medium uppercase text-xs">
                   Actions
                 </th>
               </tr>
@@ -62,34 +63,22 @@ const Table = ({
                   ))}
                   {/* Action Buttons */}
                   <td className="px-4 py-4">
-                    <div className="flex items-center space-x-2">
-                      {item.actions &&
-                        item.actions.map((action, index) => (
+                    <div className="flex items-center ">
+                      {/* Render controles if provided */}
+                      {controles &&
+                        controles(item).map((control, index) => (
                           <button
                             key={index}
                             onClick={(e) => {
                               e.stopPropagation();
-                              action.action();
+                              control.action();
                             }}
-                            className={`
-                              ${
-                                action.style ||
-                                "text-gray-600 hover:text-blue-600"
-                              }
-                              flex items-center space-x-1
-                              text-sm
-                            `}
+                            className={`py-1 flex-1 rounded text-white ${control.style}`}
                           >
-                            {action.icon && (
-                              <action.icon size={16} className="mr-1" />
-                            )}
-                            <span>{action.text}</span>
+                            {control.icon}
+                            {control.text}
                           </button>
                         ))}
-                      <ChevronRight
-                        size={16}
-                        className="text-gray-400 ml-auto"
-                      />
                     </div>
                   </td>
                 </tr>
@@ -103,13 +92,10 @@ const Table = ({
 };
 
 Table.propTypes = {
-  title: PropTypes.string.isRequired,
   items: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,
-  icon: PropTypes.elementType,
   textColor: PropTypes.string,
   actions: PropTypes.array,
-  clickRow: PropTypes.func.isRequired,
 };
 
 export default Table;

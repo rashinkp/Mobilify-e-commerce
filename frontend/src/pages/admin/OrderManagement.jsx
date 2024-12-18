@@ -6,7 +6,8 @@ import { useGetAllOrdersQuery } from "../../redux/slices/orderApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router";
 import Pagination from "../../components/Pagination";
-import { ChevronRight, Home, Link } from "lucide-react";
+import { ChevronRight, Home } from "lucide-react";
+import { Link } from "react-router";
 
 const OrderManagement = () => {
   const pageSize = 10;

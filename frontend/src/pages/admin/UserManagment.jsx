@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronRight, Home } from "lucide-react";
+import { Ban, ChevronRight, DatabaseBackup, Eye, Home } from "lucide-react";
 import SearchBar from "../../components/SearchBar";
 import ListItem from "../../components/admin/ListItem";
 import {
@@ -74,25 +74,30 @@ const UserManagement = () => {
         text: isBlocked ? "Unblock" : "Block",
         action: () => {
           setSelectedUser(user);
-          handleBlock(user);
+          
         },
-        style: "bg-yellow-700 hover:bg-yellow-800",
-        icon: "fa-solid fa-ban",
+        style: "",
+        icon: <Eye className="text-gray-500 hover:text-blue-600" />,
       },
       {
         text: "Delete",
         action: () => {
-          setSelectedUser(user);
-          openModal();
+           setSelectedUser(user);
+           handleBlock(user);
         },
-        style: "bg-red-700 hover:bg-red-800",
-        icon: "fa-solid fa-trash",
+        style: "",
+        icon: isBlocked ? (
+          <DatabaseBackup className="text-gray-500 hover:text-green-600" size={20} />
+        ) : (
+          <Ban className="text-gray-500 hover:text-red-600" size={20} />
+        ),
       },
     ];
   };
 
   const userColumns = [
     {
+      label:'Image',
       key: "picture",
       render: (img) =>
         img?.secure_url ? (
