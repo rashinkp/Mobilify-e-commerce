@@ -26,18 +26,12 @@ const OrderDetails = () => {
     "Returned",
   ];
 
+    const paymentStatusOptions = ["Pending", "Success", "Refunded"];
+
   // Function to update product status
   const updateProductStatus = async (newStatus) => {
     try {
       await changeStatus({ newStatus, orderId }).unwrap();
-
-      // Update the local state after successful API call
-      // setOrderItems((prevItems) =>
-      //   prevItems.map((item) =>
-      //     item.id === productId ? { ...item, status: newStatus } : item
-      //   )
-      // );
-
       successToast("Product status changed");
     } catch (error) {
       errorToast(
@@ -48,6 +42,26 @@ const OrderDetails = () => {
       console.log(error);
     }
   };
+
+
+  const updatePaymentStatus = async (newPaymentStatus) => {
+
+    try {
+
+      await changeStatus({ newPaymentStatus, orderId }).unwrap();
+      successToast("Product status changed");
+    } catch (error) {
+      errorToast(
+        error?.message ||
+          error?.data?.message ||
+          "Error while updating order status"
+      );
+      console.log(error);
+    }
+  }
+
+
+  
 
   if (isLoading) {
     return (
@@ -74,12 +88,12 @@ const OrderDetails = () => {
           <div className="flex items-center space-x-2">
             <Package className="text-blue-600" />
             <h2 className="text-xl font-bold text-gray-800">
-              Order {data.orderId}
+              Order {data.orderNumber}
             </h2>
           </div>
           <span
             className={`px-3 py-1 rounded-full text-sm font-medium ${
-              data.paymentStatus === "Paid"
+              data.paymentStatus === "Success"
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
             }`}
@@ -178,6 +192,22 @@ const OrderDetails = () => {
                   className="border rounded px-2 py-1 text-sm"
                 >
                   {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center space-x-2 mt-2">
+                <span>Payement Status:</span>
+                <select
+                  value={data.paymentStatus}
+                  onChange={(e) => updatePaymentStatus(e.target.value)}
+                  className="border rounded px-2 py-1 text-sm"
+                >
+                  {paymentStatusOptions.filter((status) => (
+                    status !== 'Refunded' || data.status === 'Cancelled' || data.status === 'Returned'
+                  )).map((status) => (
                     <option key={status} value={status}>
                       {status}
                     </option>

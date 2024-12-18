@@ -2,12 +2,12 @@ import asyncHandler from "express-async-handler";
 import Order from "../models/orderSchema.js";
 import Cart from "../models/cartSchema.js";
 import mongoose from "mongoose";
+import Product from "../models/productSchema.js";
 
 export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const data = req.body;
 
-  console.log(data);
 
   // Check required inputs
   if (!userId || !data || !data.orderItems) {
@@ -20,6 +20,7 @@ export const addOrder = asyncHandler(async (req, res) => {
     // Destructure required fields
     const { orderItems, shippingAddress, shipping, paymentMethod, couponCode } =
       data;
+    
 
     // Prepare and store each product as a separate order document
     const orderDocuments = orderItems.map((item) => ({
@@ -29,7 +30,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       model: item.model,
       price: item.price,
       quantity: item.quantity,
-      imageUrl: item.imageUrl,
+      imageUrl: item.imageUrl, 
       shipping: shipping,
       paymentMethod: paymentMethod,
       shippingAddress: shippingAddress,
@@ -39,6 +40,25 @@ export const addOrder = asyncHandler(async (req, res) => {
 
     // Insert all orders into the database
     const createdOrders = await Order.insertMany(orderDocuments);
+
+    
+    //updating stock after order
+    for (const item of orderDocuments) {
+      const product = await Product.findById(item.productId);
+      
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Insufficient stock for product: ${product.name}`,
+        });
+      }
+
+      product.stock -= item.quantity;
+      await product.save();
+    }
 
     // Clear the user's cart
     const cart = await Cart.findOne({ userId });
@@ -60,7 +80,6 @@ export const addOrder = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 export const getOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
@@ -148,7 +167,7 @@ export const getAllOrders = async (req, res) => {
     const { page = 1, limit = 3 } = req.query;
 
     const skip = (page - 1) * limit;
-    
+
     const orders = await Order.find().skip(Number(skip)).limit(Number(limit));
 
     if (!orders || orders.length === 0) {
@@ -157,7 +176,7 @@ export const getAllOrders = async (req, res) => {
 
     const totalCount = await Order.countDocuments();
 
-    return res.status(200).json({orders , totalCount});
+    return res.status(200).json({ orders, totalCount });
   } catch (error) {
     console.error("Error fetching all orders:", error);
     return res
@@ -167,18 +186,27 @@ export const getAllOrders = async (req, res) => {
 };
 
 export const updateOrderStatus = async (req, res) => {
-  const { newStatus, orderId } = req.body;
+  const { newStatus = "", newPaymentStatus = "", orderId } = req.body;
 
   const order = await Order.findById(orderId);
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }
 
-  order.status = newStatus;
+  order.status = newStatus || order.status;
+  order.paymentStatus = newPaymentStatus || order.paymentStatus;
+
+  if (order.status === "Delivered") {
+    order.paymentStatus = 'Success';
+  }
+
+  if ((order.status !== "Cancelled" || order.status !== 'Returned') && order.paymentStatus === 'Refunded') {
+    order.paymentStatus = "Pending";
+  }
 
   await order.save();
 
-   res
-     .status(200)
-     .json({ message: "Product status updated successfully", order });
+  res
+    .status(200)
+    .json({ message: "Product status updated successfully", order });
 };

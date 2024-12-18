@@ -49,7 +49,6 @@ const CheckoutPage = () => {
 
   const products = cartData.cartItems || [];
 
-  console.log(products);
   
 
   useEffect(() => {
@@ -110,7 +109,7 @@ const CheckoutPage = () => {
 
   const handleSubmit = async() => {
    const orderItems = products.map((product) => ({
-     productId: product._id,
+     productId: product.productDetails?._id,
      name: product?.productDetails?.name,
      model: product?.productDetails?.model,
      price: product?.productDetails?.price,
@@ -152,7 +151,7 @@ const CheckoutPage = () => {
       successToast('Order placed successfully');
       navigate(`/user/orderSuccess/`);
     } catch (error) {
-      errorToast(error.message || error.data || 'Error while placing order')
+      errorToast(error.message || error.data.message || 'Error while placing order')
       console.log(error)
     }
 

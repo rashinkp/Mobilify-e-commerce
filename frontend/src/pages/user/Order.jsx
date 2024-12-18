@@ -136,9 +136,9 @@ const OrderDetailsPage = () => {
 
   return (
     <div className="container mx-auto p-6 min-h-screen">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-black dark:text-white shadow-lg rounded-xl overflow-hidden">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-transparent dark:text-white   ">
         {/* Order Header with Action Buttons */}
-        <div className="bg-black text-white p-4 flex justify-between items-center">
+        <div className=" border-b-2 p-4 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Order Details</h2>
             <p className="text-sm">Order ID: {order.orderNumber}</p>
@@ -162,8 +162,8 @@ const OrderDetailsPage = () => {
               className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
               ${
                 isReturnDisabled
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-green-500 hover:bg-green-600 text-white"
+                  ? " text-gray-500 cursor-not-allowed"
+                  : " text-black hover:text-green-600 dark:hover:text-green-600 dark:text-white"
               }`}
               disabled={isReturnDisabled}
               title="Return or Replace Item"
@@ -177,14 +177,14 @@ const OrderDetailsPage = () => {
               className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300
               ${
                 isCancelDisabled
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-red-500 hover:bg-red-600 text-white"
+                  ? "text-gray-500 cursor-not-allowed"
+                  : "text-black hover:text-red-600 dark:hover:text-red-600 dark:text-white"
               }`}
               onClick={() => setShowCancelConfirmation(true)}
               disabled={isCancelDisabled}
               title="Cancel Order"
             >
-              <X className="mr-2 w-5 h-5" />
+              <X className="mr-1 w-5 h-5 " />
               Cancel Order
             </button>
           </div>
@@ -224,7 +224,7 @@ const OrderDetailsPage = () => {
 
         {/* Rest of the existing component remains the same */}
         {/* Order Status Progress Bar */}
-        <div className="p-6  dark:bg-black">
+        <div className="p-6  dark:bg-transparent">
           <div className="flex items-center justify-between relative">
             {orderStages.map((stage, index) => (
               <div
