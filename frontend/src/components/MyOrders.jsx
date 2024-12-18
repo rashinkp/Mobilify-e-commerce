@@ -93,10 +93,10 @@ const OrderListingPage = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="font-semibold text-lg">
-                      {order.productName}
+                      {order.name}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      sample description
+                      {order.model}
                     </p>
                   </div>
                 </div>

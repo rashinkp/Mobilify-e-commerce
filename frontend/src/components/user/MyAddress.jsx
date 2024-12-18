@@ -7,16 +7,11 @@ import {
 } from "../../redux/slices/addressApiSlice.js";
 import { errorToast, successToast } from "../toast";
 import { useSelector } from "react-redux";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { addressValidationSchema } from "../../validationSchemas";
-import { useGetUserQuery } from "../../redux/slices/userApiSlices.js";
-import { RotatingLines } from "react-loader-spinner";
 import Modal from "../Modal.jsx";
 import AddressEditForm from "./AddressEditForm.jsx";
-
-// Validation schema using yup
+import AddressAddForm from "./AddAddressForm.jsx";
+import { RotatingLines } from "react-loader-spinner";
+import { addressValidationSchema } from "../../validationSchemas.js";
 
 const MyAddress = () => {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
@@ -25,35 +20,35 @@ const MyAddress = () => {
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(null);
   const [deleteAddress] = useDeleteAddressMutation();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [addAddress] = useAddAddressMutation();
-  const [isEditModalOpen , setIsEditModalOpen]  = useState(false)
 
   const { data, isLoading, isError, error } = useGetAddressQuery(userInfo.id);
   const { addresses } = data || {};
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({
-    defaultValues: {
-      label: "",
-      street: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "",
-    },
-    resolver: yupResolver(addressValidationSchema),
-  });
+  const handleDeleteAddress = async () => {
+    const { _id: addressId } = currentAddress;
+
+    try {
+      await deleteAddress(addressId);
+      successToast("Address deleted successfully");
+      setIsDelModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting address:", error);
+      errorToast(
+        error?.data?.message ||
+          error?.message ||
+          "Error occurred while deleting address"
+      );
+      setIsDelModalOpen(false);
+    }
+  };
 
   const handleAddAddress = async (data) => {
     console.log("Form Submitted:", data);
     try {
       await addAddress({ data, userId });
       successToast("Address added successfully");
-      reset(); // Reset form fields after successful submit
     } catch (error) {
       errorToast(
         error?.data?.message ||
@@ -87,29 +82,6 @@ const MyAddress = () => {
     );
   }
 
-
-
-  const handleDeleteAddress = async () => {
-    const { _id: addressId } = currentAddress;
-
-    try {
-      await deleteAddress(addressId);
-      successToast("Address deleted successfully");
-      setIsDelModalOpen(false);
-    } catch (error) {
-      console.error("Error deleting address:", error);
-      errorToast(
-        error?.data?.message ||
-          error?.message ||
-          "Error occurred while deleting address"
-      );
-      setIsDelModalOpen(false);
-    }
-  };
-  
-
-
-
   return (
     <>
       {isDelModalOpen && (
@@ -134,8 +106,12 @@ const MyAddress = () => {
       )}
 
       {isEditModalOpen && (
-        <AddressEditForm address={currentAddress} onClose={() => setIsEditModalOpen(false)}/>
+        <AddressEditForm
+          address={currentAddress}
+          onClose={() => setIsEditModalOpen(false)}
+        />
       )}
+
       <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold dark:text-white text-gray-700">
@@ -150,125 +126,13 @@ const MyAddress = () => {
         </div>
 
         {isAddingAddress && (
-          <form
-            onSubmit={handleSubmit(handleAddAddress)}
-            className="bg-white dark:bg-black p-4 rounded-lg dark:border-none border mb-4"
-        >
-            <Controller
-              name="label"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Label (Home, Work, etc.)"
-                  className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-                />
-              )}
-            />
-            {errors.label && (
-              <p className="text-red-500">{errors.label.message}</p>
-            )}
-
-            <Controller
-              name="street"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Street"
-                  className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-                />
-              )}
-            />
-            {errors.street && (
-              <p className="text-red-500">{errors.street.message}</p>
-            )}
-
-            <Controller
-              name="city"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="City"
-                  className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-                />
-              )}
-            />
-            {errors.city && (
-              <p className="text-red-500">{errors.city.message}</p>
-            )}
-
-            <Controller
-              name="state"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="State"
-                  className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-                />
-              )}
-            />
-            {errors.state && (
-              <p className="text-red-500">{errors.state.message}</p>
-            )}
-
-            <Controller
-              name="postalCode"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Postal Code"
-                  className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-                />
-              )}
-            />
-            {errors.postalCode && (
-              <p className="text-red-500">{errors.postalCode.message}</p>
-            )}
-
-            <Controller
-              name="country"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Country"
-                  className="w-full dark:bg-slate-800 dark:border-none p-2 border rounded-md mb-2"
-                />
-              )}
-            />
-            {errors.country && (
-              <p className="text-red-500">{errors.country.message}</p>
-            )}
-
-            <div className="flex space-x-2">
-              <button
-                type="submit"
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-              >
-                Save Address
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsAddingAddress(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+          <AddressAddForm
+            userId={userId}
+            onCancel={() => setIsAddingAddress(false)}
+            validationSchema={addressValidationSchema}
+            onSubmit={handleAddAddress}
+          />
         )}
-
-
 
         {addresses.map((address, i) => (
           <div
@@ -277,18 +141,20 @@ const MyAddress = () => {
           >
             <div>
               <h3 className="font-semibold">{address.label}</h3>{" "}
-              {/* Display label */}
               <p className="text-gray-600 dark:text-gray-300">
                 {address.street}, {address.city},{address.state},
                 {address.postalCode},{address.country},
               </p>
             </div>
             <div className="flex space-x-2">
-              <button className="text-blue-600 hover:text-blue-700">
-                <Edit size={16} onClick={() => {
+              <button
+                className="text-blue-600 hover:text-blue-700"
+                onClick={() => {
                   setCurrentAddress(address);
                   setIsEditModalOpen(true);
-                }} />
+                }}
+              >
+                <Edit size={16} />
               </button>
               <button
                 onClick={() => {

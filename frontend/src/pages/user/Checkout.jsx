@@ -7,21 +7,24 @@ import {
   PercentIcon,
   ShoppingCart,
   IndianRupee,
+  Plus,
 } from "lucide-react";
 import { RotatingLines } from "react-loader-spinner";
-import { useGetAddressQuery } from "../../redux/slices/addressApiSlice";
+import { useAddAddressMutation, useGetAddressQuery } from "../../redux/slices/addressApiSlice";
 import { useGetCartQuery } from "../../redux/slices/cartApiSlice";
 import { usePlaceOrderMutation } from "../../redux/slices/orderApiSlice";
 import { errorToast, successToast } from "../../components/toast";
 import { useNavigate } from "react-router";
-
+import AddAddressForm from "../../components/user/AddAddressForm";
+import { addressValidationSchema } from "../../validationSchemas";
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedShipping, setSelectedShipping] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
+ const [addAddress] = useAddAddressMutation();
   const navigate = useNavigate();
 
   const [placeOrder] = usePlaceOrderMutation()
@@ -79,6 +82,26 @@ const CheckoutPage = () => {
       0
     );
   };
+
+
+    const handleAddAddress = async (data) => {
+      console.log("Form Submitted:", data);
+      const userId = cartData.userId
+      try {
+        await addAddress({ data, userId });
+        successToast("Address added successfully");
+      } catch (error) {
+        errorToast(
+          error?.data?.message ||
+            error?.message ||
+            error?.data ||
+            "Error occurred while adding address"
+        );
+        console.log(error);
+      }
+      setIsAddingAddress(false);
+    };
+  
 
   const calculateTax = () => {
     const subtotal = calculateSubtotal();
@@ -184,6 +207,21 @@ const CheckoutPage = () => {
         <h2 className="text-xl font-bold mb-4 flex items-center">
           <MapPin className="mr-2" /> Shipping Address
         </h2>
+        <div className=" flex flex-col ">
+          <button
+            onClick={() => setIsAddingAddress(true)}
+            className="text-green-600 ms-auto mb-5 hover:text-green-700 flex items-center"
+          >
+            <Plus size={16} className="mr-2" /> Add New
+          </button>
+          {isAddingAddress && (
+            <AddAddressForm
+              onCancel={() => setIsAddingAddress(false)}
+              validationSchema={addressValidationSchema}
+              onSubmit={handleAddAddress}
+            />
+          )}
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
           {addresses.map((address) => (
             <div
@@ -221,7 +259,7 @@ const CheckoutPage = () => {
                 className="w-16 h-16 object-cover"
               />
               <div>
-                <h3 className="font-semibold">{product.name}</h3>
+                <h3 className="font-semibold">{product?.productDetails?.name}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Model: {product?.productDetails?.model}
                 </p>
