@@ -8,7 +8,8 @@ import BrandForm from "../../components/brand/BrandForm.jsx";
 import Button from "../../components/ui/Button.jsx";
 import useBrandApi from "../../hooks/useBrandApi.jsx";
 import SearchBar from "../../components/SearchBar.jsx";
-import { Ban, DatabaseBackup } from "lucide-react";
+import { Ban, ChevronRight, DatabaseBackup, Home } from "lucide-react";
+import { Link } from "react-router";
 
 const BrandManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
@@ -83,6 +84,24 @@ const BrandManagement = () => {
 
   return (
     <div className="p-5 sm:p-10  gap-6 items-center">
+      <div className="flex items-center mb-6 text-sm text-gray-500">
+        <Link to="/admin" className="flex items-center hover:text-blue-600">
+          <Home size={16} className="mr-2" />
+          Dashboard
+        </Link>
+        <ChevronRight size={16} className="mx-2" />
+        <span className="text-gray-700">Brand Management</span>
+      </div>
+
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Brand Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
+          Manage and monitor all brands
+        </p>
+      </div>
       {isModalOpen && (
         <Modal
           title="Are you sure?"
@@ -98,12 +117,15 @@ const BrandManagement = () => {
 
       <SearchBar searchTerm={setSearchTerm} />
 
-      <Button
-        icon={<FontAwesomeIcon icon="fa-solid fa-layer-group" />}
-        text="Add Brand"
-        colorStyle="bg-skyBlue hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
-        action={() => setIsModalFormOpen(true)}
-      />
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsModalFormOpen(true)}
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg flex items-center gap-2 transition duration-200"
+        >
+          <FontAwesomeIcon icon="fa-solid fa-plus" />
+          Add Product
+        </button>
+      </div>
 
       <div className="">
         <BrandList

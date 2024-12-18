@@ -12,7 +12,8 @@ import {
   Layers,
   List,
   Sun,
-  Moon
+  Moon,
+  Copyright
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -110,7 +111,7 @@ const Sidebar = () => {
       path: "/admin/manage-category",
     },
     {
-      icon: List,
+      icon: Copyright,
       label: "Brand Management",
       path: "/admin/manage-brands",
     },
@@ -141,7 +142,7 @@ const Sidebar = () => {
         w-64
         bg-black 
         text-white
-        dark:bg-gray-900 
+        dark:bg-black 
         flex 
         flex-col 
         dark:border-gray-800
