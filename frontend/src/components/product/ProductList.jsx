@@ -3,7 +3,7 @@ import Table from "../admin/ListItem.jsx";
 import { useNavigate } from "react-router";
 import noImage from "../../assets/noImage.png";
 
-const ProductList = ({ products}) => {
+const ProductList = ({ products }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
@@ -22,8 +22,31 @@ const ProductList = ({ products}) => {
     },
     { key: "name", label: "Name" },
     { key: "model", label: "Model" },
-    { key: "price", label: "Price" },
-    { key: "stock", label: "Stock" },
+    {
+      key: "price",
+      label: "Price",
+      render: (value) => `$${value.toFixed(2)}`,
+    },
+    {
+      key: "stock",
+      label: "Stock",
+      render: (value) => (
+        <span
+          className={`
+          px-2 py-1 rounded-full text-sm 
+          ${
+            value > 10
+              ? "bg-green-200 text-green-800"
+              : value > 0
+              ? "bg-yellow-200 text-yellow-800"
+              : "bg-red-200 text-red-800"
+          }
+        `}
+        >
+          {value}
+        </span>
+      ),
+    },
     {
       key: "isSoftDelete",
       label: "Status",
@@ -44,7 +67,7 @@ const ProductList = ({ products}) => {
   };
 
   return (
-    <>
+    <div className="w-full">
       {isModalOpen && (
         <Modal
           title="Are you sure?"
@@ -70,8 +93,9 @@ const ProductList = ({ products}) => {
         columns={productColumns}
         textColor="text-skyBlue"
         clickRow={handleClick}
+        className="w-full"
       />
-    </>
+    </div>
   );
 };
 

@@ -6,58 +6,31 @@ import { useGetAllOrdersQuery } from "../../redux/slices/orderApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router";
 import Pagination from "../../components/Pagination";
+import { ChevronRight, Home, Link } from "lucide-react";
 
 const OrderManagement = () => {
-   const pageSize = 10; 
+  const pageSize = 10;
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { data, isLoading, isError, error, refetch } = useGetAllOrdersQuery({
-    page:currentPage || 1,
-    limit : pageSize,
+    page: currentPage || 1,
+    limit: pageSize,
   });
 
-  const {orders , totalCount=0} = data || [];
-  
+  const { orders, totalCount = 0 } = data || [];
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
-  }
+  };
 
-
-   useEffect(() => {
-      if (totalCount) {
-        setTotalPages(Math.ceil(totalCount / pageSize))
-      }
-    }, [totalCount]);
-
-
-
-
-  // const handleChange = (userId) => {
-  //   console.log(`Changing order with ID: ${userId}`);
-  // };
-
-  // const handleDelete = (userId) => {
-  //   console.log(`Deleting user with ID: ${userId}`);
-  // };
-
-  const orderControle = (userId) => [
-    {
-      text: "Update ",
-      action: () => handleChange(userId),
-      style: "bg-green-700 hover:bg-green-800",
-      icon: "fa-solid fa-pen",
-    },
-    {
-      text: "Delete",
-      action: () => handleDelete(userId),
-      style: "bg-red-700 hover:bg-red-800",
-      icon: "fa-solid fa-trash",
-    },
-  ];
+  useEffect(() => {
+    if (totalCount) {
+      setTotalPages(Math.ceil(totalCount / pageSize));
+    }
+  }, [totalCount]);
 
   const handleClick = (order) => {
     navigate(`/admin/order/${order._id}`);
@@ -97,7 +70,6 @@ const OrderManagement = () => {
       label: "Status",
       render: (value) => {
         let bgColor, textColor;
-
         switch (value) {
           case "Order placed":
             bgColor = "bg-blue-200";
@@ -142,7 +114,6 @@ const OrderManagement = () => {
         );
       },
     },
-
     {
       key: "paymentStatus",
       label: "Payment Status",
@@ -179,8 +150,6 @@ const OrderManagement = () => {
     },
   ];
 
-  console.log(totalPages , totalCount)
-
   if (isLoading) {
     return (
       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -199,21 +168,37 @@ const OrderManagement = () => {
   }
 
   return (
-    <div className="pt-14">
-      <div className="flex justify-center">
+    <div className="pt-6">
+      <div className="flex items-center mb-6 text-sm text-gray-500">
+        <Link to="/admin" className="flex items-center hover:text-blue-600">
+          <Home size={16} className="mr-2" />
+          Dashboard
+        </Link>
+        <ChevronRight size={16} className="mx-2" />
+        <span className="text-gray-700">Order Management</span>
+      </div>
+
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Order Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
+          Manage and monitor user orders
+        </p>
+      </div>
+      <div className="">
         <SearchBar />
       </div>
-      <div className="max-w-7xl mt-10 ms-10 me-4 sm:me-10">
+      <div className="max-w-7xl mx-auto p-4 bg-white">
         <ListItem
-          title="Order List"
           items={orders}
           columns={orderColumns}
-          icon="fa-cart-shopping"
           textColor="text-skyBlue"
           clickList={handleClick}
         />
       </div>
-      <div className="flex justify-center mb-20">
+      <div className="flex justify-center mt-8">
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

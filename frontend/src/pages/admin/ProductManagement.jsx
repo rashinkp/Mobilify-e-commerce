@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { ChevronRight, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 import ProductAddForm from "../../components/product/ProductAddForm.jsx";
 import SearchBar from "../../components/SearchBar";
 import Button from "../../components/ui/Button";
@@ -7,7 +9,7 @@ import useProductApi from "../../hooks/useProductApi";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import ProductList from "../../components/product/ProductList.jsx";
 import { RotatingLines } from "react-loader-spinner";
-import { useGetAllProductsQuery, useGetProductsQuery } from "../../redux/slices/productApiSlice.js";
+import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 import Pagination from "../../components/Pagination.jsx";
 
 const ProductManagement = () => {
@@ -16,45 +18,35 @@ const ProductManagement = () => {
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 8; 
+  const pageSize = 8;
 
   const { addProduct } = useProductApi();
 
-  // const { data: products, error, isLoading } = useGetProductsQuery();
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useGetAllProductsQuery({
+  const { data, isLoading, isError, error } = useGetAllProductsQuery({
     page: currentPage || 1,
     limit: pageSize,
     sortBy: "createdAt",
-    filterBy:filter,
+    filterBy: filter,
     order: "desc",
   });
 
   const { products = [], totalCount = 0 } = data || {};
 
-
   useEffect(() => {
     if (totalCount) {
-      setTotalPages(Math.ceil(totalCount / pageSize))
+      setTotalPages(Math.ceil(totalCount / pageSize));
     }
   }, [totalCount]);
-
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
-  }
-
+  };
 
   if (isError) return <div>Error: {error.message}</div>;
 
-  // search filtering
+  // Search filtering
   const displayedProduct =
     searchTerm.trim() === ""
       ? products || []
@@ -62,9 +54,7 @@ const ProductManagement = () => {
           product.name.toLowerCase().includes(searchTerm.toLowerCase())
         ) || [];
 
-
-
-  // handling form submission of product adding
+  // Handling form submission for product addition
   const handleAddProduct = async (data) => {
     try {
       await addProduct(data).unwrap();
@@ -75,48 +65,48 @@ const ProductManagement = () => {
     }
   };
 
-  {
-    isLoading && (
-      <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-        <RotatingLines
-          visible={true}
-          height="50"
-          width="50"
-          color="grey"
-          strokeColor="#fff"
-          strokeWidth="2"
-          animationDuration="8"
-          ariaLabel="rotating-lines-loading"
-        />
-      </div>
-    );
-  }
-
   return (
-    <>
-      <div className="p-5 sm-p-10 ">
-        <SearchBar searchTerm={setSearchTerm} />
-        <div className="p-5 sm:p-10 gap-6 items-center h-full overflow-auto">
-          {/* Product Add Form */}
-          <ProductAddForm
-            isModalFormOpen={isModalFormOpen}
-            onClose={() => setIsModalFormOpen(false)}
-            onSubmit={handleAddProduct}
-          />
+    <div className="p-6">
+      {/* Breadcrumbs */}
+      <div className="flex items-center mb-6 text-sm text-gray-500">
+        <Link to="/admin" className="flex items-center hover:text-blue-600">
+          <Home size={16} className="mr-2" />
+          Dashboard
+        </Link>
+        <ChevronRight size={16} className="mx-2" />
+        <span className="text-gray-700">Product Management</span>
+      </div>
 
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Product Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
+          Manage and monitor your product inventory
+        </p>
+      </div>
+
+      <div className="p-5 sm-p-10">
+        {/* Product Add Form */}
+        <ProductAddForm
+          isModalFormOpen={isModalFormOpen}
+          onClose={() => setIsModalFormOpen(false)}
+          onSubmit={handleAddProduct}
+        />
+
+        <div className="m-5">
+          <SearchBar searchTerm={setSearchTerm} />
+        </div>
+
+        {/* Search and Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-end mb-6 gap-4">
           {/* Search Bar */}
 
-          <div className="flex justify-between w-full max-w-5xl items-center">
-            {/* Add Product Button */}
-            <Button
-              icon={<FontAwesomeIcon icon="fa-solid fa-plus" />}
-              text="Add Product"
-              action={() => setIsModalFormOpen(true)}
-            />
-
+          <div className="flex flex-col sm:flex-row gap-4">
             {/* Dropdown for Product Filter */}
             <select
-              className="ml-4 p-2 border rounded-md shadow-md bg-white dark:bg-black dark:text-white dark:border-none"
+              className="p-2 border rounded-md shadow-md bg-white dark:bg-black dark:text-white dark:border-none"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
@@ -124,37 +114,50 @@ const ProductManagement = () => {
               <option value="active">Active Products</option>
               <option value="low stock">Low Stock</option>
             </select>
-          </div>
 
-          {/* Product List */}
-          <div className="ms-20">
-            <ProductList products={displayedProduct} icon="fa-solid fa-box" />
+            {/* Add Product Button */}
+            <button
+              onClick={() => setIsModalFormOpen(true)}
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg flex items-center gap-2 transition duration-200"
+            >
+              <FontAwesomeIcon icon="fa-solid fa-plus" />
+              Add Product
+            </button>
           </div>
+        </div>
 
+        {/* Product List */}
+        <div>
+          <ProductList products={displayedProduct} icon="fa-solid fa-box" />
+        </div>
+
+        {/* Pagination */}
+
+        <div className="flex justify-center mt-5">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
-
-          {/* Loader Spinner */}
-          {isLoading && (
-            <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-              <RotatingLines
-                visible={true}
-                height="50"
-                width="50"
-                color="grey"
-                strokeColor="#fff"
-                strokeWidth="2"
-                animationDuration="8"
-                ariaLabel="rotating-lines-loading"
-              />
-            </div>
-          )}
         </div>
+
+        {/* Loader Spinner */}
+        {isLoading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+            <RotatingLines
+              visible={true}
+              height="50"
+              width="50"
+              color="grey"
+              strokeColor="#fff"
+              strokeWidth="2"
+              animationDuration="8"
+              ariaLabel="rotating-lines-loading"
+            />
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
