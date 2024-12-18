@@ -6,7 +6,7 @@ import { useGetAllOrdersQuery } from "../../redux/slices/orderApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router";
 import Pagination from "../../components/Pagination";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight, Eye, Home } from "lucide-react";
 import { Link } from "react-router";
 
 const OrderManagement = () => {
@@ -33,9 +33,7 @@ const OrderManagement = () => {
     }
   }, [totalCount]);
 
-  const handleClick = (order) => {
-    navigate(`/admin/order/${order._id}`);
-  };
+  
 
   const orderColumns = [
     {
@@ -151,6 +149,19 @@ const OrderManagement = () => {
     },
   ];
 
+
+    const getOrderManagement = (order) => {
+      return [
+        {
+          action: () => {
+            navigate(`/admin/order/${order._id}`);
+          },
+          style: "",
+          icon: <Eye className="text-gray-500 hover:text-blue-600" />,
+        },
+      ];
+    };
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -191,12 +202,12 @@ const OrderManagement = () => {
       <div className="">
         <SearchBar />
       </div>
-      <div className="max-w-7xl mx-auto p-4 bg-white">
+      <div className="max-w-7xl mx-auto p-4">
         <ListItem
           items={orders}
           columns={orderColumns}
           textColor="text-skyBlue"
-          clickList={handleClick}
+          controles={getOrderManagement}
         />
       </div>
       <div className="flex justify-center mt-8">

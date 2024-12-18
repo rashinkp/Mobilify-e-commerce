@@ -13,11 +13,8 @@ const BrandList = ({
   ];
   return (
     <ListItem
-      title="Brand List"
       items={brands || []}
       columns={brandColumns}
-      icon={icon}
-      textColor="text-skyBlue"
       controles={getBrandControles}
     />
   );

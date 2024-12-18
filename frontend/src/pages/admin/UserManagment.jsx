@@ -71,7 +71,6 @@ const UserManagement = () => {
     const isBlocked = user.isBlocked;
     return [
       {
-        text: isBlocked ? "Unblock" : "Block",
         action: () => {
           setSelectedUser(user);
           
@@ -80,7 +79,6 @@ const UserManagement = () => {
         icon: <Eye className="text-gray-500 hover:text-blue-600" />,
       },
       {
-        text: "Delete",
         action: () => {
            setSelectedUser(user);
            handleBlock(user);

@@ -8,6 +8,7 @@ import BrandForm from "../../components/brand/BrandForm.jsx";
 import Button from "../../components/ui/Button.jsx";
 import useBrandApi from "../../hooks/useBrandApi.jsx";
 import SearchBar from "../../components/SearchBar.jsx";
+import { Ban, DatabaseBackup } from "lucide-react";
 
 const BrandManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
@@ -49,13 +50,19 @@ const BrandManagement = () => {
 
   const getBrandControles = (brand) => [
     {
-      text: "Delete",
       action: () => {
         setSelectedBrand(brand);
         setIsModalOpen(true);
       },
-      style: "bg-red-700 hover:bg-red-800",
-      icon: "fa-solid fa-trash",
+      style: "",
+      icon: brand.isBlocked ? (
+        <DatabaseBackup
+          className="text-gray-500 hover:text-green-600"
+          size={20}
+        />
+      ) : (
+        <Ban className="text-gray-500 hover:text-red-600" size={20} />
+      ),
     },
   ];
 
@@ -75,7 +82,7 @@ const BrandManagement = () => {
   ];
 
   return (
-    <div className="p-5 sm:p-10 flex flex-col gap-6 items-center">
+    <div className="p-5 sm:p-10  gap-6 items-center">
       {isModalOpen && (
         <Modal
           title="Are you sure?"
@@ -98,7 +105,7 @@ const BrandManagement = () => {
         action={() => setIsModalFormOpen(true)}
       />
 
-      <div className="w-full max-w-5xl">
+      <div className="">
         <BrandList
           brands={displayedBrands}
           getBrandControles={getBrandControles}

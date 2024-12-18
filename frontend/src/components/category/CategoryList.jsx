@@ -6,25 +6,14 @@ import { RotatingLines } from "react-loader-spinner";
 import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import CategoryEditForm from "./CategoryEditForm";
 import { useEditCategoryMutation } from "../../redux/slices/categoryApiSlices.js";
+import { Ban, DatabaseBackup, Pen } from "lucide-react";
 
 const CategoryList = ({ categories, icon }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const { deleteCategory } = useCategoryApi();
   const [editCategory] = useEditCategoryMutation();
-
-  const handleDeleteCategory = async () => {
-    try {
-      await deleteCategory(selectedCategory._id).unwrap();
-      successToast("Category deleted");
-      setIsModalOpen(false);
-      setSelectedCategory(null);
-    } catch (error) {
-      errorToast(error?.data?.message || error.message || error.error);
-    }
-  };
 
   const handleEditCategory = (category) => {
     setSelectedCategory(category);
@@ -55,25 +44,21 @@ const CategoryList = ({ categories, icon }) => {
 
   const getCategoryControles = (category) => [
     {
-      text: "Edit",
       action: () => handleEditCategory(category),
-      style: "bg-green-700 hover:bg-green-800",
-      icon: "fa-solid fa-pen",
+      style: "",
+      icon: <Pen className="text-black" size={20} />,
     },
     {
-      text: category.isSoftDeleted ? "Recover" : "SoftDelete",
       action: () => handleSoftDelete(category),
-      style: "bg-yellow-700 hover:bg-yellow-800",
-      icon: category.isSoftDeleted ? "fa-solid fa-hammer" : "fa-solid fa-ban",
-    },
-    {
-      text: "Delete",
-      action: () => {
-        setSelectedCategory(category);
-        setIsModalOpen(true);
-      },
-      style: "bg-red-700 hover:bg-red-800",
-      icon: "fa-solid fa-trash",
+      style: "",
+      icon: category.isSoftDeleted ? (
+        <DatabaseBackup
+          className="text-gray-500 hover:text-green-600"
+          size={20}
+        />
+      ) : (
+        <Ban className="text-gray-500 hover:text-red-600" size={20} />
+      ),
     },
   ];
 
@@ -110,7 +95,7 @@ const CategoryList = ({ categories, icon }) => {
             },
             {
               text: "Delete",
-              action: handleDeleteCategory,
+              action: handleSoftDelete,
               style:
                 "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
             },
