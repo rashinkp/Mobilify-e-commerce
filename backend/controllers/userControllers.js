@@ -29,7 +29,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOneAndUpdate(
     { _id: id },
-    { $set: { isActive: true } },
+    { $set: { isBlocked: false } },
     { new: true }
   );
 
@@ -53,6 +53,12 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const userLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
+
+  //checking if user is blocked or not
+  if (user.isBlocked) {
+    return res.status(400).json({ message: 'This user is not availble currently' });
+  }
+
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id, "user");
     res.status(201).json({

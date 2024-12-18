@@ -41,7 +41,7 @@ export const sendOTP = async (req, res) => {
       email,
       password,
       otpId,
-      isActive: false,
+      isBlocked: true,
     });
 
     const userId = user._id;
