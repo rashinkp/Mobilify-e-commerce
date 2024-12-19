@@ -16,13 +16,17 @@ const brandSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    isSoftDeleted: {
+      type: Boolean,
+      default:false
+    },
     categories: {
       type: [String],
       default: [],
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 

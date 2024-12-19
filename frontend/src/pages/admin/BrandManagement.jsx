@@ -75,10 +75,11 @@ const BrandManagement = () => {
         "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
     },
     {
-      text: "Delete",
+      text: selectedBrand?.isSoftDeleted ? "Restore" : "Delete",
       action: handleDeleteBrand,
-      style:
-        "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
+      style: selectedBrand?.isSoftDeleted
+        ? "text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800"
+        : "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
     },
   ];
 
@@ -105,7 +106,7 @@ const BrandManagement = () => {
       {isModalOpen && (
         <Modal
           title="Are you sure?"
-          description="This process cannot be undone. Make sure you are doing the right thing."
+          description="You should be very careful while handling this kind of deleting"
           controles={modalControles}
         />
       )}

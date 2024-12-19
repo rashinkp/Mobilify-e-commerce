@@ -156,9 +156,18 @@ export const getAllBrand = asyncHandler(async (req, res) => {
 
 export const deleteBrand = asyncHandler(async (req, res) => {
   const brandId = req.params.id;
-  const brand = await Brand.findByIdAndDelete(brandId);
+  const brand = await Brand.findById(brandId);
 
-  if (brand) {
+  if (!brand) {
+    return res.status(404).json({ message: "Brand not found" });
+  }
+
+
+  brand.isSoftDeleted = !brand.isSoftDeleted;
+
+  const updatedBrand = await brand.save();
+
+  if (updatedBrand) {
     res.status(200).json({message:'Brand deleted successfully'})
   } else {
     res.status(404).json({message:'Brand not found'})

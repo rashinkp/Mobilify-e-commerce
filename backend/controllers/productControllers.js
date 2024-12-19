@@ -31,10 +31,12 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
   if (filterBy === "active") {
     filter = { isSoftDelete: false };
+  } else if (filterBy === "inactive") {
+    filter = {isSoftDelete: true};
   } else if (filterBy === "low stock") {
     filter = { stock: { $lt: 20 } };
-  } else if (filterBy === 'high stock') {
-    filter = {stock: {$gt :20}}
+  } else if (filterBy === "high stock") {
+    filter = { stock: { $gt: 20 } };
   }
 
   if (searchTerm.trim() !== "") {

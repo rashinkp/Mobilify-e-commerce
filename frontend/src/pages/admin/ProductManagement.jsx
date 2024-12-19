@@ -115,6 +115,7 @@ const ProductManagement = () => {
             >
               <option value="all">All Products</option>
               <option value="active">Active Products</option>
+              <option value="inactive">Inactive Products</option>
               <option value="low stock">Low Stock</option>
             </select>
 
@@ -131,7 +132,7 @@ const ProductManagement = () => {
 
         {/* Product List */}
         <div>
-          <ProductList products={displayedProduct} icon="fa-solid fa-box"  />
+          <ProductList products={displayedProduct} icon="fa-solid fa-box" />
         </div>
 
         {/* Pagination */}

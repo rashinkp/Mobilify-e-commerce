@@ -20,7 +20,8 @@ const CategoryList = ({ categories, icon }) => {
     setIsEditModalOpen(true);
   };
 
-  const handleSoftDelete = async (category) => {
+  const handleSoftDelete = async () => {
+    const category = selectedCategory;
     const data = { isSoftDeleted: !category.isSoftDeleted };
 
     try {
@@ -39,6 +40,8 @@ const CategoryList = ({ categories, icon }) => {
       errorToast(
         error?.data?.message || error.message || "Failed to update category"
       );
+    } finally {
+      setIsModalOpen(false);
     }
   };
 
@@ -49,7 +52,10 @@ const CategoryList = ({ categories, icon }) => {
       icon: <Pen className="text-black" size={20} />,
     },
     {
-      action: () => handleSoftDelete(category),
+      action: () => {
+        setSelectedCategory(category);
+        setIsModalOpen(true)
+      },
       style: "",
       icon: category.isSoftDeleted ? (
         <DatabaseBackup
@@ -85,7 +91,7 @@ const CategoryList = ({ categories, icon }) => {
       {isModalOpen && (
         <Modal
           title="Are you sure?"
-          description="This process cannot be undone..."
+          description="Soft deleting the category can completely change the products and all in your website"
           controles={[
             {
               text: "Cancel",
@@ -94,7 +100,7 @@ const CategoryList = ({ categories, icon }) => {
                 "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
             },
             {
-              text: "Delete",
+              text: "Confirm",
               action: handleSoftDelete,
               style:
                 "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
