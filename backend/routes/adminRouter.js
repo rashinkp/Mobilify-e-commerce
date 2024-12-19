@@ -4,7 +4,6 @@ import {
   authAdmin,
   blockUser,
   deleteBrand,
-  deleteUser,
   getAllBrand,
   getAllUsers,
   logoutAdmin,
@@ -34,7 +33,6 @@ router.post("/register", registerAdmin);
 router.post("/login", authAdmin);
 router.post("/logout", logoutAdmin);
 router.get("/users", protect("admin"), getAllUsers);
-router.delete("/user/:id", protect("admin"), deleteUser);
 router.put("/user/:id", protect("admin"), blockUser);
 
 //brand routers

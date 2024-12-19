@@ -4,7 +4,6 @@ import SearchBar from "../../components/SearchBar";
 import ListItem from "../../components/admin/ListItem";
 import {
   useBlockUserMutation,
-  useDeleteUserMutation,
   useFetchUsersQuery,
 } from "../../redux/slices/adminApiSlices.js";
 import { successToast, errorToast } from "../../components/toast/index.js";
@@ -18,9 +17,9 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const { data: users, isLoading } = useFetchUsersQuery();
-  const [deleteUser] = useDeleteUserMutation();
   const [blockUser] = useBlockUserMutation();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isConfirmingBlocking, setIsConfirmingBlock] = useState(false);
 
   const displayedUsers =
     searchTerm.trim() === ""
@@ -39,31 +38,17 @@ const UserManagement = () => {
     setIsModalOpen(false);
   };
 
-  const handleBlock = (user) => {
-    blockUser(user._id)
-      .unwrap()
-      .then(() => {
-        successToast(`${user.isBlocked ? "User Unblocked" : "User blocked"}`);
-        setSelectedUser(null);
-      })
-      .catch((error) => {
-        errorToast("Error while blocking user");
-        console.error(error);
-      });
-  };
-
-  const handleDelete = () => {
-    deleteUser(selectedUser._id)
-      .unwrap()
-      .then(() => {
-        successToast("User deleted successfully");
-        setIsModalOpen(false);
-        setSelectedUser(null);
-      })
-      .catch((error) => {
-        errorToast("Error while deleting user");
-        console.error(error);
-      });
+  const handleBlock = async () => {
+    const user = selectedUser;
+    try {
+      await blockUser(user._id).unwrap();
+      successToast(`${user.isBlocked ? "User Unblocked" : "User blocked"}`);
+      setSelectedUser(null);
+      closeModal();
+    } catch (error) {
+      errorToast("Error while blocking user");
+      console.error(error);
+    }
   };
 
   // Variable to define controls
@@ -73,19 +58,22 @@ const UserManagement = () => {
       {
         action: () => {
           setSelectedUser(user);
-          
         },
         style: "",
         icon: <Eye className="text-gray-500 hover:text-blue-600" />,
       },
       {
         action: () => {
-           setSelectedUser(user);
-           handleBlock(user);
+          setSelectedUser(user);
+          setIsConfirmingBlock(true);
+          openModal();
         },
         style: "",
         icon: isBlocked ? (
-          <DatabaseBackup className="text-gray-500 hover:text-green-600" size={20} />
+          <DatabaseBackup
+            className="text-gray-500 hover:text-green-600"
+            size={20}
+          />
         ) : (
           <Ban className="text-gray-500 hover:text-red-600" size={20} />
         ),
@@ -95,7 +83,7 @@ const UserManagement = () => {
 
   const userColumns = [
     {
-      label:'Image',
+      label: "Image",
       key: "picture",
       render: (img) =>
         img?.secure_url ? (
@@ -166,8 +154,8 @@ const UserManagement = () => {
         "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
     },
     {
-      text: "Delete",
-      action: handleDelete,
+      text: selectedUser?.isBlocked ? "Unblock" : "Block",
+      action: handleBlock,
       style:
         "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
     },
@@ -203,8 +191,12 @@ const UserManagement = () => {
       {/* Modal and Table */}
       {isModalOpen && (
         <Modal
-          title="Are you sure?"
-          description="This process cannot be undone. Make sure you are doing the right thing."
+          title={selectedUser?.isBlocked ? "Unblock User?" : "Block User?"}
+          description={
+            selectedUser?.isBlocked
+              ? "Are you sure you want to unblock this user? They will regain access."
+              : "Are you sure you want to block this user? They will lose access."
+          }
           controles={modalControles}
         />
       )}
@@ -215,8 +207,6 @@ const UserManagement = () => {
         textColor="text-skyBlue"
         controles={getUserControls}
       />
-
-      
 
       {/* Loading Spinner */}
       {isLoading && (

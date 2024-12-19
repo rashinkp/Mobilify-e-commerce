@@ -55,11 +55,17 @@ export const userLogin = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   //checking if user is blocked or not
-  if (user.isBlocked) {
-    return res.status(400).json({ message: 'This user is not availble currently' });
-  }
+  
 
   if (user && (await user.matchPassword(password))) {
+
+    if (user.isBlocked || !user.isActive) {
+      return res
+        .status(400)
+        .json({ message: "This user is not availble currently" });
+    }
+
+
     generateToken(res, user._id, "user");
     res.status(201).json({
       id: user._id,
@@ -99,7 +105,13 @@ export const signWithGoogle = asyncHandler(async (req, res) => {
         name,
         picture: {secure_url:picture},
       });
-    }
+    } 
+    
+     if (user.isBlocked || !user.isActive) {
+       return res
+         .status(400)
+         .json({ message: "This user is not availble currently" });
+     }
 
     generateToken(res, user._id, "user");
 

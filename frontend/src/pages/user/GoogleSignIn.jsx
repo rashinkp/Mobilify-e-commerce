@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useGoogleSignMutation } from '../../redux/slices/userApiSlices';
 import { useDispatch } from 'react-redux';
 import { userLogin } from '../../redux/slices/authUser';
-import { successToast } from '../../components/toast';
+import { errorToast, successToast } from '../../components/toast';
 import { useNavigate } from 'react-router';
 
 const GoogleSignIn = () => {
@@ -19,7 +19,7 @@ const GoogleSignIn = () => {
     onSuccess: (codeResponse) => {
       setUser(codeResponse);
     },
-    onError: (error) => console.log("Login Failed:", error),
+    onError: (error) => errorToast(error?.message || error?.data?.message || 'Could not login now'),
   });
 
 
@@ -42,7 +42,11 @@ const GoogleSignIn = () => {
           successToast("Login Successful");
           navigate("/user");
         })
-        .catch((err) => console.log(err));
+        .catch((error) =>
+          errorToast(
+            error?.message || error?.data?.message || "Could not login now"
+          )
+        );
     }
   }, [user, googleSign, dispatch]);
 

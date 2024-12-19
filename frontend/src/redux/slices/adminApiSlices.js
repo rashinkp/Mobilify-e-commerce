@@ -26,13 +26,6 @@ export const adminApiSLice = apiSlice.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
-    deleteUser: builder.mutation({
-      query: (userId) => ({
-        url: `${ADMIN_URL}/user/${userId}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["User"],
-    }),
     blockUser: builder.mutation({
       query: (userId) => ({
         url: `${ADMIN_URL}/user/${userId}`,
@@ -71,7 +64,6 @@ export const {
   useAdminLoginMutation,
   useAdminLogoutMutation,
   useFetchUsersQuery,
-  useDeleteUserMutation,
   useBlockUserMutation,
   useAddBrandMutation,
   useGetAllBrandQuery,

@@ -13,7 +13,7 @@ import Pagination from "../../components/Pagination";
 const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8; 
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("active");
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState("CreatedAt");
   const [searchTerm, setSearchTerm] = useState("");
