@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   MapPin,
   Truck,
@@ -17,6 +17,10 @@ import { errorToast, successToast } from "../../components/toast";
 import { useNavigate } from "react-router";
 import AddAddressForm from "../../components/user/AddAddressForm";
 import { addressValidationSchema } from "../../validationSchemas";
+import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice.js";
+import Razorpay from 'razorpay';
+
+
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedShipping, setSelectedShipping] = useState(null);
@@ -24,7 +28,8 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
- const [addAddress] = useAddAddressMutation();
+  const [verifyPayment] = useVerifyPaymentMutation()
+  const [addAddress] = useAddAddressMutation();
   const navigate = useNavigate();
 
   const [placeOrder] = usePlaceOrderMutation()
@@ -51,6 +56,57 @@ const CheckoutPage = () => {
   const { addresses } = addressData || {};
 
   const products = cartData.cartItems || [];
+
+
+
+   const handleRazorpaySuccess = useCallback(
+     async (razorpayOrderData, response) => {
+       try {
+         const paymentId = response.razorpay_payment_id;
+         const orderId = razorpayOrderData.orderId;
+         const verifyPaymentResponse = await verifyPayment({
+           paymentId,
+           orderId,
+         });
+
+         if (verifyPaymentResponse.success) {
+           successToast("Payment successful!");
+           navigate(`/user/orderSuccess/`);
+         } else {
+           errorToast("Payment verification failed. Please try again.");
+         }
+       } catch (error) {
+         errorToast("Error verifying payment. Please try again.");
+         console.log(error);
+       }
+     },
+     [verifyPayment]
+  );
+  
+
+
+    const triggerRazorpayCheckout = (razorpayOrderData) => {
+      const options = {
+        key: "rzp_test_K5otU6Q5C8lSi8",
+        amount: razorpayOrderData.price,
+        currency: "INR",
+        order_id: razorpayOrderData.orderNumber,
+        handler: async function (response) {
+          await handleRazorpaySuccess(razorpayOrderData, response); // Call the handler inside the component
+        },
+        prefill: {
+          name: "Customer Name",
+          email: "customer@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#F37254",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    };
 
   
 
@@ -130,56 +186,57 @@ const CheckoutPage = () => {
     return subtotal + tax + shippingCost - couponDiscount;
   };
 
-  const handleSubmit = async() => {
-   const orderItems = products.map((product) => ({
-     productId: product.productDetails?._id,
-     name: product?.productDetails?.name,
-     model: product?.productDetails?.model,
-     price: product?.productDetails?.price,
-     quantity: product.quantity,
-     imageUrl: product?.productDetails?.images[0]?.url,
-   }));
-     const subtotal = calculateSubtotal();
-     const tax = calculateTax();
-     const shippingCost = selectedShipping ? selectedShipping.price : 0;
-     const couponDiscount = appliedCoupon
-       ? subtotal * appliedCoupon.discount
-       : 0;
+  const handleSubmit = async () => {
+  const orderItems = products.map((product) => ({
+    productId: product.productDetails?._id,
+    name: product?.productDetails?.name,
+    model: product?.productDetails?.model,
+    price: product?.productDetails?.price,
+    quantity: product.quantity,
+    imageUrl: product?.productDetails?.images[0]?.url,
+  }));
 
+  const subtotal = calculateSubtotal();
+  const tax = calculateTax();
+  const shippingCost = selectedShipping ? selectedShipping.price : 0;
+  const couponDiscount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
     const total = subtotal + shippingCost + tax - couponDiscount;
     
-
-    const orderData = {
-      shippingAddress: {
-        addressId: selectedAddress._id,
-        street: selectedAddress.street,
-        city: selectedAddress.city,
-        state: selectedAddress.state,
-        postalCode: selectedAddress.postalCode,
-        country: selectedAddress.country,
-        label: selectedAddress.label,
-      },
-      shipping: selectedShipping,
-      paymentMethod: selectedPayment,
-      orderItems: orderItems,
-      couponCode: appliedCoupon ? appliedCoupon.code : null,
-    
-    };
-
-    console.log(orderData);
-
-
-    try {
-      const {orderId} = await placeOrder(orderData).unwrap();
-      successToast('Order placed successfully');
-      navigate(`/user/orderSuccess/`);
-    } catch (error) {
-      errorToast(error.message || error.data.message || 'Error while placing order')
-      console.log(error)
-    }
-
-    console.log("Order Data:", orderData);
+  const orderData = {
+    shippingAddress: {
+      addressId: selectedAddress._id,
+      street: selectedAddress.street,
+      city: selectedAddress.city,
+      state: selectedAddress.state,
+      postalCode: selectedAddress.postalCode,
+      country: selectedAddress.country,
+      label: selectedAddress.label,
+    },
+    shipping: selectedShipping,
+    paymentMethod: selectedPayment,
+    orderItems: orderItems,
+    couponCode: appliedCoupon ? appliedCoupon.code : null,
   };
+
+  try {
+    if (selectedPayment === "Razorpay") {
+      const razorpayOrderData = await placeOrder(orderData);
+      triggerRazorpayCheckout(razorpayOrderData);
+    } else {
+      const response = await placeOrder(orderData);
+      successToast("Order placed successfully");
+      navigate(`/user/orderSuccess/`);
+    }
+  } catch (error) {
+    errorToast(
+      error.message || error.data.message || "Error while placing order"
+    );
+    console.log(error);
+  }
+};
+
+
+
 
   if (isAddressLoading || isCartLoading) {
     return (
@@ -259,7 +316,9 @@ const CheckoutPage = () => {
                 className="w-16 h-16 object-cover"
               />
               <div>
-                <h3 className="font-semibold">{product?.productDetails?.name}</h3>
+                <h3 className="font-semibold">
+                  {product?.productDetails?.name}
+                </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Model: {product?.productDetails?.model}
                 </p>
@@ -335,7 +394,7 @@ const CheckoutPage = () => {
           <CreditCard className="mr-2" /> Payment Method
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {["Credit Card", "PayPal", "Cash on Delivery"].map((method) => (
+          {["Razorpay", "Cash on Delivery"].map((method) => (
             <div
               key={method}
               className={`p-4 border rounded-lg cursor-pointer ${

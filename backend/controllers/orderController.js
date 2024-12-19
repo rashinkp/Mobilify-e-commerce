@@ -8,7 +8,6 @@ export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const data = req.body;
 
-
   // Check required inputs
   if (!userId || !data || !data.orderItems) {
     return res.status(400).json({
@@ -17,12 +16,9 @@ export const addOrder = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Destructure required fields
     const { orderItems, shippingAddress, shipping, paymentMethod, couponCode } =
       data;
-    
 
-    // Prepare and store each product as a separate order document
     const orderDocuments = orderItems.map((item) => ({
       userId: userId,
       productId: item.productId,
@@ -30,7 +26,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       model: item.model,
       price: item.price,
       quantity: item.quantity,
-      imageUrl: item.imageUrl, 
+      imageUrl: item.imageUrl,
       shipping: shipping,
       paymentMethod: paymentMethod,
       shippingAddress: shippingAddress,
@@ -38,16 +34,13 @@ export const addOrder = asyncHandler(async (req, res) => {
       status: "Order placed",
     }));
 
-    // Insert all orders into the database
     const createdOrders = await Order.insertMany(orderDocuments);
 
-    
-    //updating stock after order
     for (const item of orderDocuments) {
       const product = await Product.findById(item.productId);
-      
+
       if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
+        return res.status(404).json({ message: "Product not found" });
       }
 
       if (product.stock < item.quantity) {
@@ -60,17 +53,14 @@ export const addOrder = asyncHandler(async (req, res) => {
       await product.save();
     }
 
-    // Clear the user's cart
     const cart = await Cart.findOne({ userId });
     if (cart) {
       cart.cartItems = [];
       await cart.save();
     }
-
-    const orderIds = createdOrders.map((order) => order._id);
     res.status(201).json({
-      message: "Order placed successfully",
-      orderIds: orderIds,
+      message: "Order placed successfully with Cash on Delivery",
+      orderIds: createdOrders.map((order) => order._id),
     });
   } catch (error) {
     console.error("Error placing order:", error);
@@ -197,10 +187,13 @@ export const updateOrderStatus = async (req, res) => {
   order.paymentStatus = newPaymentStatus || order.paymentStatus;
 
   if (order.status === "Delivered") {
-    order.paymentStatus = 'Success';
+    order.paymentStatus = "Success";
   }
 
-  if ((order.status !== "Cancelled" || order.status !== 'Returned') && order.paymentStatus === 'Refunded') {
+  if (
+    (order.status !== "Cancelled" || order.status !== "Returned") &&
+    order.paymentStatus === "Refunded"
+  ) {
     order.paymentStatus = "Pending";
   }
 

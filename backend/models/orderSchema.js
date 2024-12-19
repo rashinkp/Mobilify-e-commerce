@@ -25,11 +25,11 @@ const OrderSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
-    name: { type: String, required: true }, 
-    model: { type: String, required: true }, 
-    price: { type: Number, required: true }, 
-    quantity: { type: Number, required: true, min: 1 }, 
-    imageUrl: { type: String, trim: true }, 
+    name: { type: String, required: true },
+    model: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true, min: 1 },
+    imageUrl: { type: String, trim: true },
 
     status: {
       type: String,
@@ -43,6 +43,11 @@ const OrderSchema = new mongoose.Schema(
         "Returned",
       ],
       default: "Order placed",
+    },
+
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
     },
 
     shipping: {
@@ -66,7 +71,7 @@ const OrderSchema = new mongoose.Schema(
       enum: [
         "Credit Card",
         "PayPal",
-        "Apple Pay",
+        "Razorpay",
         "Google Pay",
         "Cash on Delivery",
         "Bank Transfer",

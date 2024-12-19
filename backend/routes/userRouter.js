@@ -5,6 +5,7 @@ import protect from '../middlewares/protect.js';
 import { addAddress, deleteAddress, getAddress, updateAddress } from '../controllers/addressController.js';
 import { addToCart, deleteFromCart, getCart, updateCartQuantity } from '../controllers/cartController.js';
 import { addOrder, getAllOrdersWithEachProducts, getOrder, getOrdersWithSingleProducts, updateOrderStatus } from '../controllers/orderController.js';
+import { savePayment, verifyPayment } from '../controllers/paymentController.js';
 
 const router = express.Router();
 
@@ -62,8 +63,11 @@ router
     "/order/:ordId",
     protect("user"),
     getOrdersWithSingleProducts
-  );
+);
+  
 
+router.post("/savePayment" , protect('user') , savePayment);
+router.put("/updatePayment", protect("user"), verifyPayment);
 
 
 
