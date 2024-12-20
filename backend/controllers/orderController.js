@@ -55,6 +55,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       price: item.price,
       quantity: item.quantity,
       imageUrl: item.imageUrl,
+      returnPolicy:item.returnPolicy,
       shipping: shipping,
       paymentMethod: paymentMethod,
       shippingAddress: shippingAddress,
@@ -216,7 +217,7 @@ export const updateOrderStatus = async (req, res) => {
   order.paymentStatus = newPaymentStatus || order.paymentStatus;
 
   if (order.status === "Delivered") {
-    order.paymentStatus = "Success";
+    order.paymentStatus = "Successful";
   }
 
   if (

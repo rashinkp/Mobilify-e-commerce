@@ -276,7 +276,7 @@ const ProductDetails = () => {
                   Return Policy
                 </p>
                 <p className="font-semibold text-gray-800 dark:text-gray-200">
-                  {product.returnPolicy}
+                  {product.returnPolicy ? 'Availble within 7 days' : 'Not available'}
                 </p>
               </div>
               <div>

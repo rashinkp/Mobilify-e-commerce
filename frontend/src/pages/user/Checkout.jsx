@@ -207,6 +207,7 @@ const CheckoutPage = () => {
         price: product?.productDetails?.price,
         quantity: product.quantity,
         imageUrl: product?.productDetails?.images[0]?.url,
+        returnPolicy: product?.productDetails?.returnPolicy,
       }));
 
       const subtotal = calculateSubtotal();

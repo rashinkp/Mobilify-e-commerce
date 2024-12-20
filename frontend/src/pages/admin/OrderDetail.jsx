@@ -191,7 +191,12 @@ const OrderDetails = () => {
                   onChange={(e) => updateProductStatus(e.target.value)}
                   className="border rounded px-2 py-1 text-sm"
                 >
-                  {statusOptions.map((status) => (
+                  {statusOptions.filter((status) => {
+                    if (status === "Returned" && !data.returnPolicy) {
+                      return false;
+                    }
+                    return true;
+                  }).map((status) => (
                     <option key={status} value={status}>
                       {status}
                     </option>

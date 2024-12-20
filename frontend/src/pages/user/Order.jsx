@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Package,
   Truck,
@@ -13,6 +13,7 @@ import {
   X,
   RefreshCcw,
   AlertTriangle,
+  Recycle,
 } from "lucide-react";
 import {
   useChangeOrderStatusMutation,
@@ -21,11 +22,13 @@ import {
 import { useParams } from "react-router";
 import { RotatingLines } from "react-loader-spinner";
 import { errorToast, successToast } from "../../components/toast";
+import { useGetProductQuery } from "../../redux/slices/productApiSlice";
 
 const OrderDetailsPage = () => {
   // State for managing order actions
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [orderCancelled, setOrderCancelled] = useState(false);
+  const [product, setProduct] = useState({});
 
   const { ordId: orderId } = useParams();
 
@@ -36,6 +39,23 @@ const OrderDetailsPage = () => {
   const [changeStatus] = useChangeOrderStatusMutation();
 
   const order = data || {};
+
+  
+  const orderDate = new Date(order.orderDate);
+
+  const returnAvailableDate = new Date(orderDate);
+  returnAvailableDate.setDate(orderDate.getDate() + 7);
+
+  const currentDate = new Date();
+
+  const isReturnActive = currentDate <= returnAvailableDate;
+ 
+
+  const formattedDate = returnAvailableDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   // Dynamic order stages mapping
   const orderStageMapper = {
@@ -158,19 +178,21 @@ const OrderDetailsPage = () => {
           </div>
           <div className="flex items-center space-x-4">
             {/* Return/Replace Button */}
-            <button
-              className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
+            {(order.returnPolicy && isReturnActive) && (
+              <button
+                className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
               ${
                 isReturnDisabled
                   ? " text-gray-500 cursor-not-allowed"
                   : " text-black hover:text-green-600 dark:hover:text-green-600 dark:text-white"
               }`}
-              disabled={isReturnDisabled}
-              title="Return or Replace Item"
-            >
-              <RefreshCcw className="mr-2 w-5 h-5" />
-              Return/Replace
-            </button>
+                disabled={isReturnDisabled}
+                title="Return or Replace Item"
+              >
+                <RefreshCcw className="mr-2 w-5 h-5" />
+                Return/Replace
+              </button>
+            )}
 
             {/* Cancel Order Button */}
             <button
@@ -329,6 +351,20 @@ const OrderDetailsPage = () => {
                 <span className="font-medium text-green-600">
                   {order.paymentStatus}
                 </span>
+              </div>
+            </div>
+
+            <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
+              <div className="flex items-center mb-2">
+                <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
+                <h4 className="font-semibold">Return</h4>
+              </div>
+              <div>
+                {order.returnPolicy && isReturnActive ? (
+                  <span>Available in {formattedDate} </span>
+                ) : (
+                  <span>Not available </span>
+                )}
               </div>
             </div>
 

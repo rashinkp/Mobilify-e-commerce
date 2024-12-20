@@ -33,8 +33,6 @@ const OrderManagement = () => {
     }
   }, [totalCount]);
 
-  
-
   const orderColumns = [
     {
       key: "orderNumber",
@@ -149,18 +147,17 @@ const OrderManagement = () => {
     },
   ];
 
-
-    const getOrderManagement = (order) => {
-      return [
-        {
-          action: () => {
-            navigate(`/admin/order/${order._id}`);
-          },
-          style: "",
-          icon: <Eye className="text-gray-500 hover:text-blue-600" />,
+  const getOrderManagement = (order) => {
+    return [
+      {
+        action: () => {
+          navigate(`/admin/order/${order._id}`);
         },
-      ];
-    };
+        style: "",
+        icon: <Eye className="text-gray-500 hover:text-blue-600" />,
+      },
+    ];
+  };
 
   if (isLoading) {
     return (
@@ -202,7 +199,7 @@ const OrderManagement = () => {
       <div className="">
         <SearchBar />
       </div>
-      <div className="max-w-7xl mx-auto p-4">
+      <div className="">
         <ListItem
           items={orders}
           columns={orderColumns}

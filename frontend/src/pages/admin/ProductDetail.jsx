@@ -220,7 +220,7 @@ const ProductManagement = () => {
                 </li>
                 <li>
                   <strong>Return Policy:</strong>{" "}
-                  {product.returnPolicy || "N/A"}
+                  {product.returnPolicy ? 'Available within 7 days' : 'Not available' || "N/A"}
                 </li>
                 <li>
                   <strong>COD Available:</strong>{" "}

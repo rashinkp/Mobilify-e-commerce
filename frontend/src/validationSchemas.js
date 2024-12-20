@@ -89,9 +89,7 @@ export const productValidation = Yup.object().shape({
     .min(0, "Offer Percent cannot be negative")
     .max(100, "Offer Percent cannot exceed 100%"),
 
-  returnPolicy: Yup.string()
-    .required("Return Policy is required")
-    .min(5, "Return Policy must be at least 5 characters"),
+  returnPolicy: Yup.string().required("return policy is required"),
 
   warranty: Yup.string()
     .required("Warranty is required")

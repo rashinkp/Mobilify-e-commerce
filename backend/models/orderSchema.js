@@ -8,6 +8,11 @@ const OrderSchema = new mongoose.Schema(
       required: true,
     },
 
+    returnPolicy: {
+      type: Boolean,
+      required: true,
+    },
+
     orderNumber: {
       type: String,
       unique: true,

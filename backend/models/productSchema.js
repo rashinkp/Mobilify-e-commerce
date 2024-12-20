@@ -12,7 +12,7 @@ const ProductSchema = new mongoose.Schema(
     },
     offerPercent: { type: Number, required: true },
     images: { type: [Object], required: false },
-    returnPolicy: { type: String, required: true },
+    returnPolicy: { type: Boolean, default:true },
     COD: { type: Boolean, default: true },
     warranty: { type: String, required: true },
     isSoftDelete: { type: Boolean, default: false },

@@ -35,9 +35,13 @@ export const getProductFields = (categoryOptions = [], product = {}) => [
   {
     name: "returnPolicy",
     label: "Return Policy",
-    type: "text",
-    placeholder: "Enter return policy",
+    type: "select",
+    placeholder: "Select an option",
     required: false,
+    options: [
+      { label: "Yes", value: true },
+      { label: "No", value: false },
+    ],
     defaultValue: product.returnPolicy || "",
   },
   {
@@ -45,7 +49,7 @@ export const getProductFields = (categoryOptions = [], product = {}) => [
     label: "Cash On Delivery available?",
     type: "select",
     placeholder: "Select an option",
-    required: false,
+    required: false, 
     options: [
       { label: "Yes", value: true },
       { label: "No", value: false },
