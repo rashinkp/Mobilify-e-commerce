@@ -3,6 +3,7 @@ import Order from "../models/orderSchema.js";
 import Cart from "../models/cartSchema.js";
 import mongoose from "mongoose";
 import Product from "../models/productSchema.js";
+import Payment from "../models/paymentSchema.js";
 
 export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
@@ -42,6 +43,10 @@ export const addOrder = asyncHandler(async (req, res) => {
       }
     }
 
+    // Validate payment
+    const payment = await Payment.findOne({ paymentId });
+    
+
     const orderDocuments = orderItems.map((item) => ({
       userId: userId,
       productId: item.productId,
@@ -56,9 +61,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       couponCode: couponCode,
       status: "Order placed",
       paymentId: paymentId || null,
-      paymentStatus:
-        paymentStatus ||
-        (paymentMethod === "Razorpay" ? "Pending" : "Cash on Delivery"),
+      paymentStatus: payment?.status || "Pending",
     }));
 
     const createdOrders = await Order.insertMany(orderDocuments);
@@ -72,6 +75,8 @@ export const addOrder = asyncHandler(async (req, res) => {
 
     // Clear cart
     const cart = await Cart.findOne({ userId });
+
+    console.log(cart);
     if (cart) {
       cart.cartItems = [];
       await cart.save();
@@ -93,6 +98,7 @@ export const addOrder = asyncHandler(async (req, res) => {
     });
   }
 });
+
 
 export const getOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;

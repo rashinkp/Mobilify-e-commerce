@@ -73,7 +73,7 @@ const OrderSchema = new mongoose.Schema(
         "PayPal",
         "Razorpay",
         "Google Pay",
-        "Cash on Delivery",
+        "Cash On Delivery",
         "Bank Transfer",
       ],
       required: true,

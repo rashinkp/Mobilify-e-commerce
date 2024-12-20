@@ -236,7 +236,7 @@ const CheckoutPage = () => {
 
       if (selectedPayment === "Razorpay") {
         await triggerRazorpayCheckout(orderData);
-      } else if (selectedPayment === "COD") {
+      } else if (selectedPayment === "Cash On Delivery") {
         const response = await placeOrder(orderData);
         if (response) {
           successToast("Order placed successfully");
@@ -407,7 +407,7 @@ const CheckoutPage = () => {
           <CreditCard className="mr-2" /> Payment Method
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {["Razorpay", "Cash on Delivery"].map((method) => (
+          {["Razorpay", "Cash On Delivery"].map((method) => (
             <div
               key={method}
               className={`p-4 border rounded-lg cursor-pointer ${

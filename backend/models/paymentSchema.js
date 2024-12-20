@@ -4,30 +4,30 @@ const paymentSchema = mongoose.Schema(
   {
     paymentGateway: {
       type: String,
-      required: true, 
+      required: true,
     },
     paymentId: {
       type: String,
-      required: true, 
+      required: true,
     },
     signature: {
       type: String,
     },
     status: {
       type: String,
-      enum: ["pending", "successful", "failed"],
+      enum: ["pending", "Successful", "failed"],
       default: "pending",
     },
     amount: {
       type: Number,
-      required: true, 
+      required: true,
     },
     paymentDate: {
       type: Date,
       default: Date.now,
     },
     paymentDetails: {
-      type: Object, 
+      type: Object,
       default: {},
     },
   },

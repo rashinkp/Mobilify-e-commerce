@@ -40,10 +40,10 @@ export const verifyPayment = expressAsyncHandler(async (req, res) => {
     await savePayment({
       paymentId,
       amount: payment.amount,
-      status: payment.status === "authorized" ? "successful" : "failed",
+      status: payment.status === "authorized" ? "Successful" : "failed",
       method: payment.method,
       timestamp: new Date(),
-      paymentGateway:'Razorpay'
+      paymentGateway: "Razorpay",
     });
 
     res.status(200).json({
