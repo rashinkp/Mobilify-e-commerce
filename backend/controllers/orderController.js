@@ -220,12 +220,14 @@ export const updateOrderStatus = async (req, res) => {
     order.paymentStatus = "Successful";
   }
 
-  if (
-    (order.status !== "Cancelled" || order.status !== "Returned") &&
-    order.paymentStatus === "Refunded"
-  ) {
-    order.paymentStatus = "Pending";
-  }
+if (
+  order.paymentStatus === "Refunded" &&
+  order.status !== "Cancelled" &&
+  order.status !== "Returned"
+) {
+  order.paymentStatus = "Pending";
+}
+
 
   await order.save();
 

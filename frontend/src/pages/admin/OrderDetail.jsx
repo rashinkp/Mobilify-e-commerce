@@ -26,7 +26,7 @@ const OrderDetails = () => {
     "Returned",
   ];
 
-    const paymentStatusOptions = ["Pending", "Success", "Refunded"];
+    const paymentStatusOptions = ["Pending", "Successful", "Refunded"];
 
   // Function to update product status
   const updateProductStatus = async (newStatus) => {

@@ -23,12 +23,13 @@ import { useParams } from "react-router";
 import { RotatingLines } from "react-loader-spinner";
 import { errorToast, successToast } from "../../components/toast";
 import { useGetProductQuery } from "../../redux/slices/productApiSlice";
+import CancelConfirmation from "../../components/cancelConfirmation";
 
 const OrderDetailsPage = () => {
   // State for managing order actions
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [orderCancelled, setOrderCancelled] = useState(false);
-  const [product, setProduct] = useState({});
+  const [confirmReturn, setConfirmReturn] = useState(false);
 
   const { ordId: orderId } = useParams();
 
@@ -40,7 +41,6 @@ const OrderDetailsPage = () => {
 
   const order = data || {};
 
-  
   const orderDate = new Date(order.orderDate);
 
   const returnAvailableDate = new Date(orderDate);
@@ -49,7 +49,6 @@ const OrderDetailsPage = () => {
   const currentDate = new Date();
 
   const isReturnActive = currentDate <= returnAvailableDate;
- 
 
   const formattedDate = returnAvailableDate.toLocaleDateString("en-US", {
     year: "numeric",
@@ -130,10 +129,26 @@ const OrderDetailsPage = () => {
     }
   };
 
+  const handleReturn = async () => {
+    try {
+      await changeStatus({ newStatus: "Returned", orderId }).unwrap();
+      successToast("Order returned successfully");
+    } catch (error) {
+      errorToast(
+        error?.message ||
+          error?.data?.message ||
+          "Error while updating order status"
+      );
+      console.log(error);
+    } finally {
+      setConfirmReturn(false);
+    }
+  };
+
   // Determine if cancel and return buttons should be disabled
   const isCancelDisabled =
     orderCancelled ||
-    ["Delivered", "Cancelled", "Out for Delivery"].includes(order.status);
+    ["Delivered", "Cancelled", "Out for Delivery"].includes(order.status) || order.status === 'Returned';
 
   const isReturnDisabled = !["Delivered", "Shipped"].includes(order.status);
 
@@ -155,244 +170,256 @@ const OrderDetailsPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 min-h-screen">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-transparent dark:text-white   ">
-        {/* Order Header with Action Buttons */}
-        <div className=" border-b-2 p-4 flex justify-between items-center">
-          <div>
-            <h2 className="text-xl font-bold">Order Details</h2>
-            <p className="text-sm">Order ID: {order.orderNumber}</p>
-            <p className="text-sm">
-              Order Date:{" "}
-              <strong>
-                {new Date(order.orderDate).toLocaleString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </strong>
+    <>
+      {confirmReturn && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+            <div className="flex items-center mb-4 text-yellow-500">
+              <Recycle className="mr-3 w-6 h-6" />
+              <h3 className="text-xl font-bold dark:text-white">
+                Return Order?
+              </h3>
+            </div>
+            <p className="mb-4 dark:text-gray-300">
+              Are you sure you want to return this order? This action cannot be
+              undone.
             </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            {/* Return/Replace Button */}
-            {(order.returnPolicy && isReturnActive) && (
+            <div className="flex justify-end space-x-4">
               <button
-                className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
+                onClick={() => setConfirmReturn(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 dark:text-white rounded-md hover:bg-gray-300"
+              >
+                No, Keep Order
+              </button>
+              <button
+                onClick={handleReturn}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+              >
+                Yes, Return Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="container mx-auto p-6 min-h-screen">
+        <div className="max-w-4xl mx-auto bg-white dark:bg-transparent dark:text-white   ">
+          {/* Order Header with Action Buttons */}
+          <div className=" border-b-2 p-4 flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold">Order Details</h2>
+              <p className="text-sm">Order ID: {order.orderNumber}</p>
+              <p className="text-sm">
+                Order Date:{" "}
+                <strong>
+                  {new Date(order.orderDate).toLocaleString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </strong>
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* Return/Replace Button */}
+              {order.returnPolicy && isReturnActive && (
+                <button
+                  onClick={() => setConfirmReturn(true)}
+                  className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
               ${
                 isReturnDisabled
                   ? " text-gray-500 cursor-not-allowed"
                   : " text-black hover:text-green-600 dark:hover:text-green-600 dark:text-white"
               }`}
-                disabled={isReturnDisabled}
-                title="Return or Replace Item"
-              >
-                <RefreshCcw className="mr-2 w-5 h-5" />
-                Return/Replace
-              </button>
-            )}
+                  disabled={isReturnDisabled}
+                  title="Return or Replace Item"
+                >
+                  <RefreshCcw className="mr-2 w-5 h-5" />
+                  Return/Replace
+                </button>
+              )}
 
-            {/* Cancel Order Button */}
-            <button
-              className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300
+              {/* Cancel Order Button */}
+              <button
+                className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300
               ${
                 isCancelDisabled
                   ? "text-gray-500 cursor-not-allowed"
                   : "text-black hover:text-red-600 dark:hover:text-red-600 dark:text-white"
               }`}
-              onClick={() => setShowCancelConfirmation(true)}
-              disabled={isCancelDisabled}
-              title="Cancel Order"
-            >
-              <X className="mr-1 w-5 h-5 " />
-              Cancel Order
-            </button>
-          </div>
-        </div>
-
-        {/* Cancel Order Confirmation Modal */}
-        {showCancelConfirmation && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
-              <div className="flex items-center mb-4 text-yellow-500">
-                <AlertTriangle className="mr-3 w-6 h-6" />
-                <h3 className="text-xl font-bold dark:text-white">
-                  Cancel Order?
-                </h3>
-              </div>
-              <p className="mb-4 dark:text-gray-300">
-                Are you sure you want to cancel this order? This action cannot
-                be undone.
-              </p>
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => setShowCancelConfirmation(false)}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-600 dark:text-white rounded-md hover:bg-gray-300"
-                >
-                  No, Keep Order
-                </button>
-                <button
-                  onClick={handleCancelOrder}
-                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                >
-                  Yes, Cancel Order
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Rest of the existing component remains the same */}
-        {/* Order Status Progress Bar */}
-        <div className="p-6  dark:bg-transparent">
-          <div className="flex items-center justify-between relative">
-            {orderStages.map((stage, index) => (
-              <div
-                key={stage.label}
-                className="flex-1 flex flex-col items-center relative"
+                onClick={() => setShowCancelConfirmation(true)}
+                disabled={isCancelDisabled}
+                title="Cancel Order"
               >
-                {/* Connecting line: before the current circle */}
-                {index > 0 && (
-                  <div
-                    className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
-                      stage.completed
-                        ? "bg-green-500"
-                        : "bg-gray-300 dark:bg-white"
-                    }`}
-                    style={{ zIndex: 0 }}
-                  />
-                )}
+                <X className="mr-1 w-5 h-5 " />
+                Cancel Order
+              </button>
+            </div>
+          </div>
 
-                {/* Status circle with icon */}
+          {/* Cancel Order Confirmation Modal */}
+          {showCancelConfirmation && (
+            <CancelConfirmation
+              handleCancelOrder={handleCancelOrder}
+              setShowCancelConfirmation={setShowCancelConfirmation}
+            />
+          )}
+
+          {/* Order Status Progress Bar */}
+          {order.status === 'Returned' ? (
+            <div className="flex justify-center m-5 text-yellow-600 font-bold">
+              Order returned
+            </div>
+          ) : (<div className="p-6  dark:bg-transparent">
+            <div className="flex items-center justify-between relative">
+              {orderStages.map((stage, index) => (
                 <div
-                  className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
-                    stage.completed
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-300 dark:bg-white text-gray-600"
-                  }`}
+                  key={stage.label}
+                  className="flex-1 flex flex-col items-center relative"
                 >
-                  <stage.Icon className="w-6 h-6" />
-                </div>
+                  {/* Connecting line: before the current circle */}
+                  {index > 0 && (
+                    <div
+                      className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
+                        stage.completed
+                          ? "bg-green-500"
+                          : "bg-gray-300 dark:bg-white"
+                      }`}
+                      style={{ zIndex: 0 }}
+                    />
+                  )}
 
-                {/* Status label */}
-                <span className="text-xs mt-2 text-center dark:text-white">
-                  {stage.label}
-                </span>
-
-                {/* Connecting line: after the current circle */}
-                {index < orderStages.length - 1 && (
+                  {/* Status circle with icon */}
                   <div
-                    className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
+                    className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
                       stage.completed
-                        ? "bg-green-500"
-                        : "bg-gray-300 dark:bg-white"
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-300 dark:bg-white text-gray-600"
                     }`}
-                    style={{ zIndex: 0 }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+                  >
+                    <stage.Icon className="w-6 h-6" />
+                  </div>
 
-        {/* Product & Order Details */}
-        <div className="grid md:grid-cols-2 gap-6 p-6">
-          {/* Product Details */}
-          <div className="space-y-4">
-            <div className="rounded-lg overflow-hidden">
-              <img
-                src={order.imageUrl}
-                alt="No image found"
-                className="w-full h-48 object-contain"
-              />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">{order.productName}</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Model: {order.productModel}
-              </p>
-              <div className="flex items-center mt-2">
-                <CreditCard className="mr-2 w-5 h-5 text-blue-600" />
-                <span className="font-bold text-xl">
-                  ${order.price.toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
+                  {/* Status label */}
+                  <span className="text-xs mt-2 text-center dark:text-white">
+                    {stage.label}
+                  </span>
 
-          {/* Order Information */}
-          <div className="space-y-4">
-            <div className="bg-gray-100 dark:text-black p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <MapPin className="mr-2 w-5 h-5 text-green-600" />
-                <h4 className="font-semibold">Shipping Address</h4>
-              </div>
-              <p>{order.shippingAddress.label}</p>
-              <p className="text-gray-600">
-                {order.shippingAddress.street},{order.shippingAddress.city},
-                {order.shippingAddress.postalCode},
-                {order.shippingAddress.country}
-              </p>
+                  {/* Connecting line: after the current circle */}
+                  {index < orderStages.length - 1 && (
+                    <div
+                      className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
+                        stage.completed
+                          ? "bg-green-500"
+                          : "bg-gray-300 dark:bg-white"
+                      }`}
+                      style={{ zIndex: 0 }}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
+          </div>)}
 
-            <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <CreditCard className="mr-2 w-5 h-5 text-purple-600" />
-                <h4 className="font-semibold">Payment Details</h4>
-              </div>
-              <div className="flex justify-between">
-                <span>Method:</span>
-                <span className="font-medium">{order.paymentMethod}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Status:</span>
-                <span className="font-medium text-green-600">
-                  {order.paymentStatus}
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
-                <h4 className="font-semibold">Return</h4>
+          {/* Product & Order Details */}
+          <div className="grid md:grid-cols-2 gap-6 p-6">
+            {/* Product Details */}
+            <div className="space-y-4">
+              <div className="rounded-lg overflow-hidden">
+                <img
+                  src={order.imageUrl}
+                  alt="No image found"
+                  className="w-full h-48 object-contain"
+                />
               </div>
               <div>
-                {order.returnPolicy && isReturnActive ? (
-                  <span>Available in {formattedDate} </span>
-                ) : (
-                  <span>Not available </span>
-                )}
-              </div>
-            </div>
-
-            {order.coupon && (
-              <div className="bg-yellow-100  dark:text-black p-4 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <Tag className="mr-2 w-5 h-5 text-yellow-600" />
-                  <h4 className="font-semibold">Coupon Applied</h4>
-                </div>
-                <div className="flex justify-between">
-                  <span>Code:</span>
-                  <span className="font-medium">{order.coupon.code}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Discount:</span>
-                  <span className="font-medium text-green-600">
-                    -${order.coupon.discount.toFixed(2)}
+                <h3 className="text-lg font-semibold">{order.productName}</h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Model: {order.productModel}
+                </p>
+                <div className="flex items-center mt-2">
+                  <CreditCard className="mr-2 w-5 h-5 text-blue-600" />
+                  <span className="font-bold text-xl">
+                    ${order.price.toFixed(2)}
                   </span>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* Order Summary */}
+            {/* Order Information */}
+            <div className="space-y-4">
+              <div className="bg-gray-100 dark:text-black p-4 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <MapPin className="mr-2 w-5 h-5 text-green-600" />
+                  <h4 className="font-semibold">Shipping Address</h4>
+                </div>
+                <p>{order.shippingAddress.label}</p>
+                <p className="text-gray-600">
+                  {order.shippingAddress.street},{order.shippingAddress.city},
+                  {order.shippingAddress.postalCode},
+                  {order.shippingAddress.country}
+                </p>
+              </div>
+
+              <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <CreditCard className="mr-2 w-5 h-5 text-purple-600" />
+                  <h4 className="font-semibold">Payment Details</h4>
+                </div>
+                <div className="flex justify-between">
+                  <span>Method:</span>
+                  <span className="font-medium">{order.paymentMethod}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status:</span>
+                  <span className="font-medium text-green-600">
+                    {order.paymentStatus}
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
+                  <h4 className="font-semibold">Return</h4>
+                </div>
+                <div>
+                  {order.returnPolicy && isReturnActive ? (
+                    <span>Available in {formattedDate} </span>
+                  ) : (
+                    <span>Not available </span>
+                  )}
+                </div>
+              </div>
+
+              {order.coupon && (
+                <div className="bg-yellow-100  dark:text-black p-4 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Tag className="mr-2 w-5 h-5 text-yellow-600" />
+                    <h4 className="font-semibold">Coupon Applied</h4>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Code:</span>
+                    <span className="font-medium">{order.coupon.code}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Discount:</span>
+                    <span className="font-medium text-green-600">
+                      -${order.coupon.discount.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Order Summary */}
+        </div>
+        <div></div>
       </div>
-      <div></div>
-    </div>
+    </>
   );
 };
 
