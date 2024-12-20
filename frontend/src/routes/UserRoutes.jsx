@@ -22,6 +22,7 @@ import OrderSuccessPage from "../pages/user/SuccessfulOrder.jsx";
 import OrderDetailsPage from "../pages/user/Order.jsx";
 import OrderListingPage from "../components/MyOrders.jsx";
 import ProtectUser from "../pages/user/UserProtect.jsx";
+import WishList from "../pages/user/WishList.jsx";
 
 const UserRoutes = () => {
   
@@ -32,13 +33,12 @@ const UserRoutes = () => {
       </div>
       <Routes>
         <Route element={<ProtectUser />}>
-        
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/orders" element={<OrderListingPage />} />
-        <Route path="/profile" element={<UserProfileDashboard />} />
-        <Route path="/orderSuccess" element={<OrderSuccessPage />} />
-        <Route path="/orderDetail/:ordId" element={<OrderDetailsPage />} />
-        
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/orders" element={<OrderListingPage />} />
+          <Route path="/profile" element={<UserProfileDashboard />} />
+          <Route path="/orderSuccess" element={<OrderSuccessPage />} />
+          <Route path="/orderDetail/:ordId" element={<OrderDetailsPage />} />
+          <Route path="/wishlist" element={<WishList />} />
         </Route>
 
         <Route path="/" element={<HomePage />} />
