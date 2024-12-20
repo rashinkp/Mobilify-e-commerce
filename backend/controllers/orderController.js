@@ -8,6 +8,8 @@ export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const data = req.body;
 
+  console.log(data);
+
   // Check required inputs
   if (!userId || !data || !data.orderItems) {
     return res.status(400).json({
@@ -16,8 +18,31 @@ export const addOrder = asyncHandler(async (req, res) => {
   }
 
   try {
-    const { orderItems, shippingAddress, shipping, paymentMethod, couponCode } =
-      data;
+    const {
+      orderItems,
+      shippingAddress,
+      shipping,
+      paymentMethod,
+      couponCode,
+      total,
+      paymentId,
+      paymentStatus,
+    } = data;
+
+    // Check stock availability first
+    for (const item of orderItems) {
+      const product = await Product.findById(item.productId);
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Insufficient stock for product: ${product.name}`,
+        });
+      }
+    }
 
     const orderDocuments = orderItems.map((item) => ({
       userId: userId,
@@ -32,35 +57,35 @@ export const addOrder = asyncHandler(async (req, res) => {
       shippingAddress: shippingAddress,
       couponCode: couponCode,
       status: "Order placed",
+      paymentId: paymentId || null,
+      paymentStatus:
+        paymentStatus ||
+        (paymentMethod === "Razorpay" ? "Pending" : "Cash on Delivery"),
     }));
 
     const createdOrders = await Order.insertMany(orderDocuments);
 
+    // Update stock for each product
     for (const item of orderDocuments) {
       const product = await Product.findById(item.productId);
-
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `Insufficient stock for product: ${product.name}`,
-        });
-      }
-
       product.stock -= item.quantity;
       await product.save();
     }
 
+    // Clear cart
     const cart = await Cart.findOne({ userId });
     if (cart) {
       cart.cartItems = [];
       await cart.save();
     }
+
     res.status(201).json({
-      message: "Order placed successfully with Cash on Delivery",
+      message:
+        paymentMethod === "Razorpay"
+          ? "Orders placed successfully with Razorpay"
+          : "Orders placed successfully with Cash on Delivery",
       orderIds: createdOrders.map((order) => order._id),
+      total,
     });
   } catch (error) {
     console.error("Error placing order:", error);

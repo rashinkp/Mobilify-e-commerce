@@ -21,24 +21,42 @@ export const savePayment = async (paymentData) => {
 };
 
 export const verifyPayment = expressAsyncHandler(async (req, res) => {
-  const { paymentId, orderId } = req.body;
+  const { paymentId } = req.body;
+
+  console.log(paymentId);
 
   try {
-    const razorpayPayment = await razorpay.orders.fetch(paymentId);
+    // Fetch payment details from Razorpay
+    const payment = await razorpay.payments.fetch(paymentId);
 
-    if (razorpayPayment.status === "captured") {
-      const order = await Order.findByIdAndUpdate(orderId, {
-        status: "Paid",
-        paymentDetails: razorpayPayment,
+
+    if (payment.captured) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment not captured",
       });
-
-      res.status(200).json({ message: "Payment successful and order updated" });
-    } else {
-      res.status(400).json({ message: "Payment failed" });
     }
+
+    // Save payment details
+    await savePayment({
+      paymentId,
+      amount: payment.amount,
+      status: payment.status,
+      method: payment.method,
+      timestamp: new Date(),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Payment verified successfully",
+      order,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error verifying payment", error: error.message });
+    console.error("Payment verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error verifying payment",
+      error: error.message,
+    });
   }
 });

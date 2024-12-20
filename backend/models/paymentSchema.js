@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 
 const paymentSchema = mongoose.Schema(
   {
-    orderId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
-      required: true,
-    },
     paymentGateway: {
       type: String,
       required: true, // Example: 'razorpay'

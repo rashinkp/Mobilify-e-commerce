@@ -67,7 +67,7 @@ router
   
 
 router.post("/savePayment" , protect('user') , savePayment);
-router.put("/updatePayment", protect("user"), verifyPayment);
+router.put("/verifyPayment", protect("user"), verifyPayment);
 
 
 

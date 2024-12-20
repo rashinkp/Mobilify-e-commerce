@@ -10,7 +10,10 @@ import {
   Plus,
 } from "lucide-react";
 import { RotatingLines } from "react-loader-spinner";
-import { useAddAddressMutation, useGetAddressQuery } from "../../redux/slices/addressApiSlice";
+import {
+  useAddAddressMutation,
+  useGetAddressQuery,
+} from "../../redux/slices/addressApiSlice";
 import { useGetCartQuery } from "../../redux/slices/cartApiSlice";
 import { usePlaceOrderMutation } from "../../redux/slices/orderApiSlice";
 import { errorToast, successToast } from "../../components/toast";
@@ -18,8 +21,6 @@ import { useNavigate } from "react-router";
 import AddAddressForm from "../../components/user/AddAddressForm";
 import { addressValidationSchema } from "../../validationSchemas";
 import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice.js";
-import Razorpay from 'razorpay';
-
 
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -28,11 +29,11 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const [verifyPayment] = useVerifyPaymentMutation()
+  const [verifyPayment] = useVerifyPaymentMutation();
   const [addAddress] = useAddAddressMutation();
   const navigate = useNavigate();
 
-  const [placeOrder] = usePlaceOrderMutation()
+  const [placeOrder] = usePlaceOrderMutation();
 
   //api calling
 
@@ -56,59 +57,6 @@ const CheckoutPage = () => {
   const { addresses } = addressData || {};
 
   const products = cartData.cartItems || [];
-
-
-
-   const handleRazorpaySuccess = useCallback(
-     async (razorpayOrderData, response) => {
-       try {
-         const paymentId = response.razorpay_payment_id;
-         const orderId = razorpayOrderData.orderId;
-         const verifyPaymentResponse = await verifyPayment({
-           paymentId,
-           orderId,
-         });
-
-         if (verifyPaymentResponse.success) {
-           successToast("Payment successful!");
-           navigate(`/user/orderSuccess/`);
-         } else {
-           errorToast("Payment verification failed. Please try again.");
-         }
-       } catch (error) {
-         errorToast("Error verifying payment. Please try again.");
-         console.log(error);
-       }
-     },
-     [verifyPayment]
-  );
-  
-
-
-    const triggerRazorpayCheckout = (razorpayOrderData) => {
-      const options = {
-        key: "rzp_test_K5otU6Q5C8lSi8",
-        amount: razorpayOrderData.price,
-        currency: "INR",
-        order_id: razorpayOrderData.orderNumber,
-        handler: async function (response) {
-          await handleRazorpaySuccess(razorpayOrderData, response); // Call the handler inside the component
-        },
-        prefill: {
-          name: "Customer Name",
-          email: "customer@example.com",
-          contact: "9999999999",
-        },
-        theme: {
-          color: "#F37254",
-        },
-      };
-
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-    };
-
-  
 
   useEffect(() => {
     if (addresses && addresses.length > 0) {
@@ -139,25 +87,23 @@ const CheckoutPage = () => {
     );
   };
 
-
-    const handleAddAddress = async (data) => {
-      console.log("Form Submitted:", data);
-      const userId = cartData.userId
-      try {
-        await addAddress({ data, userId });
-        successToast("Address added successfully");
-      } catch (error) {
-        errorToast(
-          error?.data?.message ||
-            error?.message ||
-            error?.data ||
-            "Error occurred while adding address"
-        );
-        console.log(error);
-      }
-      setIsAddingAddress(false);
-    };
-  
+  const handleAddAddress = async (data) => {
+    console.log("Form Submitted:", data);
+    const userId = cartData.userId;
+    try {
+      await addAddress({ data, userId });
+      successToast("Address added successfully");
+    } catch (error) {
+      errorToast(
+        error?.data?.message ||
+          error?.message ||
+          error?.data ||
+          "Error occurred while adding address"
+      );
+      console.log(error);
+    }
+    setIsAddingAddress(false);
+  };
 
   const calculateTax = () => {
     const subtotal = calculateSubtotal();
@@ -174,10 +120,9 @@ const CheckoutPage = () => {
     }
   };
 
-
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const tax = calculateTax()
+    const tax = calculateTax();
     const shippingCost = selectedShipping ? selectedShipping.price : 0;
     const couponDiscount = appliedCoupon
       ? subtotal * appliedCoupon.discount
@@ -186,57 +131,125 @@ const CheckoutPage = () => {
     return subtotal + tax + shippingCost - couponDiscount;
   };
 
-  const handleSubmit = async () => {
-  const orderItems = products.map((product) => ({
-    productId: product.productDetails?._id,
-    name: product?.productDetails?.name,
-    model: product?.productDetails?.model,
-    price: product?.productDetails?.price,
-    quantity: product.quantity,
-    imageUrl: product?.productDetails?.images[0]?.url,
-  }));
+  const handleRazorpaySuccess = useCallback(
+    async (razorpayOrderData, response) => {
+      try {
+        const paymentId = response.razorpay_payment_id;
+        const orderId = razorpayOrderData.orderId;
 
-  const subtotal = calculateSubtotal();
-  const tax = calculateTax();
-  const shippingCost = selectedShipping ? selectedShipping.price : 0;
-  const couponDiscount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
-    const total = subtotal + shippingCost + tax - couponDiscount;
-    
-  const orderData = {
-    shippingAddress: {
-      addressId: selectedAddress._id,
-      street: selectedAddress.street,
-      city: selectedAddress.city,
-      state: selectedAddress.state,
-      postalCode: selectedAddress.postalCode,
-      country: selectedAddress.country,
-      label: selectedAddress.label,
+        const verifyPaymentResponse = await verifyPayment({
+          paymentId,
+        });
+
+
+        if (verifyPaymentResponse) {
+           const orderResponse = await placeOrder({
+             ...razorpayOrderData,
+             paymentId,
+             paymentStatus: "Successful",
+           });
+          
+          if (!orderResponse) {
+            errorToast("Failed to create order. Please try again.");
+            return;
+          }
+          successToast("Payment successful!");
+          navigate(`/user/orderSuccess`);
+        } else {
+          errorToast("Payment verification failed. Please try again.");
+        }
+      } catch (error) {
+        errorToast("Error processing payment. Please try again.");
+        console.error("Payment error:", error);
+      }
     },
-    shipping: selectedShipping,
-    paymentMethod: selectedPayment,
-    orderItems: orderItems,
-    couponCode: appliedCoupon ? appliedCoupon.code : null,
-  };
+    [verifyPayment, placeOrder, navigate]
+  );
 
-  try {
-    if (selectedPayment === "Razorpay") {
-      const razorpayOrderData = await placeOrder(orderData);
-      triggerRazorpayCheckout(razorpayOrderData);
-    } else {
-      const response = await placeOrder(orderData);
-      successToast("Order placed successfully");
-      navigate(`/user/orderSuccess/`);
+
+
+  const triggerRazorpayCheckout = useCallback(
+    (razorpayOrderData) => {
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_K5otU6Q5C8lSi8',
+        amount: razorpayOrderData.total * 100,
+        currency: "INR",
+        order_id: razorpayOrderData.orderNumber,
+        handler: (response) =>
+          handleRazorpaySuccess(razorpayOrderData, response),
+        prefill: {
+          name: razorpayOrderData.customerName || "",
+          email: razorpayOrderData.email || "",
+          contact: razorpayOrderData.phone || "",
+        },
+        theme: {
+          color: "#F37254",
+        },
+        modal: {
+          ondismiss: () => {
+            errorToast("Payment cancelled. Please try again.");
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    },
+    [handleRazorpaySuccess]
+  );
+
+  const handleSubmit = async () => {
+    try {
+      const orderItems = products.map((product) => ({
+        productId: product.productDetails?._id,
+        name: product?.productDetails?.name,
+        model: product?.productDetails?.model,
+        price: product?.productDetails?.price,
+        quantity: product.quantity,
+        imageUrl: product?.productDetails?.images[0]?.url,
+      }));
+
+      const subtotal = calculateSubtotal();
+      const tax = calculateTax();
+      const shippingCost = selectedShipping?.price || 0;
+      const couponDiscount = appliedCoupon
+        ? subtotal * appliedCoupon.discount
+        : 0;
+      const total = subtotal + shippingCost + tax - couponDiscount;
+
+      const orderData = {
+        shippingAddress: {
+          addressId: selectedAddress._id,
+          street: selectedAddress.street,
+          city: selectedAddress.city,
+          state: selectedAddress.state,
+          postalCode: selectedAddress.postalCode,
+          country: selectedAddress.country,
+          label: selectedAddress.label,
+        },
+        shipping: selectedShipping,
+        paymentMethod: selectedPayment,
+        orderItems,
+        couponCode: appliedCoupon?.code || null,
+        total,
+      };
+
+      if (selectedPayment === "Razorpay") {
+        await triggerRazorpayCheckout(orderData);
+      } else if (selectedPayment === "COD") {
+        const response = await placeOrder(orderData);
+        if (response) {
+          successToast("Order placed successfully");
+          navigate(`/user/orderSuccess`);
+        } else {
+          errorToast("Failed to place order. Please try again.");
+        }
+      }
+    } catch (error) {
+      errorToast(error.message || "Error while placing order");
+      console.error("Order error:", error);
     }
-  } catch (error) {
-    errorToast(
-      error.message || error.data.message || "Error while placing order"
-    );
-    console.log(error);
-  }
-};
-
-
-
+  };
 
   if (isAddressLoading || isCartLoading) {
     return (
@@ -304,7 +317,7 @@ const CheckoutPage = () => {
         <h2 className="text-xl font-bold mb-4 flex items-center">
           <ShoppingCart className="mr-2" /> Order Summary
         </h2>
-        {products.map((product) => (
+        {products.length === 0 ? (<>No products add products</>) : (products.map((product) => (
           <div
             key={product._id}
             className="flex items-center justify-between p-4 border-b"
@@ -333,7 +346,7 @@ const CheckoutPage = () => {
               </p>
             </div>
           </div>
-        ))}
+        )))}
       </section>
 
       {/* Coupon Section */}
