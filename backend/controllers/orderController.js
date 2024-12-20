@@ -8,8 +8,6 @@ export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const data = req.body;
 
-  console.log(data);
-
   // Check required inputs
   if (!userId || !data || !data.orderItems) {
     return res.status(400).json({

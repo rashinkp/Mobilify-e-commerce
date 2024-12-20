@@ -23,7 +23,6 @@ export const savePayment = async (paymentData) => {
 export const verifyPayment = expressAsyncHandler(async (req, res) => {
   const { paymentId } = req.body;
 
-  console.log(paymentId);
 
   try {
     // Fetch payment details from Razorpay
@@ -41,16 +40,17 @@ export const verifyPayment = expressAsyncHandler(async (req, res) => {
     await savePayment({
       paymentId,
       amount: payment.amount,
-      status: payment.status,
+      status: payment.status === "authorized" ? "successful" : "failed",
       method: payment.method,
       timestamp: new Date(),
+      paymentGateway:'Razorpay'
     });
 
     res.status(200).json({
       success: true,
       message: "Payment verified successfully",
-      order,
     });
+
   } catch (error) {
     console.error("Payment verification error:", error);
     res.status(500).json({

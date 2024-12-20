@@ -4,15 +4,14 @@ const paymentSchema = mongoose.Schema(
   {
     paymentGateway: {
       type: String,
-      required: true, // Example: 'razorpay'
+      required: true, 
     },
     paymentId: {
       type: String,
-      required: true, // Razorpay payment ID
+      required: true, 
     },
     signature: {
       type: String,
-      required: true, // Razorpay payment signature
     },
     status: {
       type: String,
@@ -21,14 +20,14 @@ const paymentSchema = mongoose.Schema(
     },
     amount: {
       type: Number,
-      required: true, // Amount paid
+      required: true, 
     },
     paymentDate: {
       type: Date,
       default: Date.now,
     },
     paymentDetails: {
-      type: Object, // Store any additional payment details if needed
+      type: Object, 
       default: {},
     },
   },
