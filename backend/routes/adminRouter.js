@@ -59,7 +59,7 @@ router
   .put(protect("admin"), updateCategory);
 
 //product related routes
-router.route("/product").post(protect("admin"), addProduct).get(getAllProducts);
+router.route("/product").post(protect("admin"), addProduct).get(optionalProtect('user'),getAllProducts);
 router
   .route("/product/:id")
   .get(optionalProtect("user"),getProduct)

@@ -26,6 +26,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     searchTerm = "",
   } = req.query;
 
+  const userId = req.user?.userId;
   const skip = (page - 1) * limit;
 
   let filter = {};
@@ -33,7 +34,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   if (filterBy === "active") {
     filter = { isSoftDelete: false };
   } else if (filterBy === "inactive") {
-    filter = {isSoftDelete: true};
+    filter = { isSoftDelete: true };
   } else if (filterBy === "low stock") {
     filter = { stock: { $lt: 20 } };
   } else if (filterBy === "high stock") {
@@ -55,10 +56,6 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
     const totalCount = await Product.countDocuments(filter);
 
-    if (products.length > 0) {
-      res.status(200).json({ products, totalCount });
-    }
-
     if (!products || products.length === 0) {
       return res.status(200).json({
         products: [],
@@ -66,6 +63,37 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         message: "No products found for the selected filters.",
       });
     }
+
+    // If user is logged in, check wishlist status for each product
+    let productsWithWishlistStatus = products;
+    if (userId) {
+      // Get all wishlist items for the user in one query
+      const wishlistItems = await WishList.find({
+        userId,
+        "items.productId": { $in: products.map((product) => product._id) },
+      });
+
+      // Create a Set of product IDs that are in the wishlist for faster lookup
+      const wishlistProductIds = new Set(
+        wishlistItems.reduce((acc, wishlist) => {
+          return [
+            ...acc,
+            ...wishlist.items.map((item) => item.productId.toString()),
+          ];
+        }, [])
+      );
+
+      // Add wishlist status to each product
+      productsWithWishlistStatus = products.map((product) => ({
+        ...product.toObject(),
+        isInWishList: wishlistProductIds.has(product._id.toString()),
+      }));
+    }
+
+    res.status(200).json({
+      products: productsWithWishlistStatus,
+      totalCount,
+    });
   } catch (error) {
     res
       .status(500)
@@ -87,6 +115,7 @@ export const getProduct = asyncHandler(async (req, res) => {
     userId,
     "items.productId": id, 
   });
+
   console.log(wishList)
   const isInWishList = wishList ? true : false;
   res.status(200).json({ ...product.toObject() , isInWishList});

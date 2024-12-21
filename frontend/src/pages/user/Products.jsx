@@ -21,7 +21,7 @@ const Products = () => {
   console.log(searchTerm)
 
 
-const { data, isLoading, isError, error } = useGetAllProductsQuery({
+const { data, isLoading, isError, error ,refetch } = useGetAllProductsQuery({
   page: currentPage,
   limit: pageSize,
   sortBy:
@@ -150,7 +150,11 @@ const { data, isLoading, isError, error } = useGetAllProductsQuery({
 
         <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 5xl:grid-cols-5 justify-center px-4">
           {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard
+              key={product._id}
+              product={product}
+              refetch={refetch}
+            />
           ))}
         </div>
 

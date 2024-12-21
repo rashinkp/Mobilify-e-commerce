@@ -6,13 +6,14 @@ import Cart from "../models/cartSchema.js";
 
 export const toggleWishList = asyncHandler(async (req, res) => {
   const userId = req.user.userId;
-  const { productId } = req.body;
+  const  productId  = req.body.productId;
+
+  console.log(userId, req.body);
 
   if (!userId || !productId) {
     return res.status(400).json({ message: "UserId or ProductId is missing" });
   }
 
-  // Check if the product exists
   const product = await Product.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });

@@ -10,7 +10,7 @@ import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 const HomePage = () => {
  
   
-  const {data,isLoading , isError, error } = useGetAllProductsQuery({
+  const {data,isLoading , isError, error , refetch } = useGetAllProductsQuery({
     limit: 8,
     sortBy: 'createdAt',
     order:'desc',
@@ -49,7 +49,11 @@ const HomePage = () => {
         </p>
         <div className="mt-14 grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 5xl:grid-cols-5 justify-center px-4">
           {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard
+              key={product._id}
+              product={product}
+              refetch={refetch}
+            />
           ))}
         </div>
       </div>
