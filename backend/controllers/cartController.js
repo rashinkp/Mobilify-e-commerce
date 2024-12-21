@@ -2,10 +2,11 @@ import asyncHandler from "express-async-handler";
 import Cart from "../models/cartSchema.js";
 import Product from "../models/productSchema.js"; 
 import mongoose from "mongoose";
+import WishList from "../models/wishListSchema.js";
 
 export const addToCart = asyncHandler(async (req, res) => {
-  const {userId} = req.user
-  const { productId, quantity } = req.body;
+  const { userId } = req.user;
+  const { productId, quantity = 1 } = req.body;
 
   // Validate the inputs
   if (!productId || !quantity || quantity < 1) {
@@ -21,32 +22,38 @@ export const addToCart = asyncHandler(async (req, res) => {
   }
 
   if (product.stock < 1) {
-    return res.status(400).json({ message: 'Product is out of stock' });
+    return res.status(400).json({ message: "Product is out of stock" });
   }
 
-  // Check if the user already has a cart
+  const wishList = await WishList.findOne({ userId });
+  if (wishList) {
+    await WishList.updateOne(
+      { userId },
+      { $pull: { items: { productId: productId } } }
+    );
+    console.log("Product removed from wishlist");
+  }
+
   let cart = await Cart.findOne({ userId });
 
   if (!cart) {
-    // If no cart exists, create a new one
     cart = new Cart({
       userId,
       cartItems: [{ productId, quantity }],
     });
   } else {
-    // If cart exists, check if product is already in the cart
     const itemIndex = cart.cartItems.findIndex(
       (item) => item.productId.toString() === productId
     );
 
     if (itemIndex > -1) {
       if (cart.cartItems[itemIndex].quantity >= 10) {
-        return res.status(400).json({message:'Maximum limit to cart reached'})
+        return res
+          .status(400)
+          .json({ message: "Maximum limit to cart reached" });
       }
-        // If product exists in cart, update the quantity
-        cart.cartItems[itemIndex].quantity += quantity;
+      cart.cartItems[itemIndex].quantity += quantity;
     } else {
-      // If product doesn't exist, add it to the cart
       cart.cartItems.push({ productId, quantity });
     }
   }
@@ -58,6 +65,7 @@ export const addToCart = asyncHandler(async (req, res) => {
     cart,
   });
 });
+
 
 
 

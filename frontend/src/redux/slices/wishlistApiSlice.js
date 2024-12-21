@@ -7,7 +7,7 @@ export const wishlistApiSlice = apiSlice.injectEndpoints({
     toggleWishList: builder.mutation({
       query: (data) => ({
         url: `${USER_URL}/wishlist`,
-        method: "PUT",
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["Wishlist"],
@@ -15,12 +15,26 @@ export const wishlistApiSlice = apiSlice.injectEndpoints({
     getAllWishList: builder.query({
       query: () => ({
         url: `${USER_URL}/wishlist`,
-        method:'GET'
+        method: "GET",
       }),
-      providesTags:['Wishlist']
-    })
+      providesTags: ["Wishlist"],
+    }),
+    removeFromWishlist: builder.mutation({
+      query: (data) => ({
+        url: `${USER_URL}/wishlist`,
+        method: "DELETE",
+        body: data,
+      }),
+      invalidatesTags: ["Wishlist"],
+    }),
+    addAllToCart: builder.mutation({
+      query: () => ({
+        url: `${USER_URL}/wishlist`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Wishlist"],
+    }),
   }),
-
 });
 
-export const {useToggleWishListMutation,  useGetAllWishListQuery} = wishlistApiSlice;
+export const {useToggleWishListMutation, useRemoveFromWishlistMutation,  useGetAllWishListQuery, useAddAllToCartMutation} = wishlistApiSlice;
