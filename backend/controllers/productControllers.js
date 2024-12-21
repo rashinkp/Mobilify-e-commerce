@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Product from "../models/productSchema.js";
 import cloudinary from "../config/cloudinary.js";
 import mongoose from "mongoose";
+import WishList from "../models/wishListSchema.js";
 
 export const addProduct = asyncHandler(async (req, res) => {
   const product = req.body;
@@ -75,11 +76,20 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 export const getProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const product = await Product.findById(id);
-  if (product) {
-    res.status(200).json(product);
-  } else {
+  const userId = req.user?.userId;
+
+
+  if (!product) {
     res.status(404).json({ message: 'Couldn"t find any product with the id' });
   }
+
+  const wishList = await WishList.findOne({
+    userId,
+    "items.productId": id, 
+  });
+  console.log(wishList)
+  const isInWishList = wishList ? true : false;
+  res.status(200).json({ ...product.toObject() , isInWishList});
 });
 
 export const deleteProduct = asyncHandler(async (req, res) => {

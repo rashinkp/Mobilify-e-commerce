@@ -6,17 +6,22 @@ import { useGetProductQuery } from "../redux/slices/productApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import noImage from "../assets/noImage.png";
 import BrudCrump from "./BrudCrump";
+import { useToggleWishListMutation } from "../redux/slices/wishlistApiSlice";
+import { errorToast, successToast } from "./toast";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const [toggleWishlist] = useToggleWishListMutation()
 
-  const { data: product, isLoading, error } = useGetProductQuery(id);
+  const { data: product, isLoading, error,refetch } = useGetProductQuery(id);
 
   const [mainImage, setMainImage] = useState(noImage);
 
   useEffect(() => {
     setMainImage(product?.images[0]?.secure_url);
   }, [product]);
+
+  console.log(product);
 
   if (isLoading) {
     return (
@@ -55,7 +60,18 @@ const ProductDetails = () => {
       {
         name: product.name,
       },
-    ];
+  ];
+  
+
+  const handleFavClick = async () => {
+    const productId = product._id
+    try {
+      await toggleWishlist({ productId })
+      refetch()
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   
     return (
@@ -74,10 +90,19 @@ const ProductDetails = () => {
                   className="max-h-full max-w-full object-contain"
                 />
                 <button
+                  onClick={handleFavClick}
                   className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-red-500 transition"
                   aria-label="Add to Wishlist"
                 >
-                  <FontAwesomeIcon icon="fa-regular fa-heart" size="xl" />
+                  {product.isInWishList ? (
+                    <FontAwesomeIcon
+                      icon="fa-solid fa-heart"
+                      className="text-red-600"
+                      size="xl"
+                    />
+                  ) : (
+                    <FontAwesomeIcon icon="fa-regular fa-heart" size="xl" />
+                  )}
                 </button>
               </div>
 
@@ -196,7 +221,10 @@ const ProductDetails = () => {
                     {product.offerPercent}% OFF Applied
                   </p>
                 </div>
-                <AddCartButton productId={product._id} disabled={product.stock === 0} />
+                <AddCartButton
+                  productId={product._id}
+                  disabled={product.stock === 0}
+                />
               </div>
             </div>
           </div>
@@ -276,7 +304,9 @@ const ProductDetails = () => {
                   Return Policy
                 </p>
                 <p className="font-semibold text-gray-800 dark:text-gray-200">
-                  {product.returnPolicy ? 'Availble within 7 days' : 'Not available'}
+                  {product.returnPolicy
+                    ? "Availble within 7 days"
+                    : "Not available"}
                 </p>
               </div>
               <div>

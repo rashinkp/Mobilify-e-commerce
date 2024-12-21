@@ -26,6 +26,7 @@ import {
 import protect from "../middlewares/protect.js";
 import { getUser } from "../controllers/userControllers.js";
 import { getAllOrders, getAOrder, updateOrderStatus } from "../controllers/orderController.js";
+import optionalProtect from '../middlewares/optionalProtect.js';
 
 const router = express.Router();
 
@@ -61,7 +62,7 @@ router
 router.route("/product").post(protect("admin"), addProduct).get(getAllProducts);
 router
   .route("/product/:id")
-  .get(getProduct)
+  .get(optionalProtect("user"),getProduct)
   .delete(protect("admin"), deleteProduct)
   .put(protect("admin"), updateProduct);
 
