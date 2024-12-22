@@ -7,6 +7,7 @@ import { addToCart, deleteFromCart, getCart, updateCartQuantity } from '../contr
 import { addOrder, getAllOrdersWithEachProducts, getOrder, getOrdersWithSingleProducts, updateOrderStatus } from '../controllers/orderController.js';
 import { savePayment, verifyPayment } from '../controllers/paymentController.js';
 import { addAllToCart, getAllWishListProducts, removeFromWishlist, toggleWishList } from '../controllers/wishListController.js';
+import { applyCoupon } from '../controllers/couponController.js';
 
 const router = express.Router();
 
@@ -78,6 +79,8 @@ router
   .patch(protect("user"), toggleWishList)
   .get(protect("user"), getAllWishListProducts).delete(protect('user'), removeFromWishlist).put(protect('user') , addAllToCart);
 
+
+router.route('/coupon').post(protect('user') , applyCoupon)
 
 
 export default router;

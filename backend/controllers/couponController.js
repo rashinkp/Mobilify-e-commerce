@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Coupon from "../models/couponSchema.js";
+import Product from "../models/productSchema.js";
 
 export const AddCoupon = asyncHandler(async (req, res) => {
   const data = req.body;
@@ -91,8 +92,7 @@ export const updateApplicables = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "No such coupon found" });
   }
 
-  coupon.applicables = selectedProducts || 
-  coupon.applicables;
+  coupon.applicables = selectedProducts || coupon.applicables;
 
   await coupon.save();
 
@@ -100,5 +100,68 @@ export const updateApplicables = asyncHandler(async (req, res) => {
     success: true,
     message: "Applicable products updated successfully",
     data: coupon,
+  });
+});
+
+//apply coupon
+export const applyCoupon = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  const { couponCode, orderProducts } = req.body;
+
+  if (!couponCode) {
+    return res.status(400).json({ message: "Coupon code is not received" });
+  }
+
+  // Find the coupon
+  const coupon = await Coupon.findOne({ couponId: couponCode });
+
+  if (!coupon) {
+    return res.status(404).json({ message: "Such coupon not found" });
+  }
+
+  // Check if the coupon has already been used by the user
+  if (coupon.usersTaken.includes(userId)) {
+    return res.status(400).json({ message: "This coupon is expired for you" });
+  }
+
+  // Find the first matching product
+  const matchedProductId = coupon.applicables.find((productId) =>
+    orderProducts.includes(productId)
+  );
+
+  if (!matchedProductId) {
+    return res.status(400).json({
+      message: "This coupon is not applicable to the selected products",
+    });
+  }
+
+  // Fetch the product details for the first matching product
+  const product = await Product.findById(matchedProductId);
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  // Calculate prices
+  const originalPrice = product.price;
+  const offerPrice = (originalPrice * (100 - product.offerPercent)) / 100;
+
+  // Apply coupon percentage
+  const couponDiscount = (offerPrice * coupon.discount) / 100;
+  const finalPriceAfterCoupon = offerPrice - couponDiscount;
+
+  // Response
+  return res.status(200).json({
+    message: "Coupon applied successfully",
+    productDetails: {
+      productId: product._id,
+      name: product.name,
+      originalPrice,
+      offerPrice,
+    },
+    couponDiscount,
+    finalPriceAfterCoupon,
+    couponCode,
+    offerPercent: coupon.discount,
   });
 });

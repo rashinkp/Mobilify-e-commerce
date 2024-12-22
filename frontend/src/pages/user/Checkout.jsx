@@ -21,6 +21,7 @@ import { useNavigate } from "react-router";
 import AddAddressForm from "../../components/user/AddAddressForm";
 import { addressValidationSchema } from "../../validationSchemas";
 import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice.js";
+import { useApplyCouponMutation } from "../../redux/slices/couponApiSlice.js";
 
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -32,6 +33,7 @@ const CheckoutPage = () => {
   const [verifyPayment] = useVerifyPaymentMutation();
   const [addAddress] = useAddAddressMutation();
   const navigate = useNavigate();
+  const [applyCoupon] = useApplyCouponMutation();
 
   const [placeOrder] = usePlaceOrderMutation();
 
@@ -109,22 +111,34 @@ const CheckoutPage = () => {
     setIsAddingAddress(false);
   };
 
-  const handleCouponApply = () => {
-    // Simple coupon validation logic
-    if (couponCode.toUpperCase() === "SAVE10") {
-      setAppliedCoupon({
-        code: "SAVE10",
-        discount: 0.1, // 10% discount
-      });
+  const handleCouponApply = async () => {
+    const orderProducts = products.map(
+      (product) => product?.productDetails?._id
+    );
+
+    try {
+      const response = await applyCoupon({
+        couponCode,
+        orderProducts,
+      }).unwrap();
+      setAppliedCoupon(response);
+      console.log(response);
+      successToast("Coupon Applied successfully");
+    } catch (error) {
+      errorToast(
+        error?.data?.message ||
+          error?.message ||
+          error?.data ||
+          "Error occurred while applying coupon"
+      );
+      console.log(error);
     }
   };
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const shippingCost = selectedShipping ? selectedShipping.price : 0;
-    const couponDiscount = appliedCoupon
-      ? subtotal * appliedCoupon.discount
-      : 0;
+    const couponDiscount = appliedCoupon ? appliedCoupon.couponDiscount : 0;
 
     return subtotal + shippingCost - couponDiscount;
   };
@@ -210,9 +224,7 @@ const CheckoutPage = () => {
 
       const subtotal = calculateSubtotal();
       const shippingCost = selectedShipping?.price || 0;
-      const couponDiscount = appliedCoupon
-        ? subtotal * appliedCoupon.discount
-        : 0;
+      const couponDiscount = appliedCoupon ? appliedCoupon.couponDiscount : 0;
       const total = subtotal + shippingCost - couponDiscount;
 
       const orderData = {
@@ -228,7 +240,7 @@ const CheckoutPage = () => {
         shipping: selectedShipping,
         paymentMethod: selectedPayment,
         orderItems,
-        couponCode: appliedCoupon?.code || null,
+        couponCode: appliedCoupon?.couponCode || null,
         total,
       };
 
@@ -380,7 +392,8 @@ const CheckoutPage = () => {
         </div>
         {appliedCoupon && (
           <p className="text-green-600 mt-2">
-            Coupon {appliedCoupon.code} applied: 10% Discount
+            Coupon {appliedCoupon.couponCode} applied:{" "}
+            {appliedCoupon.offerPercent}% Discount
           </p>
         )}
       </section>
@@ -452,7 +465,7 @@ const CheckoutPage = () => {
             <span>Coupon Discount</span>
             <span>
               -&#x20b9;
-              {(calculateSubtotal() * appliedCoupon.discount).toFixed(2)}
+              {appliedCoupon.couponDiscount.toFixed(2)}
             </span>
           </div>
         )}
