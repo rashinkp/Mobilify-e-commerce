@@ -29,6 +29,7 @@ import MyEmail from "../../components/user/MyEmail";
 import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
 import ChangePassword from "../../components/ChangePassword";
 import OrderListingPage from "../../components/MyOrders";
+import WishList from "./WishList";
 
 const UserProfileDashboard = () => {
   const { data, isLoading, isError, error, refetch } = useGetUserQuery();
@@ -158,7 +159,6 @@ const UserProfileDashboard = () => {
             />
             <MenuSection icon={Wallet} title="My Wallet" section="wallet" />
 
-            <MenuSection icon={Heart} title="Wishlist" section="wishlist" />
             <MenuSection
               icon={MapPinHouse}
               title="My Address"

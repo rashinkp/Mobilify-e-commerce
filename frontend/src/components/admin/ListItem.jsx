@@ -63,7 +63,7 @@ const Table = ({
                   ))}
                   {/* Action Buttons */}
                   <td className="px-4 py-4">
-                    <div className="flex items-center ">
+                    <div className="flex gap-5 items-center ">
                       {/* Render controles if provided */}
                       {controles &&
                         controles(item).map((control, index) => (
@@ -73,7 +73,7 @@ const Table = ({
                               e.stopPropagation();
                               control.action();
                             }}
-                            className={`py-1 flex-1 rounded text-white ${control.style}`}
+                            className={`rounded text-white ${control.style}`}
                           >
                             {control.icon}
                             {control.text}

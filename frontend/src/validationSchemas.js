@@ -235,3 +235,37 @@ export const passwordSchemaWithoutCurr = Yup.object().shape({
     .required("Please confirm your new password")
     .oneOf([Yup.ref("newPassword")], "Passwords must match"),
 });
+
+
+export const couponValidation = Yup.object().shape({
+  couponId: Yup.string()
+    .required("Coupon ID is required")
+    .matches(
+      /^[a-zA-Z0-9_-]+$/,
+      "Coupon ID can only contain letters, numbers, underscores, and dashes"
+    ),
+  title: Yup.string()
+    .required("Title is required")
+    .max(100, "Title must be less than 100 characters"),
+  description: Yup.string()
+    .required("Description is required")
+    .max(500, "Description must be less than 500 characters"),
+  discount: Yup.number()
+    .required("Discount is required")
+    .min(1, "Discount must be at least 1")
+    .max(100, "Discount cannot exceed 100"),
+  expiryDate: Yup.date()
+    .required("Expiry date is required")
+    .min(new Date(), "Expiry date must be in the future"),
+  // applicableCategories: Yup.string()
+  //   .required("At least one applicable category is required")
+  //   .test(
+  //     "is-valid-array",
+  //     "Categories must be a comma-separated list of valid IDs",
+  //     (value) => {
+  //       return value
+  //         ?.split(",")
+  //         .every((id) => /^[a-zA-Z0-9_-]+$/.test(id.trim()));
+  //     }
+  //   ),
+});

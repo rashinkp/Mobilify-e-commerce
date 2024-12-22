@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddCartButton from "./AddCartButton";
 import { useNavigate } from "react-router";
@@ -9,6 +9,10 @@ const ProductCard = ({ product, refetch }) => {
   const { name, price, description, _id } = product;
   const [toggleWishlist] = useToggleWishListMutation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [navigate]);
 
   const handleClick = (e) => {
     // Prevent navigation if clicking on the heart icon or add to cart button

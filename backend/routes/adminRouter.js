@@ -25,8 +25,13 @@ import {
 } from "../controllers/productControllers.js";
 import protect from "../middlewares/protect.js";
 import { getUser } from "../controllers/userControllers.js";
-import { getAllOrders, getAOrder, updateOrderStatus } from "../controllers/orderController.js";
-import optionalProtect from '../middlewares/optionalProtect.js';
+import {
+  getAllOrders,
+  getAOrder,
+  updateOrderStatus,
+} from "../controllers/orderController.js";
+import optionalProtect from "../middlewares/optionalProtect.js";
+import { AddCoupon, editCoupon, getAllCoupon } from "../controllers/couponController.js";
 
 const router = express.Router();
 
@@ -59,10 +64,13 @@ router
   .put(protect("admin"), updateCategory);
 
 //product related routes
-router.route("/product").post(protect("admin"), addProduct).get(optionalProtect('user'),getAllProducts);
+router
+  .route("/product")
+  .post(protect("admin"), addProduct)
+  .get(optionalProtect("user"), getAllProducts);
 router
   .route("/product/:id")
-  .get(optionalProtect("user"),getProduct)
+  .get(optionalProtect("user"), getProduct)
   .delete(protect("admin"), deleteProduct)
   .put(protect("admin"), updateProduct);
 
@@ -77,6 +85,12 @@ router
 
 router.route("/order/:id").get(protect("admin"), getAOrder);
 
+//coupon related routes
 
+router
+  .route("/coupon")
+  .post(protect("admin"), AddCoupon)
+  .get(protect("admin"), getAllCoupon)
+  .put(protect("admin"), editCoupon);
 
 export default router;

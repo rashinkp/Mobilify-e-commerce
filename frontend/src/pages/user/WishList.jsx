@@ -94,7 +94,7 @@ const WishList = () => {
           products.map((product) => (
             <div
               key={product.productId}
-              className="bg-white overflow-hidden border-b-2 border-gray-300 p-4"
+              className="bg-white dark:bg-inherit dark:text-white overflow-hidden border-b-2 border-gray-300 p-4"
             >
               <div className="flex flex-col md:flex-row items-center gap-6">
                 {/* Product Image */}
@@ -109,10 +109,10 @@ const WishList = () => {
                 {/* Product Details */}
                 <div className="flex-1 flex flex-col sm:flex-row items-center gap-5 justify-between">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {product.name}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-1 dark:text-white">
                       {product.description}
                     </p>
                     <p className="text-lg font-bold text-gray-900 mt-2">
@@ -126,13 +126,11 @@ const WishList = () => {
                       onClick={() => handleAddToCart(product.productId)}
                       className="flex items-center justify-center gap-2 px-4 py-2 transition-colors hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                          <ShoppingCart size={22} />
-                          Add to Cart
-                        
+                      <ShoppingCart size={22} />
+                      Add to Cart
                     </button>
                     <button
                       onClick={() => handleBuyNow(product.productId)}
-                     
                       className="flex items-center justify-center gap-2 px-4 py-2 transition-colors hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <CreditCard size={22} />

@@ -17,6 +17,7 @@ import BrandManagement from "../pages/admin/BrandManagement.jsx";
 import ManageImage from "../pages/admin/ManageImage.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import OrderDetail from "../pages/admin/OrderDetail.jsx";
+import ManageCouponDetail from "../pages/admin/ManageCouponDetail.jsx";
 
 const AdminRoutes = () => {
   const location = useLocation();
@@ -40,6 +41,7 @@ const AdminRoutes = () => {
             <Route path="/profile" element={<AdminProfile />} />
             <Route path="/manage-category" element={<CategoryManagement />} />
             <Route path="/manage-image/:id" element={<ManageImage />} />
+            <Route path="/manage-coupon/:id" element={<ManageCouponDetail />} />
           </Route>
 
           <Route path="/login" element={<AdminLogin />} />
