@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Plus, Minus, AlertOctagon } from "lucide-react";
-import { useDeleteFromCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "../../redux/slices/cartApiSlice";
+import {
+  useDeleteFromCartMutation,
+  useGetCartQuery,
+  useUpdateProductQuantityMutation,
+} from "../../redux/slices/cartApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router";
 import { errorToast, successToast } from "../../components/toast";
@@ -15,20 +19,16 @@ const ShoppingCart = () => {
 
   const navigate = useNavigate();
 
-
- useEffect(() => {
-   if (cartItems && cartItems.length > 0) {
-     const filteredItems = cartItems.filter(
-       (item) => Object.keys(item).length > 0
-     );
-     setProducts(filteredItems);
-   } else {
-     setProducts([]);
-   }
- }, [cartItems]);
-
-
-
+  useEffect(() => {
+    if (cartItems && cartItems.length > 0) {
+      const filteredItems = cartItems.filter(
+        (item) => Object.keys(item).length > 0
+      );
+      setProducts(filteredItems);
+    } else {
+      setProducts([]);
+    }
+  }, [cartItems]);
 
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -36,76 +36,84 @@ const ShoppingCart = () => {
   const incrementQuantity = async (productId) => {
     const updatedQuantity = data?.cartItems?.reduce((quantity, product) => {
       if (product.productId === productId) {
-         quantity = product.quantity + 1
+        quantity = product.quantity + 1;
       }
-      return quantity
-    },null)
-
+      return quantity;
+    }, null);
 
     try {
       await updateCartQuantity({ productId, updatedQuantity }).unwrap();
     } catch (error) {
-      errorToast(error?.message || error?.data?.message || 'error occured while updating data');
+      errorToast(
+        error?.message ||
+          error?.data?.message ||
+          "error occured while updating data"
+      );
       console.log(error);
-    }
-  }
-
-const decrementQuantity = async (productId) => {
-  const product = data?.cartItems?.find((item) => item.productId === productId);
-
-  if (!product) {
-    errorToast("Product not found in cart.");
-    return;
-  }
-
-  if (product.quantity === 1) {
-    errorToast("Minimum cart count is 1. Cannot decrement further.");
-    return;
-  }
-
-  const updatedQuantity = product.quantity - 1;
-
-  try {
-    await updateCartQuantity({ productId, updatedQuantity }).unwrap();
-  } catch (error) {
-    errorToast(
-      error?.message || error?.data || "Could not update cart quantity"
-    );
-    console.error(error);
-  }
-};
-
-
-  const removeProduct = async(productId) => {
-    try {
-      await deletItem({ productId })
-      successToast('Product removed from cart')
-      
-    } catch (error) {
-      errorToast(error?.message || error?.data || 'Couldnt remove item from cart');
     }
   };
 
-  
+  const decrementQuantity = async (productId) => {
+    const product = data?.cartItems?.find(
+      (item) => item.productId === productId
+    );
+
+    if (!product) {
+      errorToast("Product not found in cart.");
+      return;
+    }
+
+    if (product.quantity === 1) {
+      errorToast("Minimum cart count is 1. Cannot decrement further.");
+      return;
+    }
+
+    const updatedQuantity = product.quantity - 1;
+
+    try {
+      await updateCartQuantity({ productId, updatedQuantity }).unwrap();
+    } catch (error) {
+      errorToast(
+        error?.message || error?.data || "Could not update cart quantity"
+      );
+      console.error(error);
+    }
+  };
+
+  const removeProduct = async (productId) => {
+    try {
+      await deletItem({ productId });
+      successToast("Product removed from cart");
+    } catch (error) {
+      errorToast(
+        error?.message || error?.data || "Couldnt remove item from cart"
+      );
+    }
+  };
+
   const subtotal = Array.isArray(products)
     ? products.reduce(
-        (total, product) => total + product?.productDetails?.price * product.quantity,
+        (total, product) =>
+          total +
+          ((product?.productDetails?.price *
+            (100 - product?.productDetails?.offerPercent)) /
+            100) *
+            product.quantity,
         0
       )
     : 0;
 
-  const deliveryCharge = products.length>0 ? (subtotal > 1000000 ? 0 : 15) : 0;
+  const deliveryCharge =
+    products.length > 0 ? (subtotal > 1000000 ? 0 : 15) : 0;
   const total = subtotal + deliveryCharge - discount;
 
-
-   const isAnyProductOutOfStock = products.some(
-     (product) => product?.productDetails?.stock < 1
-   );
-
+  const isAnyProductOutOfStock = products.some(
+    (product) => product?.productDetails?.stock < 1
+  );
 
   const handleProceed = () => {
     navigate("/user/checkout");
-  }
+  };
 
   return (
     <div className="container mx-auto p-6 bg-gray-50 dark:bg-darkBackground min-h-screen">
@@ -177,8 +185,19 @@ const decrementQuantity = async (productId) => {
                     {product?.productDetails?.model}
                   </p>
                   <p className="text-primary font-bold">
-                    ${product?.productDetails?.price}
+                    <span className="text-gray-500 line-through mr-2">
+                      ${product?.productDetails?.price.toFixed(2)}
+                    </span>
+                    <span>
+                      $
+                      {(
+                        (product?.productDetails?.price *
+                          (100 - product?.productDetails?.offerPercent)) /
+                        100
+                      ).toFixed(2)}
+                    </span>
                   </p>
+
                   {product?.productDetails?.stock < 1 && (
                     <p className="text-red-500 font-semibold mt-2">
                       Currently Unavailable

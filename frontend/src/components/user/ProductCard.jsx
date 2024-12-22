@@ -10,6 +10,8 @@ const ProductCard = ({ product, refetch }) => {
   const [toggleWishlist] = useToggleWishListMutation();
   const navigate = useNavigate();
 
+  console.log(product);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [navigate]);
@@ -75,10 +77,18 @@ const ProductCard = ({ product, refetch }) => {
             <h3 className="text-lg font-semibold dark:text-lightText">
               {name}
             </h3>
-            <span className="text-darkText font-extrabold text-lg dark:text-lightText">
-              {"\u20B9"}
-              {price}
-            </span>
+            <div className="flex flex-col">
+              {/* Original Price */}
+              <span className="text-darkGray line-through mr-2">
+                {"\u20B9"}
+                {price.toFixed(2)}
+              </span>
+              {/* Offer Price */}
+              <span className="text-darkText font-extrabold text-lg dark:text-lightText">
+                {"\u20B9"}
+                {((price * (100 - product.offerPercent)) / 100).toFixed(2)}
+              </span>
+            </div>
           </div>
           <p className="text-darkGray mb-2">{description}</p>
           <div onClick={handleClick} className="flex items-center mb-4">

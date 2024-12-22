@@ -81,6 +81,7 @@ const CouponList = ({ coupons, icon }) => {
     { key: "couponId", label: "Coupon ID", render: (value) => value },
     { key: "title", label: "Title", render: (value) => value },
     { key: "discount", label: "Discount", render: (value) => `${value}%` },
+    { key: "applicables", label: "Products", render: (value) => value.length },
     {
       key: "expiryDate",
       label: "Expiry Date",

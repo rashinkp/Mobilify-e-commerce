@@ -268,60 +268,62 @@ const OrderDetailsPage = () => {
           )}
 
           {/* Order Status Progress Bar */}
-          {order.status === 'Returned' ? (
+          {order.status === "Returned" ? (
             <div className="flex justify-center m-5 text-yellow-600 font-bold">
               Order returned
             </div>
-          ) : (<div className="p-6  dark:bg-transparent">
-            <div className="flex items-center justify-between relative">
-              {orderStages.map((stage, index) => (
-                <div
-                  key={stage.label}
-                  className="flex-1 flex flex-col items-center relative"
-                >
-                  {/* Connecting line: before the current circle */}
-                  {index > 0 && (
-                    <div
-                      className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
-                        stage.completed
-                          ? "bg-green-500"
-                          : "bg-gray-300 dark:bg-white"
-                      }`}
-                      style={{ zIndex: 0 }}
-                    />
-                  )}
-
-                  {/* Status circle with icon */}
+          ) : (
+            <div className="p-6  dark:bg-transparent">
+              <div className="flex items-center justify-between relative">
+                {orderStages.map((stage, index) => (
                   <div
-                    className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
-                      stage.completed
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-300 dark:bg-white text-gray-600"
-                    }`}
+                    key={stage.label}
+                    className="flex-1 flex flex-col items-center relative"
                   >
-                    <stage.Icon className="w-6 h-6" />
-                  </div>
+                    {/* Connecting line: before the current circle */}
+                    {index > 0 && (
+                      <div
+                        className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
+                          stage.completed
+                            ? "bg-green-500"
+                            : "bg-gray-300 dark:bg-white"
+                        }`}
+                        style={{ zIndex: 0 }}
+                      />
+                    )}
 
-                  {/* Status label */}
-                  <span className="text-xs mt-2 text-center dark:text-white">
-                    {stage.label}
-                  </span>
-
-                  {/* Connecting line: after the current circle */}
-                  {index < orderStages.length - 1 && (
+                    {/* Status circle with icon */}
                     <div
-                      className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
+                      className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
                         stage.completed
-                          ? "bg-green-500"
-                          : "bg-gray-300 dark:bg-white"
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-300 dark:bg-white text-gray-600"
                       }`}
-                      style={{ zIndex: 0 }}
-                    />
-                  )}
-                </div>
-              ))}
+                    >
+                      <stage.Icon className="w-6 h-6" />
+                    </div>
+
+                    {/* Status label */}
+                    <span className="text-xs mt-2 text-center dark:text-white">
+                      {stage.label}
+                    </span>
+
+                    {/* Connecting line: after the current circle */}
+                    {index < orderStages.length - 1 && (
+                      <div
+                        className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
+                          stage.completed
+                            ? "bg-green-500"
+                            : "bg-gray-300 dark:bg-white"
+                        }`}
+                        style={{ zIndex: 0 }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>)}
+          )}
 
           {/* Product & Order Details */}
           <div className="grid md:grid-cols-2 gap-6 p-6">
@@ -371,6 +373,10 @@ const OrderDetailsPage = () => {
                 <div className="flex justify-between">
                   <span>Method:</span>
                   <span className="font-medium">{order.paymentMethod}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Quantity:</span>
+                  <span className="font-medium">{order.quantity}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Status:</span>

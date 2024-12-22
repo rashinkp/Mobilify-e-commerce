@@ -82,7 +82,11 @@ const CheckoutPage = () => {
   const calculateSubtotal = () => {
     return products.reduce(
       (total, product) =>
-        total + product?.productDetails?.price * product.quantity,
+        total +
+        ((product?.productDetails?.price *
+          (100 - product?.productDetails?.offerPercent)) /
+          100 || product?.product?.offerPercent) *
+          product.quantity,
       0
     );
   };
@@ -105,11 +109,6 @@ const CheckoutPage = () => {
     setIsAddingAddress(false);
   };
 
-  const calculateTax = () => {
-    const subtotal = calculateSubtotal();
-    return subtotal * 0.02;
-  };
-
   const handleCouponApply = () => {
     // Simple coupon validation logic
     if (couponCode.toUpperCase() === "SAVE10") {
@@ -122,13 +121,12 @@ const CheckoutPage = () => {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const tax = calculateTax();
     const shippingCost = selectedShipping ? selectedShipping.price : 0;
     const couponDiscount = appliedCoupon
       ? subtotal * appliedCoupon.discount
       : 0;
 
-    return subtotal + tax + shippingCost - couponDiscount;
+    return subtotal + shippingCost - couponDiscount;
   };
 
   const handleRazorpaySuccess = useCallback(
@@ -141,14 +139,13 @@ const CheckoutPage = () => {
           paymentId,
         });
 
-
         if (verifyPaymentResponse) {
-           const orderResponse = await placeOrder({
-             ...razorpayOrderData,
-             paymentId,
-             paymentStatus: "Successful",
-           });
-          
+          const orderResponse = await placeOrder({
+            ...razorpayOrderData,
+            paymentId,
+            paymentStatus: "Successful",
+          });
+
           if (!orderResponse) {
             errorToast("Failed to create order. Please try again.");
             return;
@@ -166,12 +163,10 @@ const CheckoutPage = () => {
     [verifyPayment, placeOrder, navigate]
   );
 
-
-
   const triggerRazorpayCheckout = useCallback(
     (razorpayOrderData) => {
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_K5otU6Q5C8lSi8',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_K5otU6Q5C8lSi8",
         amount: razorpayOrderData.total * 100,
         currency: "INR",
         order_id: razorpayOrderData.orderNumber,
@@ -204,19 +199,21 @@ const CheckoutPage = () => {
         productId: product.productDetails?._id,
         name: product?.productDetails?.name,
         model: product?.productDetails?.model,
-        price: product?.productDetails?.price,
+        price:
+          (product?.productDetails?.price *
+            (100 - product?.productDetails?.offerPercent)) /
+          100,
         quantity: product.quantity,
         imageUrl: product?.productDetails?.images[0]?.url,
         returnPolicy: product?.productDetails?.returnPolicy,
       }));
 
       const subtotal = calculateSubtotal();
-      const tax = calculateTax();
       const shippingCost = selectedShipping?.price || 0;
       const couponDiscount = appliedCoupon
         ? subtotal * appliedCoupon.discount
         : 0;
-      const total = subtotal + shippingCost + tax - couponDiscount;
+      const total = subtotal + shippingCost - couponDiscount;
 
       const orderData = {
         shippingAddress: {
@@ -318,36 +315,50 @@ const CheckoutPage = () => {
         <h2 className="text-xl font-bold mb-4 flex items-center">
           <ShoppingCart className="mr-2" /> Order Summary
         </h2>
-        {products.length === 0 ? (<>No products add products</>) : (products.map((product) => (
-          <div
-            key={product._id}
-            className="flex items-center justify-between p-4 border-b"
-          >
-            <div className="flex items-center space-x-4">
-              <img
-                src={product?.productDetails?.images[0]?.secure_url}
-                alt={product?.productDetails?.name}
-                className="w-16 h-16 object-cover"
-              />
-              <div>
-                <h3 className="font-semibold">
-                  {product?.productDetails?.name}
-                </h3>
+        {products.length === 0 ? (
+          <>No products add products</>
+        ) : (
+          products.map((product) => (
+            <div
+              key={product._id}
+              className="flex items-center justify-between p-4 border-b"
+            >
+              <div className="flex items-center space-x-4">
+                <img
+                  src={product?.productDetails?.images[0]?.secure_url}
+                  alt={product?.productDetails?.name}
+                  className="w-16 h-16 object-cover"
+                />
+                <div>
+                  <h3 className="font-semibold">
+                    {product?.productDetails?.name}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Model: {product?.productDetails?.model}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-bold">
+                  <span className="text-gray-500 line-through mr-2">
+                    &#x20b9;{product?.productDetails?.price}
+                  </span>
+                  <span>
+                    &#x20b9;
+                    {(
+                      (product?.productDetails?.price *
+                        (100 - product?.productDetails?.offerPercent)) /
+                        100 || product?.productDetails?.price
+                    ).toFixed(2)}
+                  </span>
+                </p>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Model: {product?.productDetails?.model}
+                  Qty: {product.quantity}
                 </p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="font-bold">
-                &#x20b9;{product?.productDetails?.price}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400">
-                Qty: {product.quantity}
-              </p>
-            </div>
-          </div>
-        )))}
+          ))
+        )}
       </section>
 
       {/* Coupon Section */}
@@ -445,11 +456,6 @@ const CheckoutPage = () => {
             </span>
           </div>
         )}
-
-        <div className="flex justify-between mb-2">
-          <span>Tax</span>
-          <span>&#x20b9;{calculateTax().toFixed(2)}</span>
-        </div>
 
         <div className="flex justify-between font-bold text-lg border-t pt-2">
           <span>Total</span>

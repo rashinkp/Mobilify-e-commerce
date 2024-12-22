@@ -3,6 +3,7 @@ import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 import { RotatingLines } from "react-loader-spinner";
 import Pagination from "../Pagination.jsx";
 import { useUpdateApplicablesMutation } from "../../redux/slices/couponApiSlice.js";
+import { successToast } from "../toast/index.js";
 
 const CouponApplicable = ({ coupon }) => {
   const { _id: couponId, applicables = [] } = coupon;
@@ -31,10 +32,9 @@ const CouponApplicable = ({ coupon }) => {
     }
   }, [applicables]);
 
-const hasChanges =
-  JSON.stringify([...selectedProducts].sort()) !==
-  JSON.stringify([...initialSelectedProducts].sort());
-
+  const hasChanges =
+    JSON.stringify([...selectedProducts].sort()) !==
+    JSON.stringify([...initialSelectedProducts].sort());
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -62,7 +62,8 @@ const hasChanges =
     setIsUpdating(true);
     try {
       await updateApplicable({ selectedProducts, couponId });
-      setInitialSelectedProducts(selectedProducts); // Update initial state after successful update
+      setInitialSelectedProducts(selectedProducts);
+      successToast("Updated!");
     } catch (error) {
       console.log(error);
     } finally {
