@@ -23,19 +23,33 @@ export const couponApiSlice = apiSlice.injectEndpoints({
     editCoupon: builder.mutation({
       query: (data) => ({
         url: `${ADMIN_URL}/coupon`,
-        method: 'PUT',
-        body:data,
+        method: "PUT",
+        body: data,
       }),
-     invalidatesTags: ['All Coupons'], 
+      invalidatesTags: ["All Coupons"],
     }),
     getACoupon: builder.query({
       query: ({ id }) => ({
         url: `${ADMIN_URL}/coupon/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags:['Coupon'],
-    })
+      providesTags: ["Coupon"],
+    }),
+    updateApplicables: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/coupon`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Coupon"],
+    }),
   }),
 });
 
-export const {useEditCouponMutation, useAddCouponMutation, useGetAllCouponQuery , useGetACouponQuery } = couponApiSlice;
+export const {
+  useEditCouponMutation,
+  useAddCouponMutation,
+  useGetAllCouponQuery,
+  useGetACouponQuery,
+  useUpdateApplicablesMutation,
+} = couponApiSlice;

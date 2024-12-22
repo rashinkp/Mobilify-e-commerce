@@ -31,7 +31,7 @@ import {
   updateOrderStatus,
 } from "../controllers/orderController.js";
 import optionalProtect from "../middlewares/optionalProtect.js";
-import { AddCoupon, editCoupon, getACoupon, getAllCoupon } from "../controllers/couponController.js";
+import { AddCoupon, editCoupon, getACoupon, getAllCoupon, updateApplicables } from "../controllers/couponController.js";
 
 const router = express.Router();
 
@@ -91,7 +91,9 @@ router
   .route("/coupon")
   .post(protect("admin"), AddCoupon)
   .get(protect("admin"), getAllCoupon)
-  .put(protect("admin"), editCoupon);
+  .put(protect("admin"), editCoupon)
+  .patch(protect('admin'), updateApplicables);
+
 
 
 router.get('/coupon/:id', protect('admin'), getACoupon);

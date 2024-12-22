@@ -25,7 +25,7 @@ const couponSchema = new mongoose.Schema({
     type: Date, // Expiration date of the coupon
     required: true, // Field is required
   },
-  applicableCategories: {
+  applicables: {
     type: [String], // Array of category IDs where the coupon can be applied
     default: [], // Default is an empty array
   },

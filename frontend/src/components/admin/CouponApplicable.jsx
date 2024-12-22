@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 import { RotatingLines } from "react-loader-spinner";
 import Pagination from "../Pagination.jsx";
+import { useUpdateApplicablesMutation } from "../../redux/slices/couponApiSlice.js";
 
-const CouponApplicable = () => {
+const CouponApplicable = ({ coupon }) => {
+  const { _id: couponId, applicables = [] } = coupon;
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [initialSelectedProducts, setInitialSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isUpdating, setIsUpdating] = useState(false);
   const pageSize = 5;
   const [totalPages, setTotalPages] = useState(1);
+  const [updateApplicable] = useUpdateApplicablesMutation();
 
   const { data = [], isLoading: productLoading } = useGetAllProductsQuery({
     page: currentPage,
@@ -17,6 +22,19 @@ const CouponApplicable = () => {
   });
 
   const { products = [], totalCount = 0 } = data || {};
+
+  // Initialize selected products from coupon applicables
+  useEffect(() => {
+    if (applicables?.length > 0) {
+      setSelectedProducts(applicables);
+      setInitialSelectedProducts(applicables);
+    }
+  }, [applicables]);
+
+const hasChanges =
+  JSON.stringify([...selectedProducts].sort()) !==
+  JSON.stringify([...initialSelectedProducts].sort());
+
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -29,12 +47,27 @@ const CouponApplicable = () => {
       setTotalPages(Math.ceil(totalCount / pageSize));
     }
   }, [totalCount]);
+
   const handleProductSelection = (productId) => {
     setSelectedProducts((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
+  };
+
+  const handleUpdate = async () => {
+    if (!hasChanges || isUpdating) return;
+
+    setIsUpdating(true);
+    try {
+      await updateApplicable({ selectedProducts, couponId });
+      setInitialSelectedProducts(selectedProducts); // Update initial state after successful update
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   if (productLoading) {
@@ -57,7 +90,7 @@ const CouponApplicable = () => {
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="">
+        <div className="p-4 flex justify-between items-center">
           <input
             type="text"
             placeholder="Search products..."
@@ -65,11 +98,22 @@ const CouponApplicable = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-sm px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
           />
+          <button
+            onClick={handleUpdate}
+            disabled={!hasChanges || isUpdating}
+            className={`px-4 py-2 rounded-lg ${
+              hasChanges && !isUpdating
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            } transition-colors duration-200`}
+          >
+            {isUpdating ? "Updating..." : "Update"}
+          </button>
         </div>
 
         <div className="relative overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase ">
+            <thead className="text-xs text-gray-700 uppercase">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   Product
@@ -117,7 +161,7 @@ const CouponApplicable = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex justify-center mt-5">
+        <div className="flex justify-center mt-5 pb-4">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

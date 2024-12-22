@@ -33,7 +33,7 @@ export const editCoupon = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Coupon ID not received" });
   }
 
-  const coupon = await Coupon.findOne({_id});
+  const coupon = await Coupon.findOne({ _id });
 
   if (!coupon) {
     return res.status(404).json({ message: "No such coupon found" });
@@ -62,21 +62,43 @@ export const editCoupon = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Coupon updated successfully" });
 });
 
-
-
 export const getACoupon = asyncHandler(async (req, res) => {
   const { id } = req.params;
   console.log(id);
 
   if (!id) {
-    return res.status(400).json({message:'id not found'})
+    return res.status(400).json({ message: "id not found" });
   }
 
   const coupon = await Coupon.findOne({ _id: id });
 
   if (!coupon) {
-    return res.status(404).json({message:'No such coupon found'})
+    return res.status(404).json({ message: "No such coupon found" });
   }
 
   res.status(200).json(coupon);
-})
+});
+
+export const updateApplicables = asyncHandler(async (req, res) => {
+  const { selectedProducts, couponId } = req.body;
+
+  if (!couponId) {
+    return res.status(400).json({ message: "No coupon id found" });
+  }
+
+  const coupon = await Coupon.findOne({ _id: couponId });
+  if (!coupon) {
+    return res.status(404).json({ message: "No such coupon found" });
+  }
+
+  coupon.applicables = selectedProducts || 
+  coupon.applicables;
+
+  await coupon.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Applicable products updated successfully",
+    data: coupon,
+  });
+});

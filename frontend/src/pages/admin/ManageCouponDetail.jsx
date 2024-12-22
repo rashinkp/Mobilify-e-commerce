@@ -45,7 +45,7 @@ const ManageCouponDetail = () => {
       {/* Breadcrumbs */}
       <nav className="flex items-center text-sm text-gray-500">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/admin")}
           className="flex items-center hover:text-blue-600"
         >
           <Home size={16} className="mr-2" />
@@ -72,7 +72,7 @@ const ManageCouponDetail = () => {
                 : "bg-red-200 text-red-800"
             }`}
           >
-            {coupon.status ? "Active" : "Inactive"}
+            {coupon.isSoftDeleted ? "Inactive" : "Active"}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -114,7 +114,7 @@ const ManageCouponDetail = () => {
       </div>
 
       {/* Conditionally render CouponApplicable component */}
-      {isEditOpen && <CouponApplicable />}
+      {isEditOpen && <CouponApplicable coupon={coupon} />}
     </div>
   );
 };
