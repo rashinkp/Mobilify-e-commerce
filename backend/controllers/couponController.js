@@ -61,3 +61,22 @@ export const editCoupon = asyncHandler(async (req, res) => {
   await coupon.save();
   res.status(200).json({ message: "Coupon updated successfully" });
 });
+
+
+
+export const getACoupon = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+
+  if (!id) {
+    return res.status(400).json({message:'id not found'})
+  }
+
+  const coupon = await Coupon.findOne({ _id: id });
+
+  if (!coupon) {
+    return res.status(404).json({message:'No such coupon found'})
+  }
+
+  res.status(200).json(coupon);
+})

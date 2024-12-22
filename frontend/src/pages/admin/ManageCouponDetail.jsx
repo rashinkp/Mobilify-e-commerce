@@ -1,53 +1,47 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
+import { useGetACouponQuery } from "../../redux/slices/couponApiSlice";
+import { RotatingLines } from "react-loader-spinner";
+import Pagination from "../../components/Pagination";
+import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice";
 
 const ManageCouponDetail = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
-
-  // Dummy data for coupon and products
-  const coupon = {
-    couponId: "C12345",
-    code: "SAVE50",
-    discount: 50,
-    expiryDate: "2024-12-31",
-    description: "Save 50% on selected items",
-    status: "Active",
-  };
-
-  const products = [
-    {
-      _id: "P001",
-      name: "Product 1",
-      image: "/api/placeholder/64/64",
-      category: "Electronics",
-      price: "$299",
-    },
-    {
-      _id: "P002",
-      name: "Product 2",
-      image: "/api/placeholder/64/64",
-      category: "Clothing",
-      price: "$59",
-    },
-    {
-      _id: "P003",
-      name: "Product 3",
-      image: "/api/placeholder/64/64",
-      category: "Home",
-      price: "$149",
-    },
-    {
-      _id: "P004",
-      name: "Product 4",
-      image: "/api/placeholder/64/64",
-      category: "Electronics",
-      price: "$199",
-    },
-  ];
-
+  const { id } = useParams();
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const {
+    data: coupon = {},
+    isLoading: couponLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetACouponQuery({ id });
+
+  const { data = [], isLoading: productLoading } = useGetAllProductsQuery({
+    page: currentPage,
+    limit: pageSize,
+    searchTerm: searchTerm,
+  });
+
+  const { products = [], totalCount = 0 } = data || {};
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  useEffect(() => {
+    if (totalCount) {
+      setTotalPages(Math.ceil(totalCount / pageSize));
+    }
+  }, [totalCount]);
 
   const handleProductSelection = (productId) => {
     setSelectedProducts((prev) =>
@@ -56,6 +50,23 @@ const ManageCouponDetail = () => {
         : [...prev, productId]
     );
   };
+
+  if (productLoading || couponLoading) {
+    return (
+      <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen space-y-6">
@@ -84,22 +95,22 @@ const ManageCouponDetail = () => {
           </h2>
           <span
             className={`px-3 py-1 rounded-full text-sm font-medium ${
-              coupon.status === "Active"
-                ? "bg-green-100 text-green-800"
-                : "bg-gray-100 text-gray-800"
+              !coupon.isSoftDeleted
+                ? "bg-green-200 text-green-800"
+                : "bg-red-200 text-red-800"
             }`}
           >
-            {coupon.status}
+            {coupon.status ? "Active" : "Inactive"}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm font-medium text-gray-500">Coupon ID</p>
-            <p className="text-gray-900">{coupon.couponId}</p>
+            <p className="text-gray-900">{coupon._id}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Code</p>
-            <p className="text-gray-900">{coupon.code}</p>
+            <p className="text-gray-900">{coupon.couponId}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Discount</p>
@@ -139,7 +150,7 @@ const ManageCouponDetail = () => {
                   Product
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Category
+                  Id
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Price
@@ -160,13 +171,13 @@ const ManageCouponDetail = () => {
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center gap-3"
                   >
                     <img
-                      src={product.image}
+                      src={product.images[0].secure_url}
                       alt={product.name}
                       className="w-8 h-8 rounded-full object-cover"
                     />
                     {product.name}
                   </th>
-                  <td className="px-6 py-4">{product.category}</td>
+                  <td className="px-6 py-4">{product._id}</td>
                   <td className="px-6 py-4">{product.price}</td>
                   <td className="px-6 py-4">
                     <input
@@ -180,6 +191,13 @@ const ManageCouponDetail = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="flex justify-center mt-5">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

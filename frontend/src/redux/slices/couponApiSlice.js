@@ -27,8 +27,15 @@ export const couponApiSlice = apiSlice.injectEndpoints({
         body:data,
       }),
      invalidatesTags: ['All Coupons'], 
+    }),
+    getACoupon: builder.query({
+      query: ({ id }) => ({
+        url: `${ADMIN_URL}/coupon/${id}`,
+        method: 'GET',
+      }),
+      providesTags:['Coupon'],
     })
   }),
 });
 
-export const {useEditCouponMutation, useAddCouponMutation, useGetAllCouponQuery } = couponApiSlice;
+export const {useEditCouponMutation, useAddCouponMutation, useGetAllCouponQuery , useGetACouponQuery } = couponApiSlice;

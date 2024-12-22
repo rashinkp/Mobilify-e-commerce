@@ -12,52 +12,41 @@ import Pagination from "../../components/Pagination";
 
 const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8; 
+  const pageSize = 8;
   const [filter, setFilter] = useState("active");
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState("CreatedAt");
   const [searchTerm, setSearchTerm] = useState("");
 
-  console.log(searchTerm)
-
-
-const { data, isLoading, isError, error ,refetch } = useGetAllProductsQuery({
-  page: currentPage,
-  limit: pageSize,
-  sortBy:
-    sortBy === "priceLowToHigh"
-      ? "price"
-      : sortBy === "priceHighToLow"
-      ? "price"
-      : sortBy === "nameAsc" || sortBy === "nameDesc"
-      ? "name"
-      : "createdAt",
-  order: sortBy === "priceLowToHigh" || sortBy === "nameAsc" ? "asc" : "desc",
-  filterBy: filter,
-  searchTerm:searchTerm
-});
-
-
-
-  
+  const { data, isLoading, isError, error, refetch } = useGetAllProductsQuery({
+    page: currentPage,
+    limit: pageSize,
+    sortBy:
+      sortBy === "priceLowToHigh"
+        ? "price"
+        : sortBy === "priceHighToLow"
+        ? "price"
+        : sortBy === "nameAsc" || sortBy === "nameDesc"
+        ? "name"
+        : "createdAt",
+    order: sortBy === "priceLowToHigh" || sortBy === "nameAsc" ? "asc" : "desc",
+    filterBy: filter,
+    searchTerm: searchTerm,
+  });
 
   const { products = [], totalCount = 0 } = data || {};
-  
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
-  }
+  };
 
   useEffect(() => {
     if (totalCount) {
       setTotalPages(Math.ceil(totalCount / pageSize));
     }
-  },[totalCount])
-
-
-
+  }, [totalCount]);
 
   // const displayedProduct =
   //   searchTerm.trim() === ""
@@ -66,26 +55,24 @@ const { data, isLoading, isError, error ,refetch } = useGetAllProductsQuery({
   //         (product) =>
   //           product.name.toLowerCase().includes(searchTerm.toLowerCase())
   //     ) || [];
-  
-  
+
   if (isError) return <div>Error: {error.message}</div>;
-  
-  
+
   if (isLoading) {
     return (
-        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-          <RotatingLines
-            visible={true}
-            height="50"
-            width="50"
-            color="grey"
-            strokeColor="#fff"
-            strokeWidth="2"
-            animationDuration="8"
-            ariaLabel="rotating-lines-loading"
-          />
-        </div>
-    )
+      <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
   }
 
   const brudCrumpList = [
