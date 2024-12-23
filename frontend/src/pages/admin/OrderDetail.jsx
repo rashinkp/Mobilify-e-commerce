@@ -10,12 +10,9 @@ import { errorToast, successToast } from "../../components/toast";
 
 const OrderDetails = () => {
   const { id: orderId } = useParams();
-
-  // Fetch order data
-  const { data, isLoading, refetch } = useGetAOrderQuery({ orderId });
+  const { data, isLoading } = useGetAOrderQuery({ orderId });
   const [changeStatus] = useChangeOrderStatusMutation();
 
-  // Status options for product status dropdown
   const statusOptions = [
     "Order placed",
     "Processing",
@@ -26,42 +23,54 @@ const OrderDetails = () => {
     "Returned",
   ];
 
-    const paymentStatusOptions = ["Pending", "Successful", "Refunded"];
+  const paymentStatusOptions = ["Pending", "Successful", "Refunded"];
 
-  // Function to update product status
-  const updateProductStatus = async (newStatus) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState({
+    orderStatus: "",
+    paymentStatus: "",
+  });
+
+  const updateStatus = async (orderStatus, paymentStatus) => {
     try {
-      await changeStatus({ newStatus, orderId }).unwrap();
-      successToast("Product status changed");
+      await changeStatus({
+        orderId,
+        newStatus: orderStatus,
+        newPaymentStatus: paymentStatus,
+      }).unwrap();
+      successToast("Status updated successfully");
+      setIsModalVisible(false);
     } catch (error) {
-      errorToast(
-        error?.message ||
-          error?.data?.message ||
-          "Error while updating order status"
-      );
-      console.log(error);
+      errorToast(error?.data?.message || "Error updating status");
     }
   };
 
+  const handleStatusChange = (newOrderStatus) => {
+    let newPaymentStatus = data.paymentStatus;
 
-  const updatePaymentStatus = async (newPaymentStatus) => {
-
-    try {
-
-      await changeStatus({ newPaymentStatus, orderId }).unwrap();
-      successToast("Product status changed");
-    } catch (error) {
-      errorToast(
-        error?.message ||
-          error?.data?.message ||
-          "Error while updating order status"
-      );
-      console.log(error);
+    if (newOrderStatus === "Cancelled" || newOrderStatus === "Returned") {
+      setSelectedStatus({
+        orderStatus: newOrderStatus,
+        paymentStatus: "Refunded",
+      });
+      setIsModalVisible(true);
+      return;
     }
-  }
 
+    updateStatus(newOrderStatus, newPaymentStatus);
+  };
 
-  
+  const handlePaymentStatusChange = (newPaymentStatus) => {
+    updateStatus(data.status, newPaymentStatus);
+  };
+
+  const handleModalConfirm = () => {
+    updateStatus(selectedStatus.orderStatus, selectedStatus.paymentStatus);
+  };
+
+  const isStatusDisabled =
+    data?.status === "Cancelled" || data?.status === "Returned";
+  const isPaymentDisabled = data?.paymentStatus === "Refunded";
 
   if (isLoading) {
     return (
@@ -71,10 +80,8 @@ const OrderDetails = () => {
           height="50"
           width="50"
           color="grey"
-          strokeColor="#fff"
           strokeWidth="2"
           animationDuration="8"
-          ariaLabel="rotating-lines-loading"
         />
       </div>
     );
@@ -82,7 +89,7 @@ const OrderDetails = () => {
 
   return (
     <div className="pt-40">
-      <div className="max-w-4xl  mx-auto  bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Order Header */}
         <div className="bg-gray-100 p-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -93,7 +100,7 @@ const OrderDetails = () => {
           </div>
           <span
             className={`px-3 py-1 rounded-full text-sm font-medium ${
-              data.paymentStatus === "Success"
+              data.paymentStatus === "Successful"
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
             }`}
@@ -104,7 +111,6 @@ const OrderDetails = () => {
 
         {/* Order Details Grid */}
         <div className="grid md:grid-cols-2 gap-6 p-6">
-          {/* Shipping Address */}
           <div className="space-y-2">
             <h3 className="font-semibold text-gray-700 flex items-center">
               <MapPin className="mr-2 text-blue-600" /> Shipping Address
@@ -118,7 +124,6 @@ const OrderDetails = () => {
             <p>{data.shippingAddress.country}</p>
           </div>
 
-          {/* Shipping & Payment Info */}
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Truck className="text-blue-600" />
@@ -137,45 +142,10 @@ const OrderDetails = () => {
           </div>
         </div>
 
-        {/* Billing Details */}
-        {/* <div className="bg-gray-50 p-6">
-        <h3 className="font-semibold text-gray-700 mb-4">Billing Details</h3>
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span>${data?.pricing?.subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Shipping Cost</span>
-            <span>${data?.pricing?.shippingCost.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Tax</span>
-            <span>${data?.pricing?.tax.toFixed(2)}</span>
-          </div>
-          {data?.pricing?.couponDiscount < 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>Coupon Discount</span>
-              <span>
-                -${Math.abs(data?.pricing?.couponDiscount).toFixed(2)}
-              </span>
-            </div>
-          )}
-          <div className="flex justify-between font-bold text-lg border-t pt-2">
-            <span>Total</span>
-            <span>${data?.pricing?.total.toFixed(2)}</span>
-          </div>
-        </div>
-      </div> */}
-
         {/* Product List */}
         <div className="p-6">
           <h3 className="font-semibold text-gray-700 mb-4">Order Item</h3>
-
-          <div
-            key={data.productId}
-            className="flex items-center space-x-4 py-4 border-b last:border-b-0"
-          >
+          <div className="flex items-center space-x-4 py-4 border-b last:border-b-0">
             <img
               src={data.imageUrl}
               alt={data.name}
@@ -188,31 +158,31 @@ const OrderDetails = () => {
                 <span>Status:</span>
                 <select
                   value={data.status}
-                  onChange={(e) => updateProductStatus(e.target.value)}
+                  onChange={(e) => handleStatusChange(e.target.value)}
                   className="border rounded px-2 py-1 text-sm"
+                  disabled={isStatusDisabled}
                 >
-                  {statusOptions.filter((status) => {
-                    if (status === "Returned" && !data.returnPolicy) {
-                      return false;
-                    }
-                    return true;
-                  }).map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
+                  {statusOptions
+                    .filter(
+                      (status) =>
+                        !status.includes("Returned") || data.returnPolicy
+                    )
+                    .map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div className="flex items-center space-x-2 mt-2">
-                <span>Payement Status:</span>
+                <span>Payment Status:</span>
                 <select
                   value={data.paymentStatus}
-                  onChange={(e) => updatePaymentStatus(e.target.value)}
+                  onChange={(e) => handlePaymentStatusChange(e.target.value)}
                   className="border rounded px-2 py-1 text-sm"
+                  disabled={isPaymentDisabled}
                 >
-                  {paymentStatusOptions.filter((status) => (
-                    status !== 'Refunded' || data.status === 'Cancelled' || data.status === 'Returned'
-                  )).map((status) => (
+                  {paymentStatusOptions.map((status) => (
                     <option key={status} value={status}>
                       {status}
                     </option>
@@ -227,6 +197,33 @@ const OrderDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {isModalVisible && (
+        <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h3 className="text-xl font-semibold">Confirm Action</h3>
+            <p className="mt-4">
+              This will change the order status to {selectedStatus.orderStatus}{" "}
+              and payment status to {selectedStatus.paymentStatus}. Continue?
+            </p>
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={() => setIsModalVisible(false)}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleModalConfirm}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
