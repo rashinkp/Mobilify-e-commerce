@@ -26,7 +26,6 @@ export const addOrder = asyncHandler(async (req, res) => {
       couponCode,
       total,
       paymentId,
-      paymentStatus,
     } = data;
 
 
@@ -50,7 +49,7 @@ export const addOrder = asyncHandler(async (req, res) => {
 
 
     let coupon = null;
-    
+
     if (couponCode) {
       coupon = await Coupon.findOne({ couponId: couponCode });
 
@@ -62,6 +61,8 @@ export const addOrder = asyncHandler(async (req, res) => {
 
       await coupon.save();
     }
+
+    const paymentStatus = paymentMethod === "Wallet" && "Successful";
 
 
     const orderDocuments = orderItems.map((item) => ({
@@ -82,7 +83,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       },
       status: "Order placed",
       paymentId: paymentId || null,
-      paymentStatus: payment?.status || "Pending",
+      paymentStatus: paymentStatus || payment?.status || "Pending",
     }));
 
     const createdOrders = await Order.insertMany(orderDocuments);

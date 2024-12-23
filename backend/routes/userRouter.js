@@ -8,7 +8,7 @@ import { addOrder, getAllOrdersWithEachProducts, getOrder, getOrdersWithSinglePr
 import { savePayment, verifyPayment } from '../controllers/paymentController.js';
 import { addAllToCart, getAllWishListProducts, removeFromWishlist, toggleWishList } from '../controllers/wishListController.js';
 import { applyCoupon } from '../controllers/couponController.js';
-import { addAmountToWallet, getOrCreateWallet } from '../controllers/walletController.js';
+import { addAmountToWallet, getOrCreateWallet, processTransaction } from '../controllers/walletController.js';
 
 const router = express.Router();
 
@@ -85,7 +85,13 @@ router.route('/coupon').post(protect('user'), applyCoupon)
 
 //wallet related
 
-router.route("/wallet").get(protect('user'), getOrCreateWallet).post(protect('user'), addAmountToWallet);
+router
+  .route("/wallet")
+  .get(protect("user"), getOrCreateWallet)
+  .post(protect("user"), addAmountToWallet)
+  .put(protect("user"), processTransaction);
+
+
 
 
 

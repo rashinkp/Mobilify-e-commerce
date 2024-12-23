@@ -89,6 +89,7 @@ const OrderSchema = new mongoose.Schema(
         "Google Pay",
         "Cash On Delivery",
         "Bank Transfer",
+        'Wallet'
       ],
       required: true,
     },

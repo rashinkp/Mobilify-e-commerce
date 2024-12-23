@@ -2,7 +2,7 @@ import React from "react";
 import { CreditCard } from "lucide-react";
 
 const  PaymentSection = ({ selectedPayment, setSelectedPayment }) => {
-  const paymentMethods = ["Razorpay", "Cash On Delivery"];
+  const paymentMethods = ["Razorpay", "Cash On Delivery" , 'Wallet'];
 
   return (
     <section className="mb-6">

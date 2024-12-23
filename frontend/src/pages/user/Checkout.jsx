@@ -28,6 +28,7 @@ import ShippingSection from "../../components/checkout/ShippingSection.jsx";
 import PaymentSection from "../../components/checkout/PaymentSection.jsx";
 import OrderTotal from "../../components/checkout/OrderTotal.jsx";
 import OrderSummery from "../../components/checkout/OrderSummery.jsx";
+import { useDebitAmountMutation } from "../../redux/slices/walletApiSlice.js";
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedShipping, setSelectedShipping] = useState(null);
@@ -41,6 +42,7 @@ const CheckoutPage = () => {
   const [applyCoupon] = useApplyCouponMutation();
 
   const [placeOrder] = usePlaceOrderMutation();
+  const [debitAmountFromWallet] = useDebitAmountMutation()
 
   //api calling
 
@@ -262,9 +264,20 @@ const CheckoutPage = () => {
         } else {
           errorToast("Failed to place order. Please try again.");
         }
+      } else if (selectedPayment === 'Wallet') {
+        const amount = orderData.total;
+        await debitAmountFromWallet({amount}).unwrap();
+
+        const response = await placeOrder(orderData).unwrap();
+        if (response) {
+          successToast("Order placed successfully");
+          navigate(`/user/orderSuccess`);
+        } else {
+          errorToast();
+        }
       }
     } catch (error) {
-      errorToast(error.message || "Error while placing order");
+      errorToast(error.message || error?.data?.message || "Error while placing order");
       console.error("Order error:", error);
     }
   };

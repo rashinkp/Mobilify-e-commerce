@@ -20,7 +20,15 @@ export const walletApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Wallet"],
     }),
+    debitAmount: builder.mutation({
+      query: (data) => ({
+        url: `${USER_URL}/wallet`,
+        method: 'PUT',
+        body:data,
+      }),
+      invalidatesTags: ['Wallet'],
+    })
   }),
 });
 
-export const { useGetWalletQuery, useAddAmountMutation } = walletApiSlice;
+export const { useGetWalletQuery, useAddAmountMutation , useDebitAmountMutation } = walletApiSlice;

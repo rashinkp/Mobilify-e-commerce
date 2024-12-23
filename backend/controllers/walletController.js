@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Wallet from "../models/walletSchema.js";
 import Transaction from "../models/walletTransactionSchema.js";
+import User from "../models/userSchema.js";
 
 export const getOrCreateWallet = asyncHandler(async (req, res) => {
   const { userId } = req.user;
@@ -80,6 +81,66 @@ export const addAmountToWallet = asyncHandler(async (req, res) => {
   });
 });
 
+
+
+export const processTransaction = asyncHandler(async (req, res) => {
+  const { userId } = req.user; 
+  const { amount } = req.body; 
+
+  console.log(amount, userId);
+
+  // Validate input
+  if (!userId || !amount || amount <= 0) {
+    return res.status(400).json({
+      message: "Invalid input: userId and valid amount are required.",
+    });
+  }
+
+  try {
+
+    const wallet = await Wallet.findOne({ userId });
+
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
+
+    console.log(wallet.balance);
+
+    if (wallet.balance < amount) {
+      return res.status(400).json({ message: "Insufficient balance." });
+    }
+
+    // Step 2: Deduct balance and save user data
+    wallet.balance -= Number(amount);
+    await wallet.save();
+
+    // Step 3: Create and save transaction
+    const transaction = new Transaction({
+      userId,
+      walletId: wallet._id,
+      amount,
+      type: "Debit",
+      status: "Successful",
+      date: new Date(),
+      description: "Purchase using wallet",
+    });
+
+    await transaction.save();
+
+    // Step 4: Send response
+    res.status(200).json({
+      message: "Transaction processed successfully.",
+      balance: wallet.balance,
+      transactionId: transaction._id,
+    });
+  } catch (error) {
+    console.error("Error processing transaction:", error);
+    res.status(500).json({
+      message: "Failed to process transaction",
+      error: error.message,
+    });
+  }
+});
 
 
 
