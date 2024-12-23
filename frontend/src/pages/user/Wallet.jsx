@@ -1,81 +1,88 @@
 import React, { useEffect, useState } from "react";
-import { useAddAmountMutation, useGetWalletQuery } from "../../redux/slices/walletApiSlice";
+import {
+  useAddAmountMutation,
+  useGetWalletQuery,
+} from "../../redux/slices/walletApiSlice";
 import { RotatingLines } from "react-loader-spinner";
 import { Wallet } from "lucide-react";
-import { errorToast, successToast } from '../../components/toast/index.js'
+import { errorToast, successToast } from "../../components/toast/index.js";
+
 const WalletDashboard = () => {
   const [balance, setBalance] = useState(0);
   const [amount, setAmount] = useState("");
   const [showAddFunds, setShowAddFunds] = useState(false);
-  const [addMoney] = useAddAmountMutation()
+  const [addMoney] = useAddAmountMutation();
+  const [transactions, setTransactions] = useState([]);
 
-  const { data = {}, isLoading, isError , refetch , error } = useGetWalletQuery();
+  const { data = {}, isLoading, refetch } = useGetWalletQuery();
 
+  useEffect(() => {
+    setBalance(data?.wallet?.balance || 0);
+    setTransactions(data?.transactions);
+  }, [data]);
 
-  console.log(data);
-
-
-useEffect(() => {
-  setBalance(data?.wallet?.balance || 0);
-}, [data]);
-
-  
-  
-    const handleAddFunds = async () => {
-      if (amount && !isNaN(amount)) {
+  const handlePayment = async (amount) => {
+    console.log(amount);
+    const options = {
+      key: 'rzp_test_K5otU6Q5C8lSi8',
+      amount: amount * 100,
+      currency: "INR",
+      name: "Your Store Name",
+      description: "Wallet Recharge",
+      handler: async function (response) {
         try {
-          const response = await addMoney({amount});
-          setBalance((prev) => prev + parseFloat(amount));
+          const result = await addMoney({
+            amount: parseFloat(amount),
+            paymentId: response.razorpay_payment_id,
+            description: "Added funds via Razorpay",
+          });
+
+          if (result.error) {
+            errorToast("Failed to add funds");
+            return;
+          }
+
+          successToast("Amount added to wallet successfully!");
           setAmount("");
           setShowAddFunds(false);
-          successToast("Amount credited to wallet");
+          refetch();
         } catch (error) {
-          console.log(error);
+          errorToast("Error processing payment");
+          console.error("Payment error:", error);
         }
-      } else {
-        errorToast("Entere a valid amount");
-      }
+      },
+      prefill: {
+        name: data?.wallet?.user?.name || "",
+        email: data?.wallet?.user?.email || "",
+        contact: data?.wallet?.user?.phone || "",
+      },
+      theme: {
+        color: "#3B82F6",
+      },
+      modal: {
+        ondismiss: () => {
+          errorToast("Payment cancelled");
+        },
+      },
     };
 
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
+  };
 
-  
-  
-  
+  const handleAddFunds = async () => {
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+      errorToast("Please enter a valid amount");
+      return;
+    }
 
-  const transactions = [
-    {
-      id: 1,
-      description: "Added funds",
-      date: "2024-12-22",
-      type: "Credit",
-      amount: 500,
-    },
-    {
-      id: 2,
-      description: "Purchase - Wireless Headphones",
-      date: "2024-12-21",
-      type: "Debit",
-      amount: 299.99,
-    },
-    {
-      id: 3,
-      description: "Added funds",
-      date: "2024-12-20",
-      type: "Credit",
-      amount: 1000,
-    },
-    {
-      id: 4,
-      description: "Purchase - Smartwatch",
-      date: "2024-12-19",
-      type: "Debit",
-      amount: 450,
-    },
-  ];
-
-
-
-
+    try {
+      handlePayment(parseFloat(amount));
+    } catch (error) {
+      errorToast("Error initiating payment");
+      console.error("Payment initiation error:", error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -138,7 +145,10 @@ useEffect(() => {
                     Add
                   </button>
                   <button
-                    onClick={() => setShowAddFunds(false)}
+                    onClick={() => {
+                      setShowAddFunds(false);
+                      setAmount("");
+                    }}
                     className="flex-1 sm:flex-none px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     Cancel
@@ -180,9 +190,9 @@ useEffect(() => {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((transaction) => (
+                {transactions?.map((transaction) => (
                   <tr
-                    key={transaction.id}
+                    key={transaction._id}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                   >
                     <th
@@ -191,7 +201,16 @@ useEffect(() => {
                     >
                       {transaction.description}
                     </th>
-                    <td className="px-6 py-4">{transaction.date}</td>
+                    <td className="px-6 py-4">
+                      {new Date(transaction.createdAt).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </td>
                     <td className="px-6 py-4">{transaction.type}</td>
                     <td
                       className={`px-6 py-4 font-medium ${

@@ -85,7 +85,8 @@ router.route('/coupon').post(protect('user'), applyCoupon)
 
 //wallet related
 
-router.route("/wallet").get(protect('user'), getOrCreateWallet).post(protect('user') ,addAmountToWallet );
+router.route("/wallet").get(protect('user'), getOrCreateWallet).post(protect('user'), addAmountToWallet);
+
 
 
 export default router;

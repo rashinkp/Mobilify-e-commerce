@@ -12,6 +12,7 @@ export const getOrCreateWallet = asyncHandler(async (req, res) => {
   try {
     let wallet = await Wallet.findOne({ userId });
 
+    // If wallet does not exist, create a new one
     if (!wallet) {
       wallet = new Wallet({
         userId,
@@ -20,15 +21,23 @@ export const getOrCreateWallet = asyncHandler(async (req, res) => {
       });
 
       await wallet.save();
+
       return res.status(201).json({
         message: "Wallet created successfully.",
         wallet,
+        transactions: [], // No transactions for a newly created wallet
       });
     }
+
+    // Fetch transactions associated with the wallet
+    const transactions = await Transaction.find({ walletId: wallet._id })
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .select("-__v"); // Exclude __v field from the response
 
     return res.status(200).json({
       message: "Wallet retrieved successfully.",
       wallet,
+      transactions,
     });
   } catch (error) {
     console.error("Error fetching or creating wallet:", error);
@@ -38,20 +47,17 @@ export const getOrCreateWallet = asyncHandler(async (req, res) => {
 
 export const addAmountToWallet = asyncHandler(async (req, res) => {
   const { userId } = req.user;
-  const { amount, description = "" } = req.body;
+  const { amount, paymentId, description = "" } = req.body;
 
-  // Validate input
   if (!userId || !amount || isNaN(amount) || amount <= 0) {
-    return res.status(400).json({ message: "Invalid input data" });
+    return res.status(400).json({ message: "Enter correct amount" });
   }
 
-  // Find the wallet
   const wallet = await Wallet.findOne({ userId });
   if (!wallet) {
     return res.status(404).json({ message: "Wallet not found" });
   }
 
-  // Create a transaction
   const transaction = await Transaction.create({
     walletId: wallet._id,
     userId,
@@ -59,10 +65,10 @@ export const addAmountToWallet = asyncHandler(async (req, res) => {
     amount,
     description: description || "Funds added to wallet",
     status: "Successful",
+    paymentId, 
   });
 
-  // Update the wallet balance
-  wallet.balance += amount;
+  wallet.balance += Number(amount);
   await wallet.save();
 
   res.status(200).json({
@@ -73,3 +79,10 @@ export const addAmountToWallet = asyncHandler(async (req, res) => {
     },
   });
 });
+
+
+
+
+
+
+
