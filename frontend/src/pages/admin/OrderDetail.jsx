@@ -25,7 +25,8 @@ const OrderDetails = () => {
 
   const paymentStatusOptions = ["Pending", "Successful", "Refunded"];
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [orderModalVisible, setOrderModalVisible] = useState(false);
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState({
     orderStatus: "",
     paymentStatus: "",
@@ -39,33 +40,30 @@ const OrderDetails = () => {
         newPaymentStatus: paymentStatus,
       }).unwrap();
       successToast("Status updated successfully");
-      setIsModalVisible(false);
+      setOrderModalVisible(false);
+      setPaymentModalVisible(false);
     } catch (error) {
       errorToast(error?.data?.message || "Error updating status");
     }
   };
 
   const handleStatusChange = (newOrderStatus) => {
-    let newPaymentStatus = data.paymentStatus;
-
     if (newOrderStatus === "Cancelled" || newOrderStatus === "Returned") {
       setSelectedStatus({
         orderStatus: newOrderStatus,
-        paymentStatus: "Refunded",
       });
-      setIsModalVisible(true);
+      setOrderModalVisible(true);
       return;
     }
-
-    updateStatus(newOrderStatus, newPaymentStatus);
+    updateStatus(newOrderStatus, data.paymentStatus);
   };
 
   const handlePaymentStatusChange = (newPaymentStatus) => {
-    updateStatus(data.status, newPaymentStatus);
-  };
-
-  const handleModalConfirm = () => {
-    updateStatus(selectedStatus.orderStatus, selectedStatus.paymentStatus);
+    setSelectedStatus({
+      orderStatus: data.status,
+      paymentStatus: newPaymentStatus,
+    });
+    setPaymentModalVisible(true);
   };
 
   const isStatusDisabled =
@@ -90,7 +88,7 @@ const OrderDetails = () => {
   return (
     <div className="pt-40">
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-        {/* Order Header */}
+        {/* Header and other sections remain unchanged */}
         <div className="bg-gray-100 p-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Package className="text-blue-600" />
@@ -198,24 +196,65 @@ const OrderDetails = () => {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
-      {isModalVisible && (
+      {/* Order Status Modal */}
+      {orderModalVisible && (
         <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <h3 className="text-xl font-semibold">Confirm Action</h3>
+            <h3 className="text-xl font-semibold">
+              Confirm Order Status Change
+            </h3>
             <p className="mt-4">
               This will change the order status to {selectedStatus.orderStatus}{" "}
               and payment status to {selectedStatus.paymentStatus}. Continue?
             </p>
             <div className="mt-6 flex justify-between">
               <button
-                onClick={() => setIsModalVisible(false)}
+                onClick={() => setOrderModalVisible(false)}
                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
               >
                 Cancel
               </button>
               <button
-                onClick={handleModalConfirm}
+                onClick={() =>
+                  updateStatus(
+                    selectedStatus.orderStatus,
+                    selectedStatus.paymentStatus
+                  )
+                }
+                className="px-4 py-2 bg-blue-600 text-white rounded-md"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Status Modal */}
+      {paymentModalVisible && (
+        <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h3 className="text-xl font-semibold">
+              Confirm Payment Status Change
+            </h3>
+            <p className="mt-4">
+              Are you sure you want to change the payment status to{" "}
+              {selectedStatus.paymentStatus}?
+            </p>
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={() => setPaymentModalVisible(false)}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() =>
+                  updateStatus(
+                    selectedStatus.orderStatus,
+                    selectedStatus.paymentStatus
+                  )
+                }
                 className="px-4 py-2 bg-blue-600 text-white rounded-md"
               >
                 Confirm
