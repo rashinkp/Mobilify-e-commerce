@@ -29,6 +29,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       paymentStatus,
     } = data;
 
+
     // Check stock availability first
     for (const item of orderItems) {
       const product = await Product.findById(item.productId);
@@ -48,15 +49,19 @@ export const addOrder = asyncHandler(async (req, res) => {
     const payment = await Payment.findOne({ paymentId });
 
 
-    const coupon = await Coupon.findOne({ couponId: couponCode });
+    let coupon = null;
+    
+    if (couponCode) {
+      coupon = await Coupon.findOne({ couponId: couponCode });
 
-    if (!coupon) {
-      return res.status(404).json({ message: "No such coupon found" });
+      if (!coupon) {
+        return res.status(404).json({ message: "No such coupon found" });
+      }
+
+      coupon.usersTaken.push(userId);
+
+      await coupon.save();
     }
-
-    coupon.usersTaken.push(userId);
-
-    await coupon.save();
 
 
     const orderDocuments = orderItems.map((item) => ({

@@ -22,7 +22,12 @@ import AddAddressForm from "../../components/user/AddAddressForm";
 import { addressValidationSchema } from "../../validationSchemas";
 import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice.js";
 import { useApplyCouponMutation } from "../../redux/slices/couponApiSlice.js";
-
+import AddressSection from "../../components/checkout/AddressSection.jsx";
+import CouponSelection from "../../components/checkout/CouponSelection.jsx";
+import ShippingSection from "../../components/checkout/ShippingSection.jsx";
+import PaymentSection from "../../components/checkout/PaymentSection.jsx";
+import OrderTotal from "../../components/checkout/OrderTotal.jsx";
+import OrderSummery from "../../components/checkout/OrderSummery.jsx";
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedShipping, setSelectedShipping] = useState(null);
@@ -285,199 +290,41 @@ const CheckoutPage = () => {
 
   return (
     <div className="container mx-auto p-4 dark:text-white max-w-4xl">
-      {/* Address Selection */}
-      <section className="mb-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center">
-          <MapPin className="mr-2" /> Shipping Address
-        </h2>
-        <div className=" flex flex-col ">
-          <button
-            onClick={() => setIsAddingAddress(true)}
-            className="text-green-600 ms-auto mb-5 hover:text-green-700 flex items-center"
-          >
-            <Plus size={16} className="mr-2" /> Add New
-          </button>
-          {isAddingAddress && (
-            <AddAddressForm
-              onCancel={() => setIsAddingAddress(false)}
-              validationSchema={addressValidationSchema}
-              onSubmit={handleAddAddress}
-            />
-          )}
-        </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          {addresses.map((address) => (
-            <div
-              key={address._id}
-              className={`p-4 border rounded-lg cursor-pointer ${
-                selectedAddress?._id === address._id
-                  ? "border-blue-500 bg-blue-50 dark:bg-black"
-                  : "hover:bg-gray-100 hover:dark:bg-gray-500"
-              }`}
-              onClick={() => setSelectedAddress(address)}
-            >
-              <h3 className="font-semibold">{address.label}</h3>
-              <p>{address.street}</p>
-              <p>{`${address.city}, ${address.state} ${address.zip}`}</p>
-              <p>{address.phone}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <AddressSection
+        addresses={addresses}
+        selectedAddress={selectedAddress}
+        setSelectedAddress={setSelectedAddress}
+        isAddingAddress={isAddingAddress}
+        setIsAddingAddress={setIsAddingAddress}
+        handleAddAddress={handleAddAddress}
+      />
 
-      {/* Product Listing */}
-      <section className="mb-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center">
-          <ShoppingCart className="mr-2" /> Order Summary
-        </h2>
-        {products.length === 0 ? (
-          <>No products add products</>
-        ) : (
-          products.map((product) => (
-            <div
-              key={product._id}
-              className="flex items-center justify-between p-4 border-b"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={product?.productDetails?.images[0]?.secure_url}
-                  alt={product?.productDetails?.name}
-                  className="w-16 h-16 object-cover"
-                />
-                <div>
-                  <h3 className="font-semibold">
-                    {product?.productDetails?.name}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Model: {product?.productDetails?.model}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-bold">
-                  <span className="text-gray-500 line-through mr-2">
-                    &#x20b9;{product?.productDetails?.price}
-                  </span>
-                  <span>
-                    &#x20b9;
-                    {(
-                      (product?.productDetails?.price *
-                        (100 - product?.productDetails?.offerPercent)) /
-                        100 || product?.productDetails?.price
-                    ).toFixed(2)}
-                  </span>
-                </p>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Qty: {product.quantity}
-                </p>
-              </div>
-            </div>
-          ))
-        )}
-      </section>
+      <OrderSummery products={products} />
 
-      {/* Coupon Section */}
-      <section className="mb-6">
-        <div className="flex items-center space-x-2">
-          <input
-            type="text"
-            placeholder="Enter coupon code"
-            className="flex-grow p-2 border rounded dark:bg-black dark:border-blue-500"
-            value={couponCode}
-            onChange={(e) => setCouponCode(e.target.value)}
-          />
-          <button
-            onClick={handleCouponApply}
-            className="bg-blue-500 text-white p-2 rounded flex items-center"
-          >
-            <PercentIcon className="mr-2" /> Apply
-          </button>
-        </div>
-        {appliedCoupon && (
-          <p className="text-green-600 mt-2">
-            Coupon {appliedCoupon.couponCode} applied:{" "}
-            {appliedCoupon.offerPercent}% Discount
-          </p>
-        )}
-      </section>
+      <CouponSelection
+        couponCode={couponCode}
+        setCouponCode={setCouponCode}
+        handleCouponApply={handleCouponApply}
+        appliedCoupon={appliedCoupon}
+      />
 
-      {/* Shipping Method */}
-      <section className="mb-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center">
-          <Truck className="mr-2" /> Shipping Method
-        </h2>
-        {shippingMethods.map((method) => (
-          <div
-            key={method.id}
-            className={`p-4 border rounded-lg cursor-pointer mb-2 ${
-              selectedShipping?.id === method.id
-                ? "border-blue-500 bg-blue-50 dark:bg-black"
-                : "hover:bg-gray-100 hover:dark:bg-gray-500"
-            }`}
-            onClick={() => setSelectedShipping(method)}
-          >
-            <div className="flex justify-between">
-              <div>
-                <h3 className="font-semibold">{method.name}</h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {method.time}
-                </p>
-              </div>
-              <p className="font-bold">&#x20b9;{method.price.toFixed(2)}</p>
-            </div>
-          </div>
-        ))}
-      </section>
+      <ShippingSection
+        shippingMethods={shippingMethods}
+        selectedShipping={selectedShipping}
+        setSelectedShipping={setSelectedShipping}
+      />
 
-      {/* Payment Method */}
-      <section className="mb-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center">
-          <CreditCard className="mr-2" /> Payment Method
-        </h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {["Razorpay", "Cash On Delivery"].map((method) => (
-            <div
-              key={method}
-              className={`p-4 border rounded-lg cursor-pointer ${
-                selectedPayment === method
-                  ? "border-blue-500 bg-blue-50 dark:bg-black"
-                  : "hover:bg-gray-100 hover:dark:bg-gray-500"
-              }`}
-              onClick={() => setSelectedPayment(method)}
-            >
-              {method}
-            </div>
-          ))}
-        </div>
-      </section>
+      <PaymentSection
+        selectedPayment={selectedPayment}
+        setSelectedPayment={setSelectedPayment}
+      />
 
-      {/* Order Summary */}
-      <section className="mb-6 bg-gray-100 dark:bg-transparent p-4 rounded-lg">
-        <div className="flex justify-between mb-2">
-          <span>Subtotal</span>
-          <span>&#x20b9;{calculateSubtotal().toFixed(2)}</span>
-        </div>
-        {selectedShipping && (
-          <div className="flex justify-between mb-2">
-            <span>Shipping ({selectedShipping.name})</span>
-            <span>&#x20b9;{selectedShipping.price.toFixed(2)}</span>
-          </div>
-        )}
-        {appliedCoupon && (
-          <div className="flex justify-between mb-2 text-green-600">
-            <span>Coupon Discount</span>
-            <span>
-              -&#x20b9;
-              {appliedCoupon.couponDiscount.toFixed(2)}
-            </span>
-          </div>
-        )}
-
-        <div className="flex justify-between font-bold text-lg border-t pt-2">
-          <span>Total</span>
-          <span>&#x20b9;{calculateTotal().toFixed(2)}</span>
-        </div>
-      </section>
+      <OrderTotal
+        calculateSubtotal={calculateSubtotal}
+        selectedShipping={selectedShipping}
+        appliedCoupon={appliedCoupon}
+        calculateTotal={calculateTotal}
+      />
 
       {/* Complete Order Button */}
       <button
