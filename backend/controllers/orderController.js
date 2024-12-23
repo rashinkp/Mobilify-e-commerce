@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import Product from "../models/productSchema.js";
 import Payment from "../models/paymentSchema.js";
 import Coupon from "../models/couponSchema.js";
+import Wallet from "../models/walletSchema.js";
+import Transaction from "../models/walletTransactionSchema.js";
 
 export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
@@ -233,32 +235,80 @@ export const getAllOrders = async (req, res) => {
 };
 
 export const updateOrderStatus = async (req, res) => {
-  const { newStatus = "", newPaymentStatus = "", orderId } = req.body;
+  try {
+    const { newStatus = "", newPaymentStatus = "", orderId } = req.body;
 
-  const order = await Order.findById(orderId);
-  if (!order) {
-    return res.status(404).json({ message: "Order not found" });
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Store previous payment status to check if refund is new
+    const previousPaymentStatus = order.paymentStatus;
+
+    order.status = newStatus || order.status;
+    order.paymentStatus = newPaymentStatus || order.paymentStatus;
+
+    if (order.status === "Delivered") {
+      order.paymentStatus = "Successful";
+    }
+
+    // Check if this is a new refund
+    if (
+      order.paymentStatus === "Refunded" &&
+      previousPaymentStatus !== "Refunded" &&
+      (order.status === "Cancelled" || order.status === "Returned")
+    ) {
+      // Calculate refund amount (original order total)
+      const refundAmount = order.price;
+
+
+      // Find user's wallet and update balance
+      const wallet = await Wallet.findOne({ userId: order.userId });
+      const walletId = wallet._id
+
+      if (!wallet) {
+        await Wallet.create({
+          userId: order.userId,
+          balance: Number(refundAmount),
+        });
+      } else {
+        // Update existing wallet
+        wallet.balance += Number(refundAmount);
+        wallet.balance = Number(wallet.balance);
+        await wallet.save();
+      }
+
+      await Transaction.create({
+        walletId,
+        userId: order.userId,
+        type: 'Credit',
+        amount: refundAmount,
+        description: 'Refund of product',
+        status: 'Successful',
+      })
+    }
+
+    // Prevent refund status if order isn't cancelled/returned
+    if (
+      order.paymentStatus === "Refunded" &&
+      order.status !== "Cancelled" &&
+      order.status !== "Returned"
+    ) {
+      order.paymentStatus = "Pending";
+    }
+
+    await order.save();
+
+    res.status(200).json({
+      message: "Order status updated successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({
+      message: "Error updating order status",
+      error: error.message,
+    });
   }
-
-  order.status = newStatus || order.status;
-  order.paymentStatus = newPaymentStatus || order.paymentStatus;
-
-  if (order.status === "Delivered") {
-    order.paymentStatus = "Successful";
-  }
-
-if (
-  order.paymentStatus === "Refunded" &&
-  order.status !== "Cancelled" &&
-  order.status !== "Returned"
-) {
-  order.paymentStatus = "Pending";
-}
-
-
-  await order.save();
-
-  res
-    .status(200)
-    .json({ message: "Product status updated successfully", order });
 };
