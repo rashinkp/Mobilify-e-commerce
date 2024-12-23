@@ -13,7 +13,13 @@ const OrderSchema = new mongoose.Schema(
       required: true,
     },
 
-   
+    couponApplied: {
+      type: {
+        couponCode: { type: String, trim: true },
+        offerAmount: { type: Number, default: 0 },
+      },
+      default: null,
+    },
 
     orderNumber: {
       type: String,

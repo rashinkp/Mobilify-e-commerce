@@ -148,7 +148,8 @@ const OrderDetailsPage = () => {
   // Determine if cancel and return buttons should be disabled
   const isCancelDisabled =
     orderCancelled ||
-    ["Delivered", "Cancelled", "Out for Delivery"].includes(order.status) || order.status === 'Returned';
+    ["Delivered", "Cancelled", "Out for Delivery"].includes(order.status) ||
+    order.status === "Returned";
 
   const isReturnDisabled = !["Delivered", "Shipped"].includes(order.status);
 
@@ -400,7 +401,7 @@ const OrderDetailsPage = () => {
                 </div>
               </div>
 
-              {order.coupon && (
+              {order.couponApplied && (
                 <div className="bg-yellow-100  dark:text-black p-4 rounded-lg">
                   <div className="flex items-center mb-2">
                     <Tag className="mr-2 w-5 h-5 text-yellow-600" />
@@ -408,12 +409,14 @@ const OrderDetailsPage = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Code:</span>
-                    <span className="font-medium">{order.coupon.code}</span>
+                    <span className="font-medium">
+                      {order.couponApplied.couponCode}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Discount:</span>
                     <span className="font-medium text-green-600">
-                      -${order.coupon.discount.toFixed(2)}
+                      -${order.couponApplied.offerAmount.toFixed(2)}
                     </span>
                   </div>
                 </div>

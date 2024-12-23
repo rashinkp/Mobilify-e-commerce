@@ -220,7 +220,10 @@ const CheckoutPage = () => {
         quantity: product.quantity,
         imageUrl: product?.productDetails?.images[0]?.url,
         returnPolicy: product?.productDetails?.returnPolicy,
+        coupon:
+          appliedCoupon?.productDetails?.productId === product?.productDetails?._id ? appliedCoupon : null,
       }));
+
 
       const subtotal = calculateSubtotal();
       const shippingCost = selectedShipping?.price || 0;
@@ -240,7 +243,7 @@ const CheckoutPage = () => {
         shipping: selectedShipping,
         paymentMethod: selectedPayment,
         orderItems,
-        couponCode: appliedCoupon?.couponCode || null,
+        couponCode,
         total,
       };
 

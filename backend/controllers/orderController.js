@@ -4,12 +4,13 @@ import Cart from "../models/cartSchema.js";
 import mongoose from "mongoose";
 import Product from "../models/productSchema.js";
 import Payment from "../models/paymentSchema.js";
+import Coupon from "../models/couponSchema.js";
 
 export const addOrder = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const data = req.body;
 
-  // Check required inputs
+
   if (!userId || !data || !data.orderItems) {
     return res.status(400).json({
       message: "Required inputs missing, please try again",
@@ -45,27 +46,47 @@ export const addOrder = asyncHandler(async (req, res) => {
 
     // Validate payment
     const payment = await Payment.findOne({ paymentId });
-    
+
+
+    const coupon = await Coupon.findOne({ couponId: couponCode });
+
+    if (!coupon) {
+      return res.status(404).json({ message: "No such coupon found" });
+    }
+
+    coupon.usersTaken.push(userId);
+
+    await coupon.save();
+
 
     const orderDocuments = orderItems.map((item) => ({
       userId: userId,
       productId: item.productId,
       name: item.name,
       model: item.model,
-      price: item.price,
+      price: item?.coupon?.finalPriceAfterCoupon,
       quantity: item.quantity,
       imageUrl: item.imageUrl,
-      returnPolicy:item.returnPolicy,
+      returnPolicy: item.returnPolicy,
       shipping: shipping,
       paymentMethod: paymentMethod,
       shippingAddress: shippingAddress,
-      couponCode: couponCode,
+      couponApplied: {
+        couponCode: item?.coupon?.couponCode,
+        offerAmount: item?.coupon?.couponDiscount,
+      },
       status: "Order placed",
       paymentId: paymentId || null,
       paymentStatus: payment?.status || "Pending",
     }));
 
     const createdOrders = await Order.insertMany(orderDocuments);
+
+
+    //adding user data in coupon
+
+    
+
 
     // Update stock for each product
     for (const item of orderDocuments) {
