@@ -23,6 +23,7 @@ import OrderDetailsPage from "../pages/user/Order.jsx";
 import OrderListingPage from "../components/MyOrders.jsx";
 import ProtectUser from "../pages/user/UserProtect.jsx";
 import WishList from "../pages/user/WishList.jsx";
+import Wallet from '../pages/user/Wallet.jsx'
 
 const UserRoutes = () => {
   
@@ -39,6 +40,7 @@ const UserRoutes = () => {
           <Route path="/orderSuccess" element={<OrderSuccessPage />} />
           <Route path="/orderDetail/:ordId" element={<OrderDetailsPage />} />
           <Route path="/wishlist" element={<WishList />} />
+          <Route path="/wallet" element={<Wallet />} />
         </Route>
 
         <Route path="/" element={<HomePage />} />

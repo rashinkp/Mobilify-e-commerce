@@ -70,7 +70,7 @@ const Navbar = () => {
       },
       {
         text: "Wishlist",
-        path: "/user/profile",
+        path: "/user/wishlist",
       },
       {
         text: "Wallet",
