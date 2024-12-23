@@ -64,7 +64,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       productId: item.productId,
       name: item.name,
       model: item.model,
-      price: item?.coupon?.finalPriceAfterCoupon,
+      price: item?.coupon?.finalPriceAfterCoupon || item?.price,
       quantity: item.quantity,
       imageUrl: item.imageUrl,
       returnPolicy: item.returnPolicy,

@@ -19,6 +19,7 @@ const OrderSchema = new mongoose.Schema(
         offerAmount: { type: Number, default: 0 },
       },
       default: null,
+      _id: false, 
     },
 
     orderNumber: {

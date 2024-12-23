@@ -2,45 +2,45 @@ import mongoose from "mongoose";
 
 const couponSchema = new mongoose.Schema({
   couponId: {
-    type: String, // Unique identifier for the coupon
-    required: true, // Field is required
-    unique: true, // Ensure no duplicates
-    trim: true, // Removes leading/trailing spaces
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
   },
   title: {
-    type: String, // Title of the coupon
-    required: true, // Field is required
-    trim: true, // Removes leading/trailing spaces
+    type: String,
+    required: true,
+    trim: true,
   },
   description: {
-    type: String, // Description of the coupon
-    trim: true, // Optional, but trimmed
+    type: String,
+    trim: true,
   },
   discount: {
-    type: Number, // Discount percentage or amount
-    required: true, // Field is required
-    min: 0, // Minimum discount value
+    type: Number,
+    required: true,
+    min: 0,
   },
   expiryDate: {
-    type: Date, // Expiration date of the coupon
-    required: true, // Field is required
+    type: Date,
+    required: true,
   },
   applicables: {
-    type: [String], // Array of category IDs where the coupon can be applied
-    default: [], // Default is an empty array
+    type: [String],
+    default: [],
   },
   usersTaken: {
-    type: [String], // Array of user IDs who have taken the coupon
-    default: [], // Default is an empty array
+    type: [String],
+    default: [],
   },
   createdAt: {
-    type: Date, // When the coupon was created
-    default: Date.now, // Default value is the current date
-    immutable: true, // Prevents updates to this field
+    type: Date,
+    default: Date.now,
+    immutable: true,
   },
   updatedAt: {
-    type: Date, // When the coupon was last updated
-    default: Date.now, // Default value is the current date
+    type: Date,
+    default: Date.now,
   },
   isSoftDeleted: {
     type: Boolean,
@@ -48,9 +48,16 @@ const couponSchema = new mongoose.Schema({
   },
 });
 
+// Virtual field for expiry status
+couponSchema.virtual("isExpired").get(function () {
+  return this.expiryDate < Date.now();
+});
 
-
+// Middleware to update the updatedAt field
 couponSchema.pre("save", function (next) {
+  if (this.expiryDate < Date.now()) {
+    return next(new Error("Cannot save or update an expired coupon."));
+  }
   this.updatedAt = Date.now();
   next();
 });

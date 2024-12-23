@@ -186,10 +186,10 @@ const ShoppingCart = () => {
                   </p>
                   <p className="text-primary font-bold">
                     <span className="text-gray-500 line-through mr-2">
-                      ${product?.productDetails?.price.toFixed(2)}
+                      ₹{product?.productDetails?.price.toFixed(2)}
                     </span>
                     <span>
-                      $
+                      ₹
                       {(
                         (product?.productDetails?.price *
                           (100 - product?.productDetails?.offerPercent)) /

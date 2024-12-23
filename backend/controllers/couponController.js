@@ -63,22 +63,39 @@ export const editCoupon = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Coupon updated successfully" });
 });
 
+
 export const getACoupon = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   if (!id) {
-    return res.status(400).json({ message: "id not found" });
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or missing coupon ID",
+    });
   }
 
-  const coupon = await Coupon.findOne({ _id: id });
+  try {
+    const coupon = await Coupon.findById(id);
 
-  if (!coupon) {
-    return res.status(404).json({ message: "No such coupon found" });
+    if (!coupon) {
+      return res.status(404).json({
+        success: false,
+        message: "No such coupon found",
+      });
+    }
+
+    res.status(200).json(coupon);
+    
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while fetching the coupon",
+      error: error.message,
+    });
   }
-
-  res.status(200).json(coupon);
 });
+
 
 export const updateApplicables = asyncHandler(async (req, res) => {
   const { selectedProducts, couponId } = req.body;
@@ -118,6 +135,15 @@ export const applyCoupon = asyncHandler(async (req, res) => {
   if (!coupon) {
     return res.status(404).json({ message: "Such coupon not found" });
   }
+
+  
+    const isExpired = coupon.expiryDate < Date.now();
+    const isActive = coupon.isSoftDeleted;
+
+    if (isExpired || isActive) {
+      return res.status(400).json({ message: "Coupon expired or not active" });
+    }
+
 
   // Check if the coupon has already been used by the user
   if (coupon.usersTaken.includes(userId)) {
