@@ -9,6 +9,7 @@ import { RotatingLines } from "react-loader-spinner";
 import BrudCrump from "../../components/BrudCrump";
 import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice";
 import Pagination from "../../components/Pagination";
+import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices";
 
 const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,6 +18,7 @@ const Products = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState("CreatedAt");
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const { data, isLoading, isError, error, refetch } = useGetAllProductsQuery({
     page: currentPage,
@@ -31,8 +33,12 @@ const Products = () => {
         : "createdAt",
     order: sortBy === "priceLowToHigh" || sortBy === "nameAsc" ? "asc" : "desc",
     filterBy: filter,
-    searchTerm: searchTerm,
+    searchTerm,
+    categoryId: categoryFilter,
   });
+
+  const { data: categories = [], isLoading: categoryLoading } =
+    useGetAllCategoryQuery();
 
   const { products = [], totalCount = 0 } = data || {};
 
@@ -56,11 +62,24 @@ const Products = () => {
   //           product.name.toLowerCase().includes(searchTerm.toLowerCase())
   //     ) || [];
 
+  const brudCrumpList = [
+    {
+      name: "Home",
+      icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
+      path: "/user",
+    },
+    {
+      name: "Products",
+      icon: <FontAwesomeIcon icon="fa-solid fa-mobile-button" />,
+      path: "/user/products",
+    },
+  ];
+
   if (isError) return <div>Error: {error.message}</div>;
 
-  if (isLoading) {
+  if (isLoading || categoryLoading) {
     return (
-      <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+      <div className="flex justify-center items-center min-h-screen">
         <RotatingLines
           visible={true}
           height="50"
@@ -75,18 +94,6 @@ const Products = () => {
     );
   }
 
-  const brudCrumpList = [
-    {
-      name: "Home",
-      icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
-      path: "/user",
-    },
-    {
-      name: "Products",
-      icon: <FontAwesomeIcon icon="fa-solid fa-mobile-button" />,
-      path: "/user/products",
-    },
-  ];
   return (
     <>
       <div className="ms-10">
@@ -98,7 +105,7 @@ const Products = () => {
       <div className="flex flex-col items-center">
         <div className="flex flex-wrap justify-between w-full max-w-7xl mb-6 px-4 dark:text-lightText">
           <div className="flex flex-wrap gap-4 mb-4 md:mb-0 items-center w-full md:w-auto">
-            <div className="flex items-center">
+            <div className="flex items-center gap-5">
               <FontAwesomeIcon
                 icon={faFilter}
                 className="text-gray-800 dark:text-lightText text-lg mr-2"
@@ -110,6 +117,19 @@ const Products = () => {
               >
                 <option value="active">All Products</option>
                 <option value="high stock">High Stock</option>
+              </select>
+
+              <select
+                className="px-1 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

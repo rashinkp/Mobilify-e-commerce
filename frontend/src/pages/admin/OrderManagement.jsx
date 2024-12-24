@@ -122,7 +122,7 @@ const OrderManagement = () => {
             bgColor = "bg-yellow-200";
             textColor = "text-yellow-800";
             break;
-          case "Success":
+          case "Successful":
             bgColor = "bg-green-200";
             textColor = "text-green-800";
             break;

@@ -20,10 +20,11 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   const {
     page = 1,
     limit = 10,
-    sortBy = "createdAt",
+    sortBy = "latest",
     order = "desc",
     filterBy = "All",
     searchTerm = "",
+    categoryId = "",
   } = req.query;
 
   const userId = req.user?.userId;
@@ -31,15 +32,19 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
   let filter = {};
 
-  if (filterBy === "active") {
-    filter = { isSoftDelete: false };
-  } else if (filterBy === "inactive") {
-    filter = { isSoftDelete: true };
-  } else if (filterBy === "low stock") {
-    filter = { stock: { $lt: 20 } };
-  } else if (filterBy === "high stock") {
-    filter = { stock: { $gt: 20 } };
+  if (categoryId) {
+    filter.categoryId = categoryId;
   }
+
+if (filterBy === "active") {
+  filter.isSoftDelete = false;
+} else if (filterBy === "inactive") {
+  filter.isSoftDelete = true;
+} else if (filterBy === "low stock") {
+  filter.stock = { $lt: 20 };
+} else if (filterBy === "high stock") {
+  filter.stock = { $gt: 20 };
+}
 
   if (searchTerm.trim() !== "") {
     filter.name = { $regex: searchTerm, $options: "i" };
@@ -50,6 +55,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       .collation({ locale: "en", strength: 2 })
       .sort({
         [sortBy]: order === "desc" ? -1 : 1,
+        _id: 1,
       })
       .skip(Number(skip))
       .limit(Number(limit));
@@ -106,19 +112,18 @@ export const getProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(id);
   const userId = req.user?.userId;
 
-
   if (!product) {
     res.status(404).json({ message: 'Couldn"t find any product with the id' });
   }
 
   const wishList = await WishList.findOne({
     userId,
-    "items.productId": id, 
+    "items.productId": id,
   });
 
-  console.log(wishList)
+  console.log(wishList);
   const isInWishList = wishList ? true : false;
-  res.status(200).json({ ...product.toObject() , isInWishList});
+  res.status(200).json({ ...product.toObject(), isInWishList });
 });
 
 export const deleteProduct = asyncHandler(async (req, res) => {

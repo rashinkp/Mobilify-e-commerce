@@ -24,12 +24,13 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: ({
         page = 1,
         limit = 10,
-        sortBy = "createdAt",
+        sortBy = "latest",
         order = "desc",
-        filterBy = 'all',
-        searchTerm = ''
+        filterBy = "all",
+        searchTerm = "",
+        categoryId = "",
       } = {}) => ({
-        url: `${ADMIN_URL}/product?page=${page}&limit=${limit}&sortBy=${sortBy}&order=${order}&filterBy=${filterBy}&searchTerm=${searchTerm}`,
+        url: `${ADMIN_URL}/product?page=${page}&limit=${limit}&sortBy=${sortBy}&order=${order}&filterBy=${filterBy}&searchTerm=${searchTerm}&categoryId=${categoryId}`,
         method: "GET",
       }),
       providesTags: ["Products"],
