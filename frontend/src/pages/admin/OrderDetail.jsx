@@ -66,6 +66,7 @@ const OrderDetails = () => {
     setPaymentModalVisible(true);
   };
 
+  console.log(data);
   const isStatusDisabled =
     data?.status === "Cancelled" || data?.status === "Returned";
   const isPaymentDisabled = data?.paymentStatus === "Refunded";
@@ -135,7 +136,17 @@ const OrderDetails = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Tag className="text-blue-600" />
-              <span>Coupon: {data.couponCode || "No coupon applied"}</span>
+              <span>
+                Coupon: {data.couponApplied?.couponCode || "No coupon applied"}
+              </span>
+            </div>
+            <div>
+              <span>
+                Coupon discount:{" "}
+                <strong>
+                  {data.couponApplied?.offerAmount.toLocaleString("en-IN") || 0}
+                </strong>
+              </span>
             </div>
           </div>
         </div>

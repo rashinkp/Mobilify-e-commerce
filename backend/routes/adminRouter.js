@@ -32,6 +32,7 @@ import {
 } from "../controllers/orderController.js";
 import optionalProtect from "../middlewares/optionalProtect.js";
 import { AddCoupon, editCoupon, getACoupon, getAllCoupon, updateApplicables } from "../controllers/couponController.js";
+import { getSales } from "../controllers/salesController.js";
 
 const router = express.Router();
 
@@ -97,5 +98,9 @@ router
 
 
 router.get('/coupon/:id', protect('admin'), getACoupon);
+
+//sales related
+
+router.route("/sales").get(protect("admin"), getSales);
 
 export default router;

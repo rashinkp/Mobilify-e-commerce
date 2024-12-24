@@ -11,6 +11,7 @@ import ProductList from "../../components/product/ProductList.jsx";
 import { RotatingLines } from "react-loader-spinner";
 import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 import Pagination from "../../components/Pagination.jsx";
+import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices.js";
 
 const ProductManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
@@ -19,6 +20,7 @@ const ProductManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 8;
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const { addProduct } = useProductApi();
 
@@ -28,7 +30,11 @@ const ProductManagement = () => {
     sortBy: "createdAt",
     filterBy: filter,
     order: "desc",
+    categoryId: categoryFilter,
   });
+
+  const { data: categories = [], isLoading: categoryLoading } =
+    useGetAllCategoryQuery();
 
   const { products = [], totalCount = 0 } = data || {};
 
@@ -64,9 +70,6 @@ const ProductManagement = () => {
       errorToast(error?.data?.message || error.message || error.error);
     }
   };
-
-
-  
 
   return (
     <div className="p-6">
@@ -109,7 +112,7 @@ const ProductManagement = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Dropdown for Product Filter */}
             <select
-              className="p-2 border rounded-md shadow-md bg-white dark:bg-black dark:text-white dark:border-none"
+              className="px-1 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
@@ -117,6 +120,18 @@ const ProductManagement = () => {
               <option value="active">Active Products</option>
               <option value="inactive">Inactive Products</option>
               <option value="low stock">Low Stock</option>
+            </select>
+            <select
+              className="px-1 py-2 border border-gray-300 rounded-md dark:bg-darkBackground focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-200"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="">All</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
 
             {/* Add Product Button */}

@@ -7,7 +7,6 @@ import OrderManagement from "../pages/admin/OrderManagement";
 import AdminLogin from "../pages/admin/AdminLogin";
 import Sidebar from "../components/admin/Sidebar.jsx";
 import CouponManagement from "../pages/admin/CouponManagement.jsx";
-import SalesManagement from "../pages/admin/SalesManagement.jsx";
 import AdminProfile from "../pages/admin/AdminProfile.jsx";
 import ProductDetail from "../pages/admin/ProductDetail.jsx";
 import CategoryManagement from "../pages/admin/CategoryManagement.jsx";
@@ -18,6 +17,7 @@ import ManageImage from "../pages/admin/ManageImage.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import OrderDetail from "../pages/admin/OrderDetail.jsx";
 import ManageCouponDetail from "../pages/admin/ManageCouponDetail.jsx";
+import SalesReport from "../pages/admin/SalesManagement.jsx";
 
 const AdminRoutes = () => {
   const location = useLocation();
@@ -37,7 +37,7 @@ const AdminRoutes = () => {
             <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/manage-brands" element={<BrandManagement />} />
             <Route path="/manage-coupon" element={<CouponManagement />} />
-            <Route path="/manage-sales" element={<SalesManagement />} />
+            <Route path="/manage-sales" element={<SalesReport />} />
             <Route path="/profile" element={<AdminProfile />} />
             <Route path="/manage-category" element={<CategoryManagement />} />
             <Route path="/manage-image/:id" element={<ManageImage />} />
