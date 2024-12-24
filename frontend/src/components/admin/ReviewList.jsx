@@ -1,31 +1,42 @@
-import React from 'react'
+import React from "react";
 
-const ReviewList = ({reviews}) => {
+const ReviewList = ({ reviews }) => {
   return (
-    <div className="p-6 dark:bg-black">
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+    <div className="relative overflow-x-auto  dark:bg-black">
+      <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
         Reviews
       </h2>
-      <ul className="mt-4 text-gray-600 dark:text-white space-y-2">
-        {reviews.map((review) => (
-          <li
-            key={review.id}
-            className="bg-gray-100 dark:bg-darkBackground p-4 rounded-md shadow-sm"
-          >
-            <p>
-              <strong>Comment:</strong> {review.comment}
-            </p>
-            <p>
-              <strong>Date:</strong> {review.date}
-            </p>
-            <p>
-              <strong>Rating:</strong> {"⭐".repeat(review.rating)}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead className="text-xs text-gray-700 uppercase  dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" className="px-6 py-3">
+              Comment
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Date
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Rating
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {reviews.map((review) => (
+            <tr
+              key={review.id}
+              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+            >
+              <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {review.comment}
+              </td>
+              <td className="px-6 py-4">{review.date}</td>
+              <td className="px-6 py-4">{"⭐".repeat(review.rating)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-}
+};
 
-export default ReviewList
+export default ReviewList;

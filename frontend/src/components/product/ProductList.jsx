@@ -26,7 +26,7 @@ const ProductList = ({ products }) => {
     {
       key: "price",
       label: "Price",
-      render: (value) => `$${value.toFixed(2)}`,
+      render: (value) => `₹${value.toLocaleString("en-IN")}`,
     },
     {
       key: "stock",
@@ -63,19 +63,17 @@ const ProductList = ({ products }) => {
     },
   ];
 
-
-   const getProductControls = (product) => {
-     return [
-       {
-         action: () => {
-           navigate(`/admin/product/${product._id}`);
-         },
-         style: "",
-         icon: <Eye className="text-gray-500 hover:text-blue-600" />,
-       },
-     ];
-   };
-
+  const getProductControls = (product) => {
+    return [
+      {
+        action: () => {
+          navigate(`/admin/product/${product._id}`);
+        },
+        style: "",
+        icon: <Eye className="text-gray-500 hover:text-blue-600" />,
+      },
+    ];
+  };
 
   return (
     <div className="w-full">

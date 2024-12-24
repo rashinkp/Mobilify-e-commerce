@@ -24,6 +24,7 @@
     "@shadcn/ui": "^0.0.4",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
+    "date-fns": "^4.1.0",
     "gapi-script": "^1.2.0",
     "google-auth-library": "^9.15.0",
     "jspdf": "^2.5.2",
