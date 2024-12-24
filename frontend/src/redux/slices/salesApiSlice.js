@@ -7,8 +7,8 @@ const ADMIn_URL = '/api/admin';
 export const salesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getSalesReport: builder.query({
-      query: () => ({
-        url: `${ADMIn_URL}/sales`,
+      query: ({ startingDate, endingDate }) => ({
+        url: `${ADMIn_URL}/sales?startingDate=${startingDate}&endingDate=${endingDate}`,
         method: "GET",
       }),
       providesTags: ["Sales"],

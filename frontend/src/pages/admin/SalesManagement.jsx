@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Calendar,
   ChevronRight,
@@ -16,6 +16,39 @@ import "jspdf-autotable";
 
 const SalesReport = () => {
   const [dateRange, setDateRange] = useState("daily");
+  const [startingDate, setStartingDate] = useState("");
+  const [endingDate, setEndingDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState("");
+
+  const today = new Date();
+
+  useEffect(() => {
+    switch (dateRange) {
+      case "daily":
+        setStartingDate(today.toISOString().split("T")[0]);
+        setEndingDate(today.toISOString().split("T")[0]);
+        break;
+      case "weekly": {
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - 7);
+        setStartingDate(weekStart.toISOString().split("T")[0]);
+        setEndingDate(today.toISOString().split("T")[0]);
+        break;
+      }
+      case "monthly": {
+        const monthStart = new Date(today);
+        monthStart.setMonth(today.getMonth() - 1);
+        setStartingDate(monthStart.toISOString().split("T")[0]);
+        setEndingDate(today.toISOString().split("T")[0]);
+        break;
+      }
+      case "custom":
+        setShowDatePicker(true);
+        break;
+      default:
+        break;
+    }
+  }, [dateRange]);
 
   const {
     data = {},
@@ -23,18 +56,33 @@ const SalesReport = () => {
     isError,
     error,
     refetch,
-  } = useGetSalesReportQuery();
+  } = useGetSalesReportQuery({
+    startingDate,
+    endingDate,
+  });
 
-  console.log(data);
+   const handleFilter = () => {
+     if (startingDate && endingDate) {
+       refetch();
+     }
+   };
+ const formatDate = (dateString) => {
+   if (!dateString) return "";
+   return new Date(dateString).toLocaleDateString("en-IN", {
+     year: "numeric",
+     month: "long",
+     day: "numeric",
+   });
+ };
 
   const salesData = data?.orders || [];
-  console.log(salesData);
   // Calculate summary statistics
   const totalSales = data?.totalCount;
   const totalDiscount = salesData.reduce(
     (sum, item) => sum + item?.couponApplied?.offerAmount,
     0
   );
+
 
   //
 
@@ -154,7 +202,10 @@ const SalesReport = () => {
           <select
             className="px-4 py-2 border rounded-lg bg-white"
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={(e) => {
+              setDateRange(e.target.value);
+              setShowDatePicker(e.target.value === "custom");
+            }}
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -162,7 +213,28 @@ const SalesReport = () => {
             <option value="custom">Custom Range</option>
           </select>
 
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          {showDatePicker && (
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={startingDate}
+                onChange={(e) => setStartingDate(e.target.value)}
+                className="px-4 py-2 border rounded-lg bg-white"
+              />
+              <span className="self-center">to</span>
+              <input
+                type="date"
+                value={endingDate}
+                onChange={(e) => setEndingDate(e.target.value)}
+                className="px-4 py-2 border rounded-lg bg-white"
+              />
+            </div>
+          )}
+
+          <button
+            onClick={handleFilter}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
             <Filter className="w-4 h-4" />
             Filter
           </button>
@@ -184,6 +256,15 @@ const SalesReport = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <span>Showing sales from:</span>
+        <span className="font-medium">
+          {dateRange === "daily"
+            ? "Today"
+            : `${formatDate(startingDate)} - ${formatDate(endingDate)}`}
+        </span>
       </div>
 
       {/* Summary Cards */}

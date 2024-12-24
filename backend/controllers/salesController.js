@@ -2,8 +2,23 @@ import asyncHandler from "express-async-handler";
 import Orders from "../models/orderSchema.js";
 
 export const getSales = asyncHandler(async (req, res) => {
+  const { startingDate, endingDate } = req.query;
+
+  const dateMatch = {};
+  if (startingDate && endingDate) {
+    dateMatch.orderDate = {
+      $gte: new Date(startingDate),
+      $lte: new Date(endingDate + "T23:59:59.999Z"), // Include the entire end date
+    };
+  }
+
   const orders = await Orders.aggregate([
-    { $match: { status: "Delivered" } },
+    {
+      $match: {
+        status: "Delivered",
+        ...dateMatch,
+      },
+    },
     {
       $project: {
         name: 1,
@@ -32,6 +47,10 @@ export const getSales = asyncHandler(async (req, res) => {
     },
   ]);
 
-  const OrderDetails = orders[0];
+  const OrderDetails = orders[0] || {
+    orders: [],
+    totalCount: 0,
+    totalPrice: 0,
+  };
   res.status(200).json(OrderDetails);
 });
