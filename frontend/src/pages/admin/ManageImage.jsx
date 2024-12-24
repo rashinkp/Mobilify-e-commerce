@@ -1,17 +1,17 @@
-
 import React, { useRef, useState, useEffect } from "react";
-import { imageValidationSchema } from "../../validationSchemas.js"; 
+import { imageValidationSchema } from "../../validationSchemas.js";
 import Button from "../../components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig.js";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import {
   useGetProductQuery,
   useUpdateProductImageMutation,
 } from "../../redux/slices/productApiSlice.js";
 import { RotatingLines } from "react-loader-spinner";
 import Modal from "../../components/Modal.jsx";
+import { Upload, Trash2, Plus, Box, ChevronRight, Home } from "lucide-react";
 
 const ManageImage = () => {
   const ImageRefs = Array.from({ length: 4 }, () => useRef());
@@ -63,13 +63,12 @@ const ManageImage = () => {
     setImages(updatedImages);
   };
 
-
   const uploadToCloudinary = async () => {
     setIsUploading(true);
     let newImages = images.filter((img) => img && typeof img !== "string");
     if (newImages.length < 1) {
       errorToast("Please select 1 new image to upload");
-      setIsUploading(false)
+      setIsUploading(false);
       return true;
     }
 
@@ -90,7 +89,7 @@ const ManageImage = () => {
         uploadedUrl: [...uploadedUrl],
         deleteQueue,
       });
-      setIsUploading(false)
+      setIsUploading(false);
       successToast("Images updated successfully!");
       uploadedUrl = [];
     } catch (error) {
@@ -100,25 +99,23 @@ const ManageImage = () => {
 
   if (isLoading || isUploading) {
     return (
-      <div>
-        <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-          <RotatingLines
-            visible={true}
-            height="50"
-            width="50"
-            color="grey"
-            strokeColor="#fff"
-            strokeWidth="2"
-            animationDuration="8"
-            ariaLabel="rotating-lines-loading"
-          />
-        </div>
+      <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
       </div>
     );
   }
 
   return (
-    <>
+    <div className="min-h-screen p-4">
       {isDelModalOpen && (
         <Modal
           title="Are you sure?"
@@ -128,78 +125,127 @@ const ManageImage = () => {
               text: "Cancel",
               action: () => setIsDelModalOpen(false),
               style:
-                "text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700",
+                "text-gray-900 bg-white border border-gray-200 hover:bg-gray-100",
             },
             {
               text: "Delete",
               action: handleDelete,
-              style:
-                "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800",
+              style: "text-white bg-red-600 hover:bg-red-700",
             },
           ]}
         />
       )}
-      <div className="flex flex-col ms-14 items-center justify-center space-y-6 p-4 overflow-auto">
-        {/* Image Slots */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full max-w-4xl">
+
+      <div className="max-w-7xl mx-auto">
+        {/* Breadcrumb */}
+        <div className="flex items-center mb-8 text-sm text-gray-500">
+          <Link to="/admin" className="flex items-center hover:text-blue-600">
+            <Home className="w-4 h-4 mr-2" />
+            Dashboard
+          </Link>
+          <ChevronRight className="w-4 h-4 mx-2" />
+          <Link
+            to="/admin/manage-products"
+            className="flex items-center hover:text-blue-600"
+          >
+            <Box className="w-4 h-4 mr-2" />
+            Product Management
+          </Link>
+          <ChevronRight className="w-4 h-4 mx-2" />
+          <Link
+            to={`/admin/product/${product._id}`}
+            className="hover:text-blue-600"
+          >
+            {product.name}
+          </Link>
+          <ChevronRight className="w-4 h-4 mx-2" />
+          <span className="text-gray-700">Manage Images</span>
+        </div>
+
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Product Images</h1>
+          <p className="mt-2 text-gray-600">
+            Upload up to 4 high-quality images of your product
+          </p>
+        </div>
+
+        {/* Image Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {images.map((image, index) => (
             <div
               key={index}
-              className="relative rounded-lg overflow-hidden shadow-md border border-black h-40 sm:h-72 w-full"
+              className="bg-white rounded-lg shadow-sm overflow-hidden"
             >
               {image ? (
-                <>
-                  <img
-                    src={
-                      typeof image === "string"
-                        ? image
-                        : URL.createObjectURL(image)
-                    }
-                    alt=""
-                    className="h-40 sm:h-72 w-full object-cover"
-                  />
-                  <div className="absolute top-2 right-2">
+                <div className="relative group">
+                  <div className="aspect-square">
+                    <img
+                      src={
+                        typeof image === "string"
+                          ? image
+                          : URL.createObjectURL(image)
+                      }
+                      alt={`Product image ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button
                       onClick={() => {
                         setIsDelModalOpen(true);
-                        
-                        setDeleteIndex(index); 
+                        setDeleteIndex(index);
                       }}
-                      className="px-4 py-2 bg-black text-white rounded-full"
+                      className="absolute top-2 right-2 p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
                     >
-                      <FontAwesomeIcon icon="fa-solid fa-trash" />
+                      <Trash2 className="w-4 h-4 text-white" />
                     </button>
                   </div>
-                </>
-              ) : (
-                <div
-                  onClick={() => handleImageClick(index)}
-                  className="h-full flex justify-center items-center border-2 border-dashed border-gray-400 rounded-lg cursor-pointer"
-                >
-                  <span className="text-gray-500">Add Image</span>
                 </div>
+              ) : (
+                <button
+                  onClick={() => handleImageClick(index)}
+                  className="w-full aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors flex flex-col items-center justify-center gap-3 bg-gray-50 hover:bg-gray-100"
+                >
+                  <div className="p-2 rounded-full bg-white shadow-sm">
+                    <Plus className="w-5 h-5 text-gray-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-600">
+                    Add Image
+                  </span>
+                </button>
               )}
               <input
                 ref={ImageRefs[index]}
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, index)}
-                hidden
+                className="hidden"
               />
             </div>
           ))}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-center space-x-4">
-          <Button
-            action={uploadToCloudinary}
-            icon={<FontAwesomeIcon icon="fa-solid fa-upload" />}
-            text="Upload Image"
-          />
+        {/* Upload Button */}
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={uploadToCloudinary}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            Upload Images
+          </button>
+        </div>
+
+        {/* Helper Text */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-700">
+            Images should be in JPG, PNG, or WebP format, with a maximum size of
+            5MB each.
+          </p>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

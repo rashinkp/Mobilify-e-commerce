@@ -93,7 +93,7 @@ const ProductManagement = () => {
         </p>
       </div>
 
-      <div className="p-5 sm-p-10">
+      <div className="">
         {/* Product Add Form */}
         <ProductAddForm
           isModalFormOpen={isModalFormOpen}
@@ -101,7 +101,7 @@ const ProductManagement = () => {
           onSubmit={handleAddProduct}
         />
 
-        <div className="m-5">
+        <div className="mb-5">
           <SearchBar searchTerm={setSearchTerm} />
         </div>
 
