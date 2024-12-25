@@ -33,7 +33,8 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   let matchFilter = {};
 
   if (categoryId) {
-    matchFilter.categoryId = categoryId;
+    
+    matchFilter.categoryId = new mongoose.Types.ObjectId(categoryId);
   }
 
   if (filterBy === "active") {
@@ -66,11 +67,10 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       {
         $unwind: {
           path: "$categoryDetails",
-          preserveNullAndEmptyArrays: true, 
+          preserveNullAndEmptyArrays: true,
         },
       },
 
-      
       {
         $match: {
           $or: [
