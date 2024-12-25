@@ -19,7 +19,7 @@ const ShoppingCart = () => {
 
   const navigate = useNavigate();
 
-  console.log(cartItems);
+  console.log(products);
 
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
@@ -169,7 +169,7 @@ const ShoppingCart = () => {
             Shopping Cart <span>({data.totalProducts})</span>
           </h1>
 
-          {products.length < 1 ? (
+          {data.totalProducts < 1 ? (
             <span className="block text-center dark:text-white mb-10">
               No products
             </span>
@@ -196,7 +196,7 @@ const ShoppingCart = () => {
                 )}
 
                 <img
-                  src={product?.productDetails?.images[0]?.secure_url}
+                  src={product?.productDetails?.images[0]?.secure_url || ""}
                   alt="Product image is not available"
                   className={`w-24 h-24 object-cover mr-6 rounded ${
                     product?.productDetails?.stock < 1 ? "opacity-50" : ""

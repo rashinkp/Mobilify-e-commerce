@@ -66,17 +66,31 @@ export const addToCart = asyncHandler(async (req, res) => {
 
 export const getCart = asyncHandler(async (req, res) => {
   const { userId } = req.user;
-
   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  let cart = await Cart.aggregate([
-    //finding the user
+  // First check if cart exists
+  let existingCart = await Cart.findOne({ userId: userObjectId });
+
+  // If no cart exists, create new one
+  if (!existingCart) {
+    const newCart = new Cart({
+      userId,
+      cartItems: [],
+      totalProducts: 0,
+    });
+    await newCart.save();
+    return res.status(200).json(newCart);
+  }
+
+  // If cart exists but empty, return it directly
+  if (existingCart.cartItems.length === 0) {
+    return res.status(200).json(existingCart);
+  }
+
+  // Only run aggregate for non-empty carts
+  const cart = await Cart.aggregate([
     { $match: { userId: userObjectId } },
-
-    //unwind cart items to process each
     { $unwind: { path: "$cartItems", preserveNullAndEmptyArrays: true } },
-
-    //lookup product details for each productId
     {
       $lookup: {
         from: "products",
@@ -85,13 +99,11 @@ export const getCart = asyncHandler(async (req, res) => {
         as: "productDetails",
       },
     },
-
     {
       $addFields: {
         "cartItems.productDetails": { $arrayElemAt: ["$productDetails", 0] },
       },
     },
-
     {
       $lookup: {
         from: "categories",
@@ -100,7 +112,6 @@ export const getCart = asyncHandler(async (req, res) => {
         as: "category",
       },
     },
-
     {
       $addFields: {
         "cartItems.productDetails.category": {
@@ -108,7 +119,6 @@ export const getCart = asyncHandler(async (req, res) => {
         },
       },
     },
-
     {
       $group: {
         _id: "$_id",
@@ -118,22 +128,12 @@ export const getCart = asyncHandler(async (req, res) => {
         updatedAt: { $first: "$updatedAt" },
       },
     },
-
     {
       $addFields: {
         totalProducts: { $sum: "$cartItems.quantity" },
       },
     },
   ]);
-
-  if (!cart || cart.length === 0) {
-    const newCart = new Cart({
-      userId,
-      cartItems: [],
-    });
-    await newCart.save();
-    return res.status(200).json(newCart);
-  }
 
   res.status(200).json(cart[0]);
 });

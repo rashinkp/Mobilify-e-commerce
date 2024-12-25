@@ -93,11 +93,11 @@ const ProductDetails = () => {
       <div className="ms-10">
         <BrudCrump list={brudCrumpList} />
       </div>
-      <div className="max-w-6xl mx-auto p-5 bg-white dark:bg-black shadow-lg rounded-xl">
+      <div className=" mx-auto p-5 bg-white dark:bg-black shadow-lg rounded-xl">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left Section: Images */}
           <div className="relative ">
-            <div className="w-full h-[500px] bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+            <div className=" h-[500px] dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src={mainImage || noImage}
                 alt="Main Product"
@@ -245,17 +245,19 @@ const ProductDetails = () => {
                   {product.offerPercent + product?.category?.offer}% OFF Applied
                 </p>
               </div>
-              <AddCartButton
-                productId={product._id}
-                disabled={product.stock === 0}
-              />
+              <div className="max-w-sm">
+                <AddCartButton
+                  productId={product._id}
+                  disabled={product.stock === 0}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5 mt-16">
           {/* Product Specifications */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border dark:border-gray-800 ">
+          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg  dark:border-gray-800 ">
             <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
               Product Specifications
             </h3>
@@ -310,7 +312,7 @@ const ProductDetails = () => {
           </div>
 
           {/* Additional Details */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border dark:border-gray-800 grid grid-cols-1 gap-1 text-sm">
+          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg dark:border-gray-800 grid grid-cols-1 gap-1 text-sm">
             <div>
               <p className="text-gray-600 dark:text-gray-400 mb-1">Warranty</p>
               <p className="font-semibold text-gray-800 dark:text-gray-200">

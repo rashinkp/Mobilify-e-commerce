@@ -107,7 +107,7 @@ const WishList = () => {
       </div>
 
       {/* Product List */}
-      <div className="space-y-6">
+      <div className="">
         {products.length < 1 ? (
           <div className="text-center py-8 text-gray-500">
             No products in wish list
@@ -120,7 +120,7 @@ const WishList = () => {
             >
               <div className="flex flex-col md:flex-row items-center gap-6">
                 {/* Product Image */}
-                <div className="w-32 h-32 flex-shrink-0">
+                <div className="w-20 h-20 flex-shrink-0">
                   <img
                     src={product.image}
                     alt={product.name}

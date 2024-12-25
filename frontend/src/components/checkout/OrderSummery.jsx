@@ -2,7 +2,6 @@ import React from "react";
 import { ShoppingCart } from "lucide-react";
 
 const OrderSummary = ({ products }) => {
-
   const finalPrice = (product) => {
     const effectiveOfferPercent =
       (product?.offerPercent || 0) + (product?.category?.offer || 0);
@@ -21,14 +20,16 @@ const OrderSummary = ({ products }) => {
         });
   };
 
-
+  console.log(products);
   return (
     <section className="mb-6">
       <h2 className="text-xl font-bold mb-4 flex items-center">
         <ShoppingCart className="mr-2" /> Order Summary
       </h2>
-      {products.length === 0 ? (
-        <>No products add products</>
+      {products.length < 1 ? (
+        <>
+          <div className="text-red-600">No products add products</div>
+        </>
       ) : (
         products.map((product) => (
           <div
@@ -53,10 +54,11 @@ const OrderSummary = ({ products }) => {
             <div className="text-right">
               <p className="font-bold">
                 <span className="text-gray-500 line-through mr-2">
-                  &#x20b9;{product?.productDetails?.price.toLocaleString("en-IN", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}
+                  &#x20b9;
+                  {product?.productDetails?.price.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </span>
                 <span>
                   &#x20b9;
@@ -74,5 +76,4 @@ const OrderSummary = ({ products }) => {
   );
 };
 
-
-export default OrderSummary
+export default OrderSummary;

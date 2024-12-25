@@ -67,7 +67,6 @@ const CheckoutPage = () => {
 
   const products = cartData.cartItems || [];
 
-
   useEffect(() => {
     if (addresses && addresses.length > 0) {
       setSelectedAddress(addresses[0]);
@@ -105,7 +104,6 @@ const CheckoutPage = () => {
         return total + discountedPrice * quantity;
       }, 0)
     : 0;
-
 
   const handleAddAddress = async (data) => {
     console.log("Form Submitted:", data);
@@ -222,20 +220,15 @@ const CheckoutPage = () => {
   );
 
   const finalPrice = (product) => {
-    const effectiveOfferPercent =
-      Math.min((product?.offerPercent || 0) + (product?.category?.offer || 0) , 100);
-    
-    
+    const effectiveOfferPercent = Math.min(
+      (product?.offerPercent || 0) + (product?.category?.offer || 0),
+      100
+    );
 
     return effectiveOfferPercent > 0
-      ? (
-          product.price -
-          (product.price * effectiveOfferPercent) / 100
-        )
-      : product.price
+      ? product.price - (product.price * effectiveOfferPercent) / 100
+      : product.price;
   };
-
-
 
   const handleSubmit = async () => {
     try {
@@ -308,6 +301,8 @@ const CheckoutPage = () => {
     }
   };
 
+  console.log(products);
+
   if (isAddressLoading || isCartLoading) {
     return (
       <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -368,11 +363,17 @@ const CheckoutPage = () => {
       {/* Complete Order Button */}
       <button
         className={`w-full p-3 rounded-lg text-white font-bold ${
-          selectedAddress && selectedShipping && selectedPayment
+          selectedAddress &&
+          selectedShipping &&
+          selectedPayment &&
+          products.length > 0
             ? "bg-blue-500 hover:bg-blue-600"
             : "bg-gray-400 cursor-not-allowed"
         }`}
-        disabled={!(selectedAddress && selectedShipping && selectedPayment)}
+        disabled={
+          !(selectedAddress && selectedShipping && selectedPayment) ||
+          products.length < 1
+        }
         onClick={handleSubmit}
       >
         <Check className="inline mr-2" /> Complete Order
