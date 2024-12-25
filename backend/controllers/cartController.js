@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Cart from "../models/cartSchema.js";
-import Product from "../models/productSchema.js"; 
+import Product from "../models/productSchema.js";
 import mongoose from "mongoose";
 import WishList from "../models/wishListSchema.js";
 
@@ -8,13 +8,11 @@ export const addToCart = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const { productId, quantity = 1 } = req.body;
 
-  // Validate the inputs
   if (!productId || !quantity || quantity < 1) {
     res.status(400);
     throw new Error("Invalid product ID or quantity");
   }
 
-  // Check if the product exists
   const product = await Product.findById(productId);
   if (!product) {
     res.status(404);
@@ -66,14 +64,10 @@ export const addToCart = asyncHandler(async (req, res) => {
   });
 });
 
-
-
-
-
 export const getCart = asyncHandler(async (req, res) => {
   const { userId } = req.user;
 
-  const userObjectId = new mongoose.Types.ObjectId(userId)
+  const userObjectId = new mongoose.Types.ObjectId(userId);
 
   let cart = await Cart.aggregate([
     //finding the user
@@ -92,16 +86,29 @@ export const getCart = asyncHandler(async (req, res) => {
       },
     },
 
-    
-
-    //add product details directly to cartItems
     {
       $addFields: {
         "cartItems.productDetails": { $arrayElemAt: ["$productDetails", 0] },
       },
     },
 
-    //grouping again
+    {
+      $lookup: {
+        from: "categories",
+        localField: "productDetails.categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+
+    {
+      $addFields: {
+        "cartItems.productDetails.category": {
+          $arrayElemAt: ["$category", 0],
+        },
+      },
+    },
+
     {
       $group: {
         _id: "$_id",
@@ -112,12 +119,11 @@ export const getCart = asyncHandler(async (req, res) => {
       },
     },
 
-    //getting the size of total products
     {
       $addFields: {
-        totalProducts: {$sum: '$cartItems.quantity'}
-      }
-    }
+        totalProducts: { $sum: "$cartItems.quantity" },
+      },
+    },
   ]);
 
   if (!cart || cart.length === 0) {
@@ -126,31 +132,32 @@ export const getCart = asyncHandler(async (req, res) => {
       cartItems: [],
     });
     await newCart.save();
-    return res.status(200).json(newCart)
+    return res.status(200).json(newCart);
   }
 
   res.status(200).json(cart[0]);
 });
 
-
 export const deleteFromCart = asyncHandler(async (req, res) => {
   const { userId } = req.user;
   const { productId } = req.body;
-  
+
   if (!userId || !productId) {
-    return res.status(400).json({ message: 'did not get proper data, please try again' });
+    return res
+      .status(400)
+      .json({ message: "did not get proper data, please try again" });
   }
 
-  const cart = await Cart.findOne({ userId })
-  
+  const cart = await Cart.findOne({ userId });
+
   if (!cart) {
-    return res.status(404).json({ message: 'could not find such a cart' });
+    return res.status(404).json({ message: "could not find such a cart" });
   }
 
   const updatedCart = await Cart.updateOne(
     { userId },
-    {$pull : {cartItems: {productId}}}
-  )
+    { $pull: { cartItems: { productId } } }
+  );
 
   if (updatedCart.modifiedCount === 0) {
     return res
@@ -160,10 +167,7 @@ export const deleteFromCart = asyncHandler(async (req, res) => {
 
   const updatedCartDetails = await Cart.findOne({ userId });
   return res.status(200).json(updatedCartDetails);
-
-
-})
-
+});
 
 export const updateCartQuantity = asyncHandler(async (req, res) => {
   const { userId } = req.user;
@@ -190,13 +194,13 @@ export const updateCartQuantity = asyncHandler(async (req, res) => {
   const product = await Product.findById(productId);
 
   if (product.stock < quantity) {
-    return res.status(400).json({ message: 'Don not have enough stock. Sorry!' });
+    return res
+      .status(400)
+      .json({ message: "Don not have enough stock. Sorry!" });
   }
 
   if (quantity > 10) {
-    return res
-      .status(400)
-      .json({ message: "Maximum limit to cart reached" });
+    return res.status(400).json({ message: "Maximum limit to cart reached" });
   }
 
   // Update the quantity

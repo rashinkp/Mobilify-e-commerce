@@ -16,6 +16,14 @@ const CategoryEditForm = ({ category, onClose }) => {
       defaultValue: category?.name || "",
     },
     {
+      name: "offer",
+      label: "Offer Percentage",
+      type: "number",
+      placeholder: "Enter category offer percentage",
+      required: true,
+      defaultValue: category?.offer || "",
+    },
+    {
       name: "description",
       label: "Category Description",
       type: "text",

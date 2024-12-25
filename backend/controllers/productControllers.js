@@ -3,6 +3,7 @@ import Product from "../models/productSchema.js";
 import cloudinary from "../config/cloudinary.js";
 import mongoose from "mongoose";
 import WishList from "../models/wishListSchema.js";
+import Category from "../models/categorySchema.js";
 
 export const addProduct = asyncHandler(async (req, res) => {
   const product = req.body;
@@ -33,7 +34,6 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   let matchFilter = {};
 
   if (categoryId) {
-    
     matchFilter.categoryId = new mongoose.Types.ObjectId(categoryId);
   }
 
@@ -92,12 +92,10 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       { $limit: Number(limit) },
     ];
 
-    // Step 7: Execute the aggregation pipeline
     const products = await Product.aggregate(pipeline);
 
-    // Step 8: Count total documents matching filters
     const totalCountPipeline = [
-      ...pipeline.slice(0, -2), // Remove skip and limit from pipeline
+      ...pipeline.slice(0, -2),
       { $count: "totalCount" },
     ];
     const totalCountResult = await Product.aggregate(totalCountPipeline);
@@ -146,21 +144,32 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
 export const getProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const product = await Product.findById(id);
   const userId = req.user?.userId;
 
+  // Fetch the product
+  const product = await Product.findById(id);
+
   if (!product) {
-    res.status(404).json({ message: 'Couldn"t find any product with the id' });
+    return res
+      .status(404)
+      .json({ message: "Couldn't find any product with the id" });
   }
+
+  // Fetch the category associated with the product
+  const category = await Category.findById(product.categoryId);
 
   const wishList = await WishList.findOne({
     userId,
     "items.productId": id,
   });
 
-  console.log(wishList);
   const isInWishList = wishList ? true : false;
-  res.status(200).json({ ...product.toObject(), isInWishList });
+
+  res.status(200).json({
+    ...product.toObject(),
+    category,
+    isInWishList,
+  });
 });
 
 export const deleteProduct = asyncHandler(async (req, res) => {

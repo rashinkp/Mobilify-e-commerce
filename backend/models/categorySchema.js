@@ -12,9 +12,12 @@ const categorySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    offer: {
+      type: Number,
+    },
     isSoftDeleted: {
       type: Boolean,
-      default:false,
+      default: false,
     },
   },
   {

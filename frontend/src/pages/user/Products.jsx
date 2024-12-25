@@ -38,9 +38,10 @@ const Products = () => {
   });
 
   const { data: categories = [], isLoading: categoryLoading } =
-    useGetAllCategoryQuery({filterBy:'Active'});
+    useGetAllCategoryQuery({ filterBy: "Active" });
 
   const { products = [], totalCount = 0 } = data || {};
+
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {

@@ -19,6 +19,8 @@ const ShoppingCart = () => {
 
   const navigate = useNavigate();
 
+  console.log(cartItems);
+
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
       const filteredItems = cartItems.filter(
@@ -30,7 +32,6 @@ const ShoppingCart = () => {
     }
   }, [cartItems]);
 
-  const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
 
   const incrementQuantity = async (productId) => {
@@ -92,15 +93,20 @@ const ShoppingCart = () => {
   };
 
   const subtotal = Array.isArray(products)
-    ? products.reduce(
-        (total, product) =>
-          total +
-          ((product?.productDetails?.price *
-            (100 - product?.productDetails?.offerPercent)) /
-            100) *
-            product.quantity,
-        0
-      )
+    ? products.reduce((total, product) => {
+        const price = product?.productDetails?.price || 0;
+        const productOffer = product?.productDetails?.offerPercent || 0;
+        const categoryOffer = product?.productDetails?.category?.offer || 0;
+        const quantity = product?.quantity || 0;
+
+        const offerPercent = Math.min(productOffer + categoryOffer, 100);
+
+        console.log(offerPercent);
+
+        const discountedPrice = (price * (100 - offerPercent)) / 100;
+
+        return total + discountedPrice * quantity;
+      }, 0)
     : 0;
 
   const deliveryCharge =
@@ -113,6 +119,26 @@ const ShoppingCart = () => {
 
   const handleProceed = () => {
     navigate("/user/checkout");
+  };
+
+  //price after offer
+
+  const finalPrice = (product) => {
+    const effectiveOfferPercent =
+      (product?.offerPercent || 0) + (product?.category?.offer || 0);
+
+    return effectiveOfferPercent > 0
+      ? (
+          product.price -
+          (product.price * effectiveOfferPercent) / 100
+        ).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : product.price.toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
   };
 
   return (
@@ -186,16 +212,13 @@ const ShoppingCart = () => {
                   </p>
                   <p className="text-primary font-bold">
                     <span className="text-gray-500 line-through mr-2">
-                      ₹{product?.productDetails?.price.toFixed(2)}
-                    </span>
-                    <span>
                       ₹
-                      {(
-                        (product?.productDetails?.price *
-                          (100 - product?.productDetails?.offerPercent)) /
-                        100
-                      ).toFixed(2)}
+                      {product?.productDetails?.price.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
+                    <span>₹{finalPrice(product?.productDetails)}</span>
                   </p>
 
                   {product?.productDetails?.stock < 1 && (

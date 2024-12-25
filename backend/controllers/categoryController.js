@@ -2,8 +2,12 @@ import asyncHandler from "express-async-handler";
 import Category from "../models/categorySchema.js";
 
 export const addCategory = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description,offer } = req.body;
   const categoryExists = await Category.findOne({ name });
+
+  if (offer && (offer > 100 || offer < 0)) {
+    return res.status(400).json({ message: "Offer must be valid" });
+  }
 
   if (categoryExists) {
     res.status(400);
@@ -14,6 +18,7 @@ export const addCategory = asyncHandler(async (req, res) => {
   const category = await Category.create({
     name,
     description,
+    offer,
   });
 
   if (category) {
@@ -21,6 +26,7 @@ export const addCategory = asyncHandler(async (req, res) => {
       _id: category._id,
       name: category.name,
       description: category.description,
+      offer:category.offer,
     });
   } else {
     res.status(400);
@@ -59,12 +65,23 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 
 export const updateCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
-  const { name, description, isSoftDeleted } = req.body;
+  const { name, description, isSoftDeleted, offer } = req.body;
 
-  const categoryExists = await Category.findOne({ name });
+  // Validate the offer value
+  if (offer && (offer > 100 || offer < 0)) {
+    return res.status(400).json({ message: "Offer must be valid" });
+  }
 
-  if (categoryExists) {
-    return res.status(400).json({ message: "Category already exists" });
+  // Check if a category with the new name exists, excluding the current category
+  if (name) {
+    const categoryExists = await Category.findOne({
+      name,
+      _id: { $ne: categoryId }, // Exclude the current category from the search
+    });
+
+    if (categoryExists) {
+      return res.status(400).json({ message: "Category already exists" });
+    }
   }
 
   const category = await Category.findById(categoryId);
@@ -72,6 +89,8 @@ export const updateCategory = asyncHandler(async (req, res) => {
   if (category) {
     category.name = name || category.name;
     category.description = description || category.description;
+    category.offer = offer || category.offer;
+
     if (isSoftDeleted !== undefined) {
       category.isSoftDeleted = isSoftDeleted;
     }

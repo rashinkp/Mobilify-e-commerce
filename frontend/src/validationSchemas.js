@@ -55,6 +55,12 @@ export const brandValidationSchema = Yup.object().shape({
 export const categoryValidation = Yup.object().shape({
   name: nameValidation,
   description: descriptionValidation,
+  offer: Yup.number()
+    .nullable()
+    .typeError("Offer Percent must be a number")
+    .required("Offer Percent is required")
+    .min(0, "Offer Percent cannot be negative")
+    .max(100, "Offer Percent cannot exceed 100%"),
 });
 
 // Reusable transformation function

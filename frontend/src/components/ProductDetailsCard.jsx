@@ -23,6 +23,24 @@ const ProductDetails = () => {
 
   console.log(product);
 
+  const finalPrice = () => {
+    const effectiveOfferPercent =
+      (product?.offerPercent || 0) + (product?.category?.offer || 0);
+
+    return effectiveOfferPercent > 0
+      ? (
+          product.price -
+          (product.price * effectiveOfferPercent) / 100
+        ).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : product.price.toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+  };
+
   if (isLoading) {
     return (
       <div>
@@ -212,19 +230,19 @@ const ProductDetails = () => {
               <div>
                 {/* Original Price */}
                 <p className="text-xl font-medium text-gray-500 line-through">
-                  ₹{product.price.toFixed(2)}
+                  ₹
+                  {product?.price.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </p>
                 {/* Offer Price */}
                 <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                  ₹
-                  {(
-                    (product.price * (100 - product.offerPercent)) /
-                    100
-                  ).toFixed(2)}
+                  ₹{finalPrice()}
                 </p>
                 {/* Discount Information */}
                 <p className="text-green-600 font-medium">
-                  {product.offerPercent}% OFF Applied
+                  {product.offerPercent + product?.category?.offer}% OFF Applied
                 </p>
               </div>
               <AddCartButton

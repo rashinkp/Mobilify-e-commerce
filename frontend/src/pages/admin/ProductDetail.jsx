@@ -23,8 +23,15 @@ const ProductManagement = () => {
   const { productId } = useParams();
   const { deleteProduct, updateProduct } = useProductApi();
 
-  const { data: product, isLoading, error } = useGetProductQuery(productId);
+  const {
+    data: product = {},
+    isLoading,
+    error,
+  } = useGetProductQuery(productId);
   const navigate = useNavigate();
+
+  console.log(product);
+
   const reviews = [
     {
       id: "REV001",
@@ -97,6 +104,24 @@ const ProductManagement = () => {
 
   const handleMangeImages = () => {
     navigate(`/admin/manage-image/${product._id}`);
+  };
+
+  const finalPrice = () => {
+    const effectiveOfferPercent =
+      (product?.offerPercent || 0) + (product?.category?.offer || 0);
+
+    return effectiveOfferPercent > 0
+      ? (
+          product.price -
+          (product.price * effectiveOfferPercent) / 100
+        ).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : product.price.toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
   };
 
   return (
@@ -192,7 +217,7 @@ const ProductManagement = () => {
                   Model: {product.model || "N/A"}
                 </span>
                 <span className="text-gray-500">
-                  Category: {product?.category || "Not available"}
+                  Category: {product?.category?.name || "Not available"}
                 </span>
                 <span
                   className={`px-3 py-1 rounded-full ${
@@ -209,31 +234,23 @@ const ProductManagement = () => {
               {/* Actual Price with Strikethrough */}
               {product.offerPercent > 0 && (
                 <div className="text-lg font-medium text-gray-500 line-through">
-                  ₹{product.price}
+                  ₹
+                  {product.price.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               )}
 
               {/* Discounted Price */}
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                ₹
-                {product.offerPercent > 0
-                  ? (
-                      product.price -
-                      (product.price * product.offerPercent) / 100
-                    ).toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })
-                  : product.price.toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                ₹{finalPrice()}
               </div>
 
               {/* Offer Percentage */}
               {product.offerPercent > 0 && (
                 <div className="text-green-600 font-medium mt-1">
-                  {product.offerPercent}% OFF
+                  {product.offerPercent + product?.category?.offer}% OFF
                 </div>
               )}
             </div>

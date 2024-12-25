@@ -76,7 +76,6 @@ const Table = ({
                             className={`rounded text-white ${control.style}`}
                           >
                             {control.icon}
-                            {control.text}
                           </button>
                         ))}
                     </div>

@@ -10,8 +10,6 @@ const ProductCard = ({ product, refetch }) => {
   const [toggleWishlist] = useToggleWishListMutation();
   const navigate = useNavigate();
 
-  console.log(product);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [navigate]);
@@ -32,6 +30,27 @@ const ProductCard = ({ product, refetch }) => {
       console.error("Error toggling wishlist:", error);
     }
   };
+
+const finalPrice = () => {
+  let effectiveOfferPercent =
+    (product?.offerPercent || 0) + (product?.categoryDetails?.offer || 0);
+
+  effectiveOfferPercent = Math.min(effectiveOfferPercent, 100);
+
+  return effectiveOfferPercent > 0
+    ? (
+        product.price -
+        (product.price * effectiveOfferPercent) / 100
+      ).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    : product.price.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+};
+
 
   return (
     <div className="cursor-pointer">
@@ -86,7 +105,7 @@ const ProductCard = ({ product, refetch }) => {
               {/* Offer Price */}
               <span className="text-darkText font-extrabold text-lg dark:text-lightText">
                 {"\u20B9"}
-                {((price * (100 - product.offerPercent)) / 100).toFixed(2)}
+                {finalPrice()}
               </span>
             </div>
           </div>

@@ -12,6 +12,13 @@ const CategoryForm = ({ isModalFormOpen, onClose, onSubmit }) => {
       required: true,
     },
     {
+      name: "offer",
+      label: "Offer Percentage",
+      type: "number",
+      placeholder: "Enter category offer percentage",
+      required: true,
+    },
+    {
       name: "description",
       label: "Category Description",
       type: "text",
