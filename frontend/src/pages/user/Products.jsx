@@ -42,7 +42,6 @@ const Products = () => {
 
   const { products = [], totalCount = 0 } = data || {};
 
-
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -54,14 +53,6 @@ const Products = () => {
       setTotalPages(Math.ceil(totalCount / pageSize));
     }
   }, [totalCount]);
-
-  // const displayedProduct =
-  //   searchTerm.trim() === ""
-  //     ? products || []
-  //     : products?.filter(
-  //         (product) =>
-  //           product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //     ) || [];
 
   const brudCrumpList = [
     {
@@ -100,7 +91,7 @@ const Products = () => {
       <div className="ms-10">
         <BrudCrump list={brudCrumpList} />
       </div>
-      <div>
+      <div className="p-5">
         <SearchBar searchTerm={setSearchTerm} />
       </div>
       <div className="flex flex-col items-center">

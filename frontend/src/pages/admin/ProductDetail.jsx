@@ -183,7 +183,7 @@ const ProductManagement = () => {
         />
       )}
 
-      <div className="p-6 min-h-screen  dark:bg-gray-900">
+      <div className="p-4 min-h-screen  dark:bg-gray-900">
         {/* Breadcrumb */}
         <div className="flex items-center mb-8 text-sm text-gray-500">
           <Link

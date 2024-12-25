@@ -17,10 +17,10 @@ const CategoryManagement = () => {
   const { addCategory, isLoading } = useCategoryApi();
   const [filterBy, setFilterBy] = useState("All");
 
-  const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategoryQuery({
-    filterBy,
-  });
-
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useGetAllCategoryQuery({
+      filterBy,
+    });
 
   const displayedCategory =
     searchTerm.trim() === ""
@@ -40,7 +40,7 @@ const CategoryManagement = () => {
   };
 
   return (
-    <div className="">
+    <div className="p-4">
       <div className="flex items-center mb-6 text-sm text-gray-500">
         <Link to="/admin" className="flex items-center hover:text-blue-600">
           <Home size={16} className="mr-2" />

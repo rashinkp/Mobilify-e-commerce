@@ -36,9 +36,9 @@ const ProductManagement = () => {
   const { data: categories = [], isLoading: categoryLoading } =
     useGetAllCategoryQuery({ filterBy: "All" });
 
-  console.log(categories);
-
   const { products = [], totalCount = 0 } = data || {};
+
+  console.log(products);
 
   useEffect(() => {
     if (totalCount) {
@@ -74,7 +74,7 @@ const ProductManagement = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       {/* Breadcrumbs */}
       <div className="flex items-center mb-6 text-sm text-gray-500">
         <Link to="/admin" className="flex items-center hover:text-blue-600">

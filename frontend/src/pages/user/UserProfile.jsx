@@ -30,7 +30,9 @@ import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
 import ChangePassword from "../../components/ChangePassword";
 import OrderListingPage from "../../components/MyOrders";
 import WishList from "./WishList";
-import WalletDashboard from '../../pages/user/Wallet.jsx';
+import WalletDashboard from "../../pages/user/Wallet.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import BrudCrump from "../../components/BrudCrump.jsx";
 
 const UserProfileDashboard = () => {
   const { data, isLoading, isError, error, refetch } = useGetUserQuery();
@@ -50,25 +52,22 @@ const UserProfileDashboard = () => {
     }
   }, [data, refetch]);
 
-
   //handling image uploading and sending url
-  const handleProfileImageChange = async(e) => {
-    setIsUploading(true)
+  const handleProfileImageChange = async (e) => {
+    setIsUploading(true);
     const file = e.target.files[0];
-   try {
-     if (file) {
-       const data = await uploadImageToCloudinary(file);
-       await uploadImgUrl(data);
-       setIsUploading(false);
-       successToast('Image updated successfully');
-       refetch()
-     }
-   } catch (error) {
-     errorToast("Update error:", error);
-    setIsUploading(false);
-   }
-
-    
+    try {
+      if (file) {
+        const data = await uploadImageToCloudinary(file);
+        await uploadImgUrl(data);
+        setIsUploading(false);
+        successToast("Image updated successfully");
+        refetch();
+      }
+    } catch (error) {
+      errorToast("Update error:", error);
+      setIsUploading(false);
+    }
   };
 
   const MenuSection = ({ icon: Icon, title, section }) => (
@@ -102,6 +101,19 @@ const UserProfileDashboard = () => {
     }
   };
 
+  const brudCrumpList = [
+    {
+      name: "Home",
+      icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
+      path: "/user",
+    },
+    {
+      name: "Profile",
+      icon: <FontAwesomeIcon icon="fa-solid fa-user" />,
+      path: "/user/profile",
+    },
+  ];
+
   if (isError) return <div>Error: {error.message}</div>;
 
   if (isLoading || isUploading) {
@@ -124,80 +136,85 @@ const UserProfileDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-darkBackground  p-4 md:p-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Sidebar Menu */}
-        <div className="bg-gray dark:bg-black bg-white dark:text-white rounded-xl shadow-lg p-6 h-fit">
-          <div className="flex flex-col items-center mb-6">
-            <div className="relative">
-              <img
-                src={user?.picture?.secure_url || noImage}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-4 border-blue-50"
+    <>
+      <div className="min-h-screen dark:bg-darkBackground  p-4 md:p-8">
+        <div className="ms-10">
+          <BrudCrump list={brudCrumpList} />
+        </div>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Sidebar Menu */}
+          <div className="bg-gray dark:bg-black bg-white dark:text-white rounded-xl shadow-lg p-6 h-fit">
+            <div className="flex flex-col items-center mb-6">
+              <div className="relative">
+                <img
+                  src={user?.picture?.secure_url || noImage}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-50"
+                />
+                <button
+                  onClick={handleImageChange}
+                  className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors"
+                >
+                  <Camera size={16} />
+                </button>
+              </div>
+              <h2 className="mt-4 text-xl font-bold text-gray-800 dark:text-white">
+                {user.name}
+              </h2>
+              <p className="text-gray-500 text-sm dark:text-white">
+                {user.email}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <MenuSection icon={User} title="My Profile" section="profile" />
+              <MenuSection icon={Mail} title="My Email" section="email" />
+              <MenuSection
+                icon={ShoppingBag}
+                title="My Orders"
+                section="orders"
+              />
+              <MenuSection icon={Wallet} title="My Wallet" section="wallet" />
+
+              <MenuSection
+                icon={MapPinHouse}
+                title="My Address"
+                section="address"
+              />
+              <MenuSection
+                icon={Lock}
+                title="Change Password"
+                section="changePassword"
               />
               <button
-                onClick={handleImageChange}
-                className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors"
+                className="flex items-center w-full p-3 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                onClick={handleLogout}
               >
-                <Camera size={16} />
+                <LogOut className="mr-3" size={20} />
+                <span className="text-sm font-medium">Logout</span>
               </button>
             </div>
-            <h2 className="mt-4 text-xl font-bold text-gray-800 dark:text-white">
-              {user.name}
-            </h2>
-            <p className="text-gray-500 text-sm dark:text-white">
-              {user.email}
-            </p>
           </div>
 
-          <div className="space-y-2">
-            <MenuSection icon={User} title="My Profile" section="profile" />
-            <MenuSection icon={Mail} title="My Email" section="email" />
-            <MenuSection
-              icon={ShoppingBag}
-              title="My Orders"
-              section="orders"
-            />
-            <MenuSection icon={Wallet} title="My Wallet" section="wallet" />
-
-            <MenuSection
-              icon={MapPinHouse}
-              title="My Address"
-              section="address"
-            />
-            <MenuSection
-              icon={Lock}
-              title="Change Password"
-              section="changePassword"
-            />
-            <button
-              className="flex items-center w-full p-3 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
-              onClick={handleLogout}
-            >
-              <LogOut className="mr-3" size={20} />
-              <span className="text-sm font-medium">Logout</span>
-            </button>
+          {/* Main Content */}
+          <div className="md:col-span-2 bg-white dark:bg-black dark:text-white rounded-xl shadow-lg p-6">
+            {activeSection === "profile" && <MyProfile />}
+            {activeSection === "address" && <MyAddress />}
+            {activeSection === "email" && <MyEmail />}
+            {activeSection === "changePassword" && <ChangePassword />}
+            {activeSection === "orders" && <OrderListingPage />}
+            {activeSection === "wallet" && <WalletDashboard />}
           </div>
         </div>
-
-        {/* Main Content */}
-        <div className="md:col-span-2 bg-white dark:bg-black dark:text-white rounded-xl shadow-lg p-6">
-          {activeSection === "profile" && <MyProfile />}
-          {activeSection === "address" && <MyAddress />}
-          {activeSection === "email" && <MyEmail />}
-          {activeSection === "changePassword" && <ChangePassword />}
-          {activeSection === "orders" && <OrderListingPage />}
-          {activeSection === "wallet" && <WalletDashboard />}
-        </div>
+        <input
+          type="file"
+          ref={imageRef}
+          accept="image/*"
+          onChange={handleProfileImageChange}
+          hidden
+        />
       </div>
-      <input
-        type="file"
-        ref={imageRef}
-        accept="image/*"
-        onChange={handleProfileImageChange}
-        hidden
-      />
-    </div>
+    </>
   );
 };
 

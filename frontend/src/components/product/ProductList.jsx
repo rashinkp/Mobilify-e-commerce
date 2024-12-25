@@ -24,9 +24,19 @@ const ProductList = ({ products }) => {
     { key: "name", label: "Name" },
     { key: "model", label: "Model" },
     {
+      key: "categoryDetails",
+      label: "Category",
+      render: (value) => value?.name || "Not Available",
+    },
+    {
       key: "price",
-      label: "Price",
+      label: "Original Price",
       render: (value) => `₹${value.toLocaleString("en-IN")}`,
+    },
+    {
+      key: "offerPercent",
+      label: "Offer",
+      render: (value) => `${value}%`,
     },
     {
       key: "stock",

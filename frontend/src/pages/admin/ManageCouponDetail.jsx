@@ -41,7 +41,7 @@ const ManageCouponDetail = () => {
   };
 
   return (
-    <div className="min-h-screen space-y-6">
+    <div className=" p-4 min-h-screen space-y-6">
       {/* Breadcrumbs */}
       <nav className="flex items-center text-sm text-gray-500">
         <button

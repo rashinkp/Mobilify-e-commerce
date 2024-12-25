@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ShoppingCart, Plus, CreditCard, Trash2 } from "lucide-react";
+import { ShoppingCart, Plus, CreditCard, Trash2, Heart } from "lucide-react";
 import {
   useAddAllToCartMutation,
   useGetAllWishListQuery,
@@ -8,6 +8,8 @@ import {
 import { RotatingLines } from "react-loader-spinner";
 import { useAddToCartMutation } from "../../redux/slices/cartApiSlice";
 import { successToast } from "../../components/toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import BrudCrump from "../../components/BrudCrump";
 
 const WishList = () => {
   const {
@@ -20,7 +22,7 @@ const WishList = () => {
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [remove] = useRemoveFromWishlistMutation();
-  const [addAllToCart] = useAddAllToCartMutation()
+  const [addAllToCart] = useAddAllToCartMutation();
 
   const handleAddToCart = async (productId) => {
     try {
@@ -29,9 +31,8 @@ const WishList = () => {
       refetch();
     } catch (error) {
       console.log(error);
-    } 
+    }
   };
-
 
   const handleBuyNow = (productId) => {
     console.log("Buy now:", productId);
@@ -53,6 +54,24 @@ const WishList = () => {
     }
   };
 
+  const brudCrumpList = [
+    {
+      name: "Home",
+      icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
+      path: "/user",
+    },
+    {
+      name: "Profile",
+      icon: <FontAwesomeIcon icon="fa-solid fa-user" />,
+      path: "/user/profile",
+    },
+    {
+      name: "Wishlist",
+      icon: <FontAwesomeIcon icon="fa-solid fa-user" />,
+      path: "/user/wishlist",
+    },
+  ];
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -72,6 +91,9 @@ const WishList = () => {
 
   return (
     <div className="px-5 sm:px-20 mx-auto">
+      <div className="ms-10">
+        <BrudCrump list={brudCrumpList} />
+      </div>
       {/* Global Actions */}
       <div className="mb-6 flex justify-end gap-3">
         <button

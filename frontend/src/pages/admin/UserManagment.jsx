@@ -162,7 +162,7 @@ const UserManagement = () => {
   ];
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       {/* Breadcrumbs */}
       <div className="flex items-center mb-6 text-sm text-gray-500">
         <Link to="/admin" className="flex items-center hover:text-blue-600">

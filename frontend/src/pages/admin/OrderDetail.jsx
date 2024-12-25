@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Package, Truck, CreditCard, MapPin, Tag } from "lucide-react";
-import { useParams } from "react-router";
+import {
+  Package,
+  Truck,
+  CreditCard,
+  MapPin,
+  Tag,
+  Home,
+  ChevronRight,
+  ShoppingCart,
+} from "lucide-react";
+import { Link, useParams } from "react-router";
 import {
   useChangeOrderStatusMutation,
   useGetAOrderQuery,
@@ -87,10 +96,37 @@ const OrderDetails = () => {
   }
 
   return (
-    <div className="pt-40">
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="p-4">
+      <div className="flex items-center mb-6 text-sm text-gray-500">
+        <Link to="/admin" className="flex items-center hover:text-blue-600">
+          <Home size={16} className="mr-2" />
+          Dashboard
+        </Link>
+        <ChevronRight size={16} className="mx-2" />
+        <Link
+          to="/admin/manage-orders"
+          className="flex items-center hover:text-blue-600"
+        >
+          <ShoppingCart size={16} className="mr-2" />
+          Order Management
+        </Link>
+        <ChevronRight size={16} className="mx-2" />
+        <span className="text-gray-700">{data.orderNumber}</span>
+      </div>
+
+      {/* Page Header */}
+      <div className="mb-14 ">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Order Detail Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
+          Manage and monitor user order detail
+        </p>
+      </div>
+
+      <div className=" mx-auto bg-white overflow-hidden">
         {/* Header and other sections remain unchanged */}
-        <div className="bg-gray-100 p-4 flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Package className="text-blue-600" />
             <h2 className="text-xl font-bold text-gray-800">
@@ -109,7 +145,7 @@ const OrderDetails = () => {
         </div>
 
         {/* Order Details Grid */}
-        <div className="grid md:grid-cols-2 gap-6 p-6">
+        <div className="grid md:grid-cols-2 gap-6 mt-10">
           <div className="space-y-2">
             <h3 className="font-semibold text-gray-700 flex items-center">
               <MapPin className="mr-2 text-blue-600" /> Shipping Address
@@ -152,8 +188,8 @@ const OrderDetails = () => {
         </div>
 
         {/* Product List */}
-        <div className="p-6">
-          <h3 className="font-semibold text-gray-700 mb-4">Order Item</h3>
+        <div className="mt-5">
+          <h3 className="font-semibold text-gray-700">Order Item</h3>
           <div className="flex items-center space-x-4 py-4 border-b last:border-b-0">
             <img
               src={data.imageUrl}
