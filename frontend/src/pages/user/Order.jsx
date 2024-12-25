@@ -345,7 +345,11 @@ const OrderDetailsPage = () => {
                 <div className="flex items-center mt-2">
                   <CreditCard className="mr-2 w-5 h-5 text-blue-600" />
                   <span className="font-bold text-xl">
-                    ₹{order.price.toFixed(2)}
+                    ₹
+                    {order.price.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </div>
               </div>

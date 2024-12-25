@@ -63,6 +63,10 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       ref: "Payment",
     },
+    offerPrice: {
+      type: Number,
+      
+    },
 
     shipping: {
       id: { type: String, required: true },

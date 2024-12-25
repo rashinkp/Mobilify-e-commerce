@@ -2,6 +2,26 @@ import React from "react";
 import { ShoppingCart } from "lucide-react";
 
 const OrderSummary = ({ products }) => {
+
+  const finalPrice = (product) => {
+    const effectiveOfferPercent =
+      (product?.offerPercent || 0) + (product?.category?.offer || 0);
+
+    return effectiveOfferPercent > 0
+      ? (
+          product.price -
+          (product.price * effectiveOfferPercent) / 100
+        ).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : product.price.toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+  };
+
+
   return (
     <section className="mb-6">
       <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -33,15 +53,14 @@ const OrderSummary = ({ products }) => {
             <div className="text-right">
               <p className="font-bold">
                 <span className="text-gray-500 line-through mr-2">
-                  &#x20b9;{product?.productDetails?.price}
+                  &#x20b9;{product?.productDetails?.price.toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
                 </span>
                 <span>
                   &#x20b9;
-                  {(
-                    (product?.productDetails?.price *
-                      (100 - product?.productDetails?.offerPercent)) /
-                      100 || product?.productDetails?.price
-                  ).toFixed(2)}
+                  {finalPrice(product?.productDetails)}
                 </span>
               </p>
               <p className="text-gray-600 dark:text-gray-400">

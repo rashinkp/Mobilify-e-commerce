@@ -23,6 +23,7 @@ export const getSales = asyncHandler(async (req, res) => {
       $project: {
         name: 1,
         price: 1,
+        offerPrice:1,
         quantity: 1,
         count: { $literal: 1 },
         couponApplied: 1,
@@ -46,6 +47,8 @@ export const getSales = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  console.log(orders);
 
   const OrderDetails = orders[0] || {
     orders: [],

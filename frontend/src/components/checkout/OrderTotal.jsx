@@ -9,7 +9,7 @@ import React from "react";
     <section className="mb-6 bg-gray-100 dark:bg-transparent p-4 rounded-lg">
       <div className="flex justify-between mb-2">
         <span>Subtotal</span>
-        <span>&#x20b9;{calculateSubtotal().toFixed(2)}</span>
+        <span>&#x20b9;{calculateSubtotal.toFixed(2)}</span>
       </div>
       {selectedShipping && (
         <div className="flex justify-between mb-2">

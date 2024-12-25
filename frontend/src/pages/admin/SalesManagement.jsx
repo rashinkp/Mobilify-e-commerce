@@ -61,28 +61,29 @@ const SalesReport = () => {
     endingDate,
   });
 
-   const handleFilter = () => {
-     if (startingDate && endingDate) {
-       refetch();
-     }
-   };
- const formatDate = (dateString) => {
-   if (!dateString) return "";
-   return new Date(dateString).toLocaleDateString("en-IN", {
-     year: "numeric",
-     month: "long",
-     day: "numeric",
-   });
- };
+  const handleFilter = () => {
+    if (startingDate && endingDate) {
+      refetch();
+    }
+  };
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const salesData = data?.orders || [];
+
+  console.log(salesData);
   // Calculate summary statistics
   const totalSales = data?.totalCount;
   const totalDiscount = salesData.reduce(
-    (sum, item) => sum + item?.couponApplied?.offerAmount,
+    (sum, item) => sum + item?.couponApplied?.offerAmount + item?.offerPrice || 0,
     0
   );
-
 
   //
 
@@ -328,9 +329,9 @@ const SalesReport = () => {
                   {sale.name}
                 </td>
                 <td className="px-6 py-4">{sale.quantity}</td>
-                <td className="px-6 py-4">${sale.price.toLocaleString()}</td>
+                <td className="px-6 py-4">₹{sale.price.toLocaleString()}</td>
                 <td className="px-6 py-4">
-                  ${sale.couponApplied?.offerAmount?.toLocaleString()}
+                  ₹{(sale.couponApplied?.offerAmount + sale?.offerPrice || 0)?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4">
                   {sale?.couponApplied?.couponCode || "Not applied"}

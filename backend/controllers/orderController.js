@@ -79,6 +79,7 @@ export const addOrder = asyncHandler(async (req, res) => {
       shipping: shipping,
       paymentMethod: paymentMethod,
       shippingAddress: shippingAddress,
+      offerPrice:item.offerPrice,
       couponApplied: {
         couponCode: item?.coupon?.couponCode,
         offerAmount: item?.coupon?.couponDiscount,

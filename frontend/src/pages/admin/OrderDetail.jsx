@@ -200,7 +200,13 @@ const OrderDetails = () => {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-semibold">${data.price.toFixed(2)}</p>
+              <p className="font-semibold">
+                ₹
+                {data.price.toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
               <p className="text-gray-600">Qty: {data.quantity}</p>
             </div>
           </div>

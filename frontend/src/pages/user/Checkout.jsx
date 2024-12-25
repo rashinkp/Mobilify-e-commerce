@@ -42,7 +42,7 @@ const CheckoutPage = () => {
   const [applyCoupon] = useApplyCouponMutation();
 
   const [placeOrder] = usePlaceOrderMutation();
-  const [debitAmountFromWallet] = useDebitAmountMutation()
+  const [debitAmountFromWallet] = useDebitAmountMutation();
 
   //api calling
 
@@ -67,6 +67,7 @@ const CheckoutPage = () => {
 
   const products = cartData.cartItems || [];
 
+
   useEffect(() => {
     if (addresses && addresses.length > 0) {
       setSelectedAddress(addresses[0]);
@@ -88,17 +89,23 @@ const CheckoutPage = () => {
     },
   ];
 
-  const calculateSubtotal = () => {
-    return products.reduce(
-      (total, product) =>
-        total +
-        ((product?.productDetails?.price *
-          (100 - product?.productDetails?.offerPercent)) /
-          100 || product?.product?.offerPercent) *
-          product.quantity,
-      0
-    );
-  };
+  const calculateSubtotal = Array.isArray(products)
+    ? products.reduce((total, product) => {
+        const price = product?.productDetails?.price || 0;
+        const productOffer = product?.productDetails?.offerPercent || 0;
+        const categoryOffer = product?.productDetails?.category?.offer || 0;
+        const quantity = product?.quantity || 0;
+
+        const offerPercent = Math.min(productOffer + categoryOffer, 100);
+
+        console.log(offerPercent);
+
+        const discountedPrice = (price * (100 - offerPercent)) / 100;
+
+        return total + discountedPrice * quantity;
+      }, 0)
+    : 0;
+
 
   const handleAddAddress = async (data) => {
     console.log("Form Submitted:", data);
@@ -143,7 +150,7 @@ const CheckoutPage = () => {
   };
 
   const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
+    const subtotal = calculateSubtotal;
     const shippingCost = selectedShipping ? selectedShipping.price : 0;
     const couponDiscount = appliedCoupon ? appliedCoupon.couponDiscount : 0;
 
@@ -214,25 +221,42 @@ const CheckoutPage = () => {
     [handleRazorpaySuccess]
   );
 
+  const finalPrice = (product) => {
+    const effectiveOfferPercent =
+      Math.min((product?.offerPercent || 0) + (product?.category?.offer || 0) , 100);
+    
+    
+
+    return effectiveOfferPercent > 0
+      ? (
+          product.price -
+          (product.price * effectiveOfferPercent) / 100
+        )
+      : product.price
+  };
+
+
+
   const handleSubmit = async () => {
     try {
       const orderItems = products.map((product) => ({
         productId: product.productDetails?._id,
         name: product?.productDetails?.name,
         model: product?.productDetails?.model,
-        price:
-          (product?.productDetails?.price *
-            (100 - product?.productDetails?.offerPercent)) /
-          100,
+        price: finalPrice(product?.productDetails),
+        offerPrice:
+          product?.productDetails.price - finalPrice(product?.productDetails),
         quantity: product.quantity,
         imageUrl: product?.productDetails?.images[0]?.url,
         returnPolicy: product?.productDetails?.returnPolicy,
         coupon:
-          appliedCoupon?.productDetails?.productId === product?.productDetails?._id ? appliedCoupon : null,
+          appliedCoupon?.productDetails?.productId ===
+          product?.productDetails?._id
+            ? appliedCoupon
+            : null,
       }));
 
-
-      const subtotal = calculateSubtotal();
+      const subtotal = calculateSubtotal;
       const shippingCost = selectedShipping?.price || 0;
       const couponDiscount = appliedCoupon ? appliedCoupon.couponDiscount : 0;
       const total = subtotal + shippingCost - couponDiscount;
@@ -264,9 +288,9 @@ const CheckoutPage = () => {
         } else {
           errorToast("Failed to place order. Please try again.");
         }
-      } else if (selectedPayment === 'Wallet') {
+      } else if (selectedPayment === "Wallet") {
         const amount = orderData.total;
-        await debitAmountFromWallet({amount}).unwrap();
+        await debitAmountFromWallet({ amount }).unwrap();
 
         const response = await placeOrder(orderData).unwrap();
         if (response) {
@@ -277,7 +301,9 @@ const CheckoutPage = () => {
         }
       }
     } catch (error) {
-      errorToast(error.message || error?.data?.message || "Error while placing order");
+      errorToast(
+        error.message || error?.data?.message || "Error while placing order"
+      );
       console.error("Order error:", error);
     }
   };
