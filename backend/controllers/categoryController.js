@@ -30,7 +30,11 @@ export const addCategory = asyncHandler(async (req, res) => {
 });
 
 export const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find({});
+  const { filterBy } = req.query;
+
+  const filterCondetion = filterBy === "Active" ? { isSoftDeleted: false } : {};
+
+  const categories = await Category.find(filterCondetion);
   if (categories) {
     res.status(200).json(categories);
   } else {
@@ -56,12 +60,11 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 export const updateCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
   const { name, description, isSoftDeleted } = req.body;
-  
+
   const categoryExists = await Category.findOne({ name });
 
   if (categoryExists) {
-    return res.status(400).json({message:'Category already exists'});
-    
+    return res.status(400).json({ message: "Category already exists" });
   }
 
   const category = await Category.findById(categoryId);
@@ -72,7 +75,6 @@ export const updateCategory = asyncHandler(async (req, res) => {
     if (isSoftDeleted !== undefined) {
       category.isSoftDeleted = isSoftDeleted;
     }
-
 
     const updatedCategory = await category.save();
     res.status(200).json({

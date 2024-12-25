@@ -1,11 +1,13 @@
 import React from "react";
 import Form from "../Form";
 import { getProductFields } from "../product/productFields.js";
-import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import { productValidation } from "../../validationSchemas.js";
+import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices.js";
 
 const ProductAddForm = ({ isModalFormOpen, onClose, onSubmit }) => {
-  const { categories = [], isLoading } = useCategoryApi();
+  const { data: categories = [], isLoading } = useGetAllCategoryQuery({
+    filterBy: "All",
+  });
 
   if (!isModalFormOpen) return null;
 
@@ -22,23 +24,22 @@ const ProductAddForm = ({ isModalFormOpen, onClose, onSubmit }) => {
     }
   };
 
-
-   {
-     isLoading && (
-       <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-         <RotatingLines
-           visible={true}
-           height="50"
-           width="50"
-           color="grey"
-           strokeColor="#fff"
-           strokeWidth="2"
-           animationDuration="8"
-           ariaLabel="rotating-lines-loading"
-         />
-       </div>
-     );
-   }
+  {
+    isLoading && (
+      <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+        <RotatingLines
+          visible={true}
+          height="50"
+          width="50"
+          color="grey"
+          strokeColor="#fff"
+          strokeWidth="2"
+          animationDuration="8"
+          ariaLabel="rotating-lines-loading"
+        />
+      </div>
+    );
+  }
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md"

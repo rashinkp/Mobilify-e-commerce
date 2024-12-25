@@ -14,8 +14,8 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Category"],
     }),
     getAllCategory: builder.query({
-      query: () => ({
-        url: `${ADMIN_URL}/category`,
+      query: ({filterBy='Active'}) => ({
+        url: `${ADMIN_URL}/category?filterBy=${filterBy}`,
         method: "GET",
       }),
       providesTags: ["Category"],

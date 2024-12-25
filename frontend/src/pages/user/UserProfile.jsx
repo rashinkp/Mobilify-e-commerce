@@ -30,6 +30,7 @@ import { uploadImageToCloudinary } from "../../uploads/cloudinaryConfig";
 import ChangePassword from "../../components/ChangePassword";
 import OrderListingPage from "../../components/MyOrders";
 import WishList from "./WishList";
+import WalletDashboard from '../../pages/user/Wallet.jsx';
 
 const UserProfileDashboard = () => {
   const { data, isLoading, isError, error, refetch } = useGetUserQuery();
@@ -186,6 +187,7 @@ const UserProfileDashboard = () => {
           {activeSection === "email" && <MyEmail />}
           {activeSection === "changePassword" && <ChangePassword />}
           {activeSection === "orders" && <OrderListingPage />}
+          {activeSection === "wallet" && <WalletDashboard />}
         </div>
       </div>
       <input

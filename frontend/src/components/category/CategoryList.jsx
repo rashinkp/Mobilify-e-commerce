@@ -6,7 +6,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import CategoryEditForm from "./CategoryEditForm";
 import { useEditCategoryMutation } from "../../redux/slices/categoryApiSlices.js";
-import { Ban, DatabaseBackup, Pen } from "lucide-react";
+import { Ban, DatabaseBackup, Eye, Pen } from "lucide-react";
 
 const CategoryList = ({ categories, icon }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,14 +47,19 @@ const CategoryList = ({ categories, icon }) => {
 
   const getCategoryControles = (category) => [
     {
+      action: () => {},
+      style: "",
+      icon: <Eye className="text-black hover:text-green-600" size={20} />,
+    },
+    {
       action: () => handleEditCategory(category),
       style: "",
-      icon: <Pen className="text-black" size={20} />,
+      icon: <Pen className="text-black hover:text-blue-600" size={20} />,
     },
     {
       action: () => {
         setSelectedCategory(category);
-        setIsModalOpen(true)
+        setIsModalOpen(true);
       },
       style: "",
       icon: category.isSoftDeleted ? (

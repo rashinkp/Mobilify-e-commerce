@@ -30,37 +30,78 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   const userId = req.user?.userId;
   const skip = (page - 1) * limit;
 
-  let filter = {};
+  let matchFilter = {};
 
   if (categoryId) {
-    filter.categoryId = categoryId;
+    matchFilter.categoryId = categoryId;
   }
 
-if (filterBy === "active") {
-  filter.isSoftDelete = false;
-} else if (filterBy === "inactive") {
-  filter.isSoftDelete = true;
-} else if (filterBy === "low stock") {
-  filter.stock = { $lt: 20 };
-} else if (filterBy === "high stock") {
-  filter.stock = { $gt: 20 };
-}
+  if (filterBy === "active") {
+    matchFilter.isSoftDelete = false;
+  } else if (filterBy === "inactive") {
+    matchFilter.isSoftDelete = true;
+  } else if (filterBy === "low stock") {
+    matchFilter.stock = { $lt: 20 };
+  } else if (filterBy === "high stock") {
+    matchFilter.stock = { $gt: 20 };
+  }
 
   if (searchTerm.trim() !== "") {
-    filter.name = { $regex: searchTerm, $options: "i" };
+    matchFilter.name = { $regex: searchTerm, $options: "i" };
   }
 
   try {
-    const products = await Product.find(filter)
-      .collation({ locale: "en", strength: 2 })
-      .sort({
-        [sortBy]: order === "desc" ? -1 : 1,
-        _id: 1,
-      })
-      .skip(Number(skip))
-      .limit(Number(limit));
+    const pipeline = [
+      { $match: matchFilter },
 
-    const totalCount = await Product.countDocuments(filter);
+      {
+        $lookup: {
+          from: "categories", // Name of the category collection
+          localField: "categoryId", // Field in Product
+          foreignField: "_id", // Field in Category
+          as: "categoryDetails",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$categoryDetails",
+          preserveNullAndEmptyArrays: true, 
+        },
+      },
+
+      
+      {
+        $match: {
+          $or: [
+            { "categoryDetails.isSoftDeleted": { $ne: true } },
+            { categoryDetails: { $exists: false } },
+          ],
+        },
+      },
+
+      {
+        $sort: {
+          [sortBy]: order === "desc" ? -1 : 1,
+          _id: 1,
+        },
+      },
+
+      // Step 6: Add pagination
+      { $skip: Number(skip) },
+      { $limit: Number(limit) },
+    ];
+
+    // Step 7: Execute the aggregation pipeline
+    const products = await Product.aggregate(pipeline);
+
+    // Step 8: Count total documents matching filters
+    const totalCountPipeline = [
+      ...pipeline.slice(0, -2), // Remove skip and limit from pipeline
+      { $count: "totalCount" },
+    ];
+    const totalCountResult = await Product.aggregate(totalCountPipeline);
+    const totalCount = totalCountResult[0]?.totalCount || 0;
 
     if (!products || products.length === 0) {
       return res.status(200).json({
@@ -70,16 +111,13 @@ if (filterBy === "active") {
       });
     }
 
-    // If user is logged in, check wishlist status for each product
     let productsWithWishlistStatus = products;
     if (userId) {
-      // Get all wishlist items for the user in one query
       const wishlistItems = await WishList.find({
         userId,
         "items.productId": { $in: products.map((product) => product._id) },
       });
 
-      // Create a Set of product IDs that are in the wishlist for faster lookup
       const wishlistProductIds = new Set(
         wishlistItems.reduce((acc, wishlist) => {
           return [
@@ -89,9 +127,8 @@ if (filterBy === "active") {
         }, [])
       );
 
-      // Add wishlist status to each product
       productsWithWishlistStatus = products.map((product) => ({
-        ...product.toObject(),
+        ...product,
         isInWishList: wishlistProductIds.has(product._id.toString()),
       }));
     }

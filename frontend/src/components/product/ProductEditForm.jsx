@@ -5,10 +5,13 @@ import { errorToast, successToast } from "../toast/index.js";
 import useProductApi from "../../hooks/useProductApi.jsx";
 import { useCategoryApi } from "../../hooks/useCategoryApi.jsx";
 import { getProductFields } from "../product/productFields.js";
+import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices.js";
 
 const ProductEditForm = ({ product, onClose }) => {
   const { updateProduct } = useProductApi();
-  const { categories = [], isLoading } = useCategoryApi();
+  const { data: categories = [], isLoading } = useGetAllCategoryQuery({
+    filterBy: "All",
+  });
 
   const categoryOptions = categories.map((category) => ({
     label: category.name,
@@ -56,6 +59,5 @@ const ProductEditForm = ({ product, onClose }) => {
     </div>
   );
 };
-
 
 export default ProductEditForm;

@@ -34,7 +34,9 @@ const ProductManagement = () => {
   });
 
   const { data: categories = [], isLoading: categoryLoading } =
-    useGetAllCategoryQuery();
+    useGetAllCategoryQuery({ filterBy: "All" });
+
+  console.log(categories);
 
   const { products = [], totalCount = 0 } = data || {};
 

@@ -9,11 +9,18 @@ import { RotatingLines } from "react-loader-spinner";
 import { errorToast, successToast } from "../../components/toast/index.js";
 import { ChevronRight, Home } from "lucide-react";
 import { Link } from "react-router";
+import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices.js";
 
 const CategoryManagement = () => {
   const [isModalFormOpen, setIsModalFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { addCategory, categories, isLoading } = useCategoryApi();
+  const { addCategory, isLoading } = useCategoryApi();
+  const [filterBy, setFilterBy] = useState("All");
+
+  const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategoryQuery({
+    filterBy,
+  });
+
 
   const displayedCategory =
     searchTerm.trim() === ""
@@ -75,7 +82,7 @@ const CategoryManagement = () => {
           icon="fa-solid fa-layer-group"
         />
       </div>
-      {isLoading && (
+      {(isLoading || categoriesLoading) && (
         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
           <RotatingLines
             visible={true}

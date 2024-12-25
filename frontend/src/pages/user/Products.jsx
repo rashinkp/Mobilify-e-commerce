@@ -38,7 +38,7 @@ const Products = () => {
   });
 
   const { data: categories = [], isLoading: categoryLoading } =
-    useGetAllCategoryQuery();
+    useGetAllCategoryQuery({filterBy:'Active'});
 
   const { products = [], totalCount = 0 } = data || {};
 
