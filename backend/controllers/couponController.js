@@ -63,7 +63,6 @@ export const editCoupon = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Coupon updated successfully" });
 });
 
-
 export const getACoupon = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -85,8 +84,6 @@ export const getACoupon = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json(coupon);
-    
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -95,7 +92,6 @@ export const getACoupon = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 export const updateApplicables = asyncHandler(async (req, res) => {
   const { selectedProducts, couponId } = req.body;
@@ -136,14 +132,12 @@ export const applyCoupon = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Such coupon not found" });
   }
 
-  
-    const isExpired = coupon.expiryDate < Date.now();
-    const isActive = coupon.isSoftDeleted;
+  const isExpired = coupon.expiryDate < Date.now();
+  const isActive = coupon.isSoftDeleted;
 
-    if (isExpired || isActive) {
-      return res.status(400).json({ message: "Coupon expired or not active" });
-    }
-
+  if (isExpired || isActive) {
+    return res.status(400).json({ message: "Coupon expired or not active" });
+  }
 
   // Check if the coupon has already been used by the user
   if (coupon.usersTaken.includes(userId)) {
@@ -190,4 +184,24 @@ export const applyCoupon = asyncHandler(async (req, res) => {
     couponCode,
     offerPercent: coupon.discount,
   });
+});
+
+export const getAllApplicableCoupons = asyncHandler(async (req, res) => {
+  const productIds = req.body;
+  const { userId } = req.user;
+
+
+  if (!productIds || !userId || productIds.length < 1) {
+    return res.status(400).json({ message: 'Did not get required data or no products' });
+  }
+
+  const coupons = await Coupon.find({
+    applicables: { $in: productIds },
+    expiryDate: { $gt: new Date() },
+    isSoftDeleted: false,
+    usersTaken: {$nin:[userId]}
+  });
+
+  res.status(200).json(coupons);
+
 });

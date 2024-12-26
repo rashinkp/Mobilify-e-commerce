@@ -19,7 +19,7 @@ import { errorToast, successToast } from "../../components/toast";
 
 const OrderDetails = () => {
   const { id: orderId } = useParams();
-  const { data, isLoading } = useGetAOrderQuery({ orderId });
+  const { data = {}, isLoading } = useGetAOrderQuery({ orderId });
   const [changeStatus] = useChangeOrderStatusMutation();
 
   const statusOptions = [
@@ -32,7 +32,12 @@ const OrderDetails = () => {
     "Returned",
   ];
 
-  const paymentStatusOptions = ["Pending", "Successful", "Refunded"];
+  const conditionMet =
+    data?.status === "Cancelled" || data?.status === "Returned";
+
+  const paymentStatusOptions = ["Pending", "Successful", "Refunded"].filter(
+    (status) => (status === "Refunded" ? conditionMet : true)
+  );
 
   const [orderModalVisible, setOrderModalVisible] = useState(false);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);

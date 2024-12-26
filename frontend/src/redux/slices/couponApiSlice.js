@@ -46,10 +46,17 @@ export const couponApiSlice = apiSlice.injectEndpoints({
     applyCoupon: builder.mutation({
       query: (data) => ({
         url: `${USER_URL}/coupon`,
-        method: 'POST',
-        body:data,
+        method: "POST",
+        body: data,
       }),
-    })
+    }),
+    applicablesForCheckout: builder.mutation({
+      query: (data) => ({
+        url: `${USER_URL}/allCoupon`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -59,5 +66,6 @@ export const {
   useGetAllCouponQuery,
   useGetACouponQuery,
   useUpdateApplicablesMutation,
-  useApplyCouponMutation
+  useApplyCouponMutation,
+  useApplicablesForCheckoutMutation
 } = couponApiSlice;

@@ -27,6 +27,22 @@ const CouponEditForm = ({ coupon, onClose }) => {
       max: 100,
     },
     {
+      name: "minAmount",
+      label: "Mininmu Amount",
+      type: "number",
+      placeholder: "Enter Mininmu Amount",
+      required: true,
+      defaultValue: coupon?.minAmount,
+    },
+    {
+      name: "maxAmount",
+      label: "Maximum Amount",
+      type: "number",
+      placeholder: "Enter Discount Maximum Amount",
+      required: true,
+      defaultValue: coupon?.maxAmount,
+    },
+    {
       name: "expiryDate",
       label: "Expiry Date",
       type: "date",
@@ -61,7 +77,7 @@ const CouponEditForm = ({ coupon, onClose }) => {
   };
 
   const handleSubmit = async (data) => {
-    console.log(data)
+    console.log(data);
     try {
       await editCoupon({ _id: coupon._id, data }).unwrap();
       successToast("Coupon updated successfully");
@@ -87,7 +103,7 @@ const CouponEditForm = ({ coupon, onClose }) => {
           fields={couponFields}
           onSubmit={handleSubmit}
           buttonText="Submit"
-          validationRules={couponValidation} 
+          validationRules={couponValidation}
         />
       </div>
     </div>

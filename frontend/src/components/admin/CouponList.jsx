@@ -50,7 +50,7 @@ const CouponList = ({ coupons, icon }) => {
   const getCouponControls = (coupon) => [
     {
       action: () => {
-        navigate(`/admin/manage-coupon/${coupon._id}`)
+        navigate(`/admin/manage-coupon/${coupon._id}`);
       },
       style: "",
       icon: <Eye className="text-black hover:text-amber-600" size={20} />,
@@ -81,6 +81,8 @@ const CouponList = ({ coupons, icon }) => {
     { key: "couponId", label: "Coupon ID", render: (value) => value },
     { key: "title", label: "Title", render: (value) => value },
     { key: "discount", label: "Discount", render: (value) => `${value}%` },
+    { key: "minAmount", label: "Max Amount", render: (value) => `₹${value}` },
+    { key: "maxAmount", label: "Min Amount", render: (value) => `₹${value}` },
     { key: "applicables", label: "Products", render: (value) => value.length },
     {
       key: "expiryDate",

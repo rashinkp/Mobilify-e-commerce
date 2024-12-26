@@ -20,7 +20,6 @@ const OrderSummary = ({ products }) => {
         });
   };
 
-  console.log(products);
   return (
     <section className="mb-6">
       <h2 className="text-xl font-bold mb-4 flex items-center">

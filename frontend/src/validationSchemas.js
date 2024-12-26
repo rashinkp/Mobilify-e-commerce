@@ -16,7 +16,12 @@ export const passwordValidation = Yup.string()
 export const nameValidation = Yup.string()
   .required("Name is required")
   .min(4, "Minimum 4 characters required")
-  .max(100, "Maximum 100 characters allowed");
+  .max(100, "Maximum 100 characters allowed")
+  .test(
+    "no-only-whitespace", 
+    "Name cannot contain only white spaces", 
+    (value) => value && value.trim().length > 0 
+  );
 
 export const descriptionValidation = Yup.string()
   .required("Description is required")
@@ -176,14 +181,49 @@ export const imageValidationSchema = Yup.object().shape({
 
 
 export const addressValidationSchema = Yup.object().shape({
-  label: Yup.string().required("Label is required"),
-  street: Yup.string().required("Street is required"),
-  city: Yup.string().required("City is required"),
-  state: Yup.string().required("State is required"),
+  label: Yup.string()
+    .required("Label is required")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
+  street: Yup.string()
+    .required("Street is required")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
+  city: Yup.string()
+    .required("City is required")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
+  state: Yup.string()
+    .required("State is required")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
   postalCode: Yup.string()
     .matches(/^[0-9]{5}$/, "Postal code must be 5 digits")
-    .required("Postal code is required"),
-  country: Yup.string().required("Country is required"),
+    .required("Postal code is required")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
+  country: Yup.string()
+    .required("Country is required")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
 });
 
 export const profileValidationSchema = Yup.object().shape({
@@ -211,13 +251,6 @@ export const passwordSchema = Yup.object().shape({
       .string()
       .required("New password is required")
       .min(6, "Password must be at least 6 characters")
-      // .matches(/[A-Z]/, "Password must include an uppercase letter")
-      // .matches(/[a-z]/, "Password must include a lowercase letter")
-      // .matches(/[0-9]/, "Password must include a number")
-      // .matches(
-      //   /[!@#$%^&*(),.?":{}|<>]/,
-      //   "Password must include a special character"
-      // )
       .notOneOf(
         [Yup.ref("currentPassword")],
         "New password must be different from current password"
@@ -252,10 +285,31 @@ export const couponValidation = Yup.object().shape({
     ),
   title: Yup.string()
     .required("Title is required")
-    .max(100, "Title must be less than 100 characters"),
+    .max(100, "Title must be less than 100 characters")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
+  minAmount: Yup.number()
+    .required("Minimum amount is required")
+    .min(100, "Minimum amount must be at least 100")
+    .max(10000, "Minimum amount cannot exceed 10000"),
+  maxAmount: Yup.number()
+    .required("Maximum amount is required")
+    .min(
+      Yup.ref("minAmount"),
+      "Maximum amount must be greater than or equal to the minimum amount"
+    )
+    .max(1000000, "Maximum amount cannot exceed 10000"),
   description: Yup.string()
     .required("Description is required")
-    .max(500, "Description must be less than 500 characters"),
+    .max(500, "Description must be less than 500 characters")
+    .test(
+      "no-only-whitespace",
+      "Name cannot contain only white spaces",
+      (value) => value && value.trim().length > 0
+    ),
   discount: Yup.number()
     .required("Discount is required")
     .min(1, "Discount must be at least 1")
@@ -263,15 +317,4 @@ export const couponValidation = Yup.object().shape({
   expiryDate: Yup.date()
     .required("Expiry date is required")
     .min(new Date(), "Expiry date must be in the future"),
-  // applicableCategories: Yup.string()
-  //   .required("At least one applicable category is required")
-  //   .test(
-  //     "is-valid-array",
-  //     "Categories must be a comma-separated list of valid IDs",
-  //     (value) => {
-  //       return value
-  //         ?.split(",")
-  //         .every((id) => /^[a-zA-Z0-9_-]+$/.test(id.trim()));
-  //     }
-  //   ),
 });

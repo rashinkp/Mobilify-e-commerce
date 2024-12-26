@@ -164,6 +164,9 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
       {
         $match: { userId: convertedUserId },
       },
+      {
+        $sort: { createdAt: -1 },
+      },
     ]);
 
     if (!orders || orders.length === 0) {
@@ -178,6 +181,8 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
+
 
 export const getOrdersWithSingleProducts = async (req, res) => {
   const { userId } = req.user;
@@ -218,7 +223,7 @@ export const getAllOrders = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const orders = await Order.find().skip(Number(skip)).limit(Number(limit));
+    const orders = await Order.find().skip(Number(skip)).limit(Number(limit)).sort({createdAt:-1});
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found" });

@@ -8,6 +8,7 @@ import {
   ShoppingCart,
   IndianRupee,
   Plus,
+  Tag,
 } from "lucide-react";
 import { RotatingLines } from "react-loader-spinner";
 import {
@@ -29,6 +30,11 @@ import PaymentSection from "../../components/checkout/PaymentSection.jsx";
 import OrderTotal from "../../components/checkout/OrderTotal.jsx";
 import OrderSummery from "../../components/checkout/OrderSummery.jsx";
 import { useDebitAmountMutation } from "../../redux/slices/walletApiSlice.js";
+import ListCoupons from "../../components/checkout/ListCoupons.jsx";
+
+ 
+
+
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedShipping, setSelectedShipping] = useState(null);
@@ -40,6 +46,7 @@ const CheckoutPage = () => {
   const [addAddress] = useAddAddressMutation();
   const navigate = useNavigate();
   const [applyCoupon] = useApplyCouponMutation();
+   const [showCoupons, setShowCoupons] = useState(false);
 
   const [placeOrder] = usePlaceOrderMutation();
   const [debitAmountFromWallet] = useDebitAmountMutation();
@@ -66,6 +73,10 @@ const CheckoutPage = () => {
   const { addresses } = addressData || {};
 
   const products = cartData.cartItems || [];
+
+  
+
+
 
   useEffect(() => {
     if (addresses && addresses.length > 0) {
@@ -96,8 +107,6 @@ const CheckoutPage = () => {
         const quantity = product?.quantity || 0;
 
         const offerPercent = Math.min(productOffer + categoryOffer, 100);
-
-        console.log(offerPercent);
 
         const discountedPrice = (price * (100 - offerPercent)) / 100;
 
@@ -341,6 +350,16 @@ const CheckoutPage = () => {
         handleCouponApply={handleCouponApply}
         appliedCoupon={appliedCoupon}
       />
+
+      <button
+        onClick={() => setShowCoupons(!showCoupons)}
+        className="text-blue-500 text-sm flex items-center gap-1 mb-2"
+      >
+        <Tag size={16} />
+        View available coupons
+      </button>
+
+      {showCoupons && <ListCoupons products={products} />}
 
       <ShippingSection
         shippingMethods={shippingMethods}
