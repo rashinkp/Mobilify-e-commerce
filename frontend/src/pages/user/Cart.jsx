@@ -54,6 +54,7 @@ const ShoppingCart = () => {
     }
   };
 
+
   const decrementQuantity = async (productId) => {
     const product = data?.cartItems?.find(
       (item) => item.productId === productId
@@ -166,10 +167,10 @@ const ShoppingCart = () => {
         {/* Left Column: Cart Items */}
         <div className="md:col-span-2">
           <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
-            Shopping Cart <span>({data.totalProducts})</span>
+            Shopping Cart <span>({data?.totalProducts || cartItems?.length || 0})</span>
           </h1>
 
-          {data.totalProducts < 1 ? (
+          {cartItems.length < 1 ? (
             <span className="block text-center dark:text-white mb-10">
               No products
             </span>

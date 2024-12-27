@@ -2,8 +2,14 @@ import jsPDF from "jspdf";
 
 export const handleDownloadInvoice = (order) => {
   const doc = new jsPDF();
-  const actaulPrice =
+  const actualPrice =
     order.price + order?.offerPrice + order?.couponApplied?.offerAmount;
+  
+  const subTotal = actualPrice * (order?.quantity || 1);
+
+  const totalOffer = (order.couponApplied?.offerAmount || 0) + (order?.offerPrice || 0);
+
+  const finalPrice = subTotal - totalOffer;
 
   // Add background color
   doc.setFillColor(247, 248, 250);
@@ -71,8 +77,8 @@ export const handleDownloadInvoice = (order) => {
   doc.roundedRect(15, startY + 12, 180, 15, 2, 2, "F");
   doc.text(order.name.substring(0, 35), 20, y);
   doc.text(order.quantity.toString(), 100, y);
-  doc.text(`${actaulPrice}`, 130, y);
-  doc.text(`${actaulPrice * order.quantity}`, 160, y);
+  doc.text(`${actualPrice}`, 130, y);
+  doc.text(`${actualPrice * order.quantity}`, 160, y);
   y += 20;
 
   // Summary Box
@@ -85,9 +91,9 @@ export const handleDownloadInvoice = (order) => {
   doc.text("Shipping (Rs.):", 100, summaryY + 20);
 
   doc.setTextColor(0, 0, 0);
-  doc.text(`${actaulPrice}`, 170, summaryY);
+  doc.text(`${subTotal}`, 170, summaryY);
   doc.text(
-    `-${(order.couponApplied?.offerAmount || 0) + (order?.offerPrice || 0)}`,
+    `-${totalOffer}`,
     170,
     summaryY + 10
   );
@@ -99,7 +105,7 @@ export const handleDownloadInvoice = (order) => {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(12);
   doc.text("Total (Rs.):", 100, summaryY + 35);
-  doc.text(`${order?.price}`, 170, summaryY + 35);
+  doc.text(`${finalPrice}`, 170, summaryY + 35);
 
   // Footer
   doc.setTextColor(51, 122, 183);

@@ -245,7 +245,7 @@ export const getAllOrders = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { newStatus = "", newPaymentStatus = "", orderId } = req.body;
+    const { newStatus = "", newPaymentStatus = "", orderId , paymentId } = req.body;
 
     const order = await Order.findById(orderId);
     if (!order) {
@@ -257,6 +257,7 @@ export const updateOrderStatus = async (req, res) => {
 
     order.status = newStatus || order.status;
     order.paymentStatus = newPaymentStatus || order.paymentStatus;
+    order.paymentId = paymentId || order?.paymentId;
 
     if (order.status === "Delivered") {
       order.paymentStatus = "Successful";

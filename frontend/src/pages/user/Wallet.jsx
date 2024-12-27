@@ -22,12 +22,11 @@ const WalletDashboard = () => {
   }, [data]);
 
   const handlePayment = async (amount) => {
-    console.log(amount);
     const options = {
-      key: 'rzp_test_K5otU6Q5C8lSi8',
+      key: "rzp_test_K5otU6Q5C8lSi8",
       amount: amount * 100,
       currency: "INR",
-      name: "Your Store Name",
+      name: "Mobilify",
       description: "Wallet Recharge",
       handler: async function (response) {
         try {

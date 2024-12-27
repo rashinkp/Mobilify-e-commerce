@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Package,
   Truck,
@@ -15,24 +15,31 @@ import {
   AlertTriangle,
   Recycle,
   Download,
+  HandCoins,
 } from "lucide-react";
 import {
   useChangeOrderStatusMutation,
   useGetSingleOrderQuery,
 } from "../../redux/slices/orderApiSlice";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { RotatingLines } from "react-loader-spinner";
 import { errorToast, successToast } from "../../components/toast";
 import { useGetProductQuery } from "../../redux/slices/productApiSlice";
 import CancelConfirmation from "../../components/cancelConfirmation";
 import jsPDF from "jspdf";
 import { handleDownloadInvoice } from "../../components/downloadInvoice";
+import PriceBreakdown from "../../components/Billing";
+import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice";
+
 
 const OrderDetailsPage = () => {
   // State for managing order actions
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [orderCancelled, setOrderCancelled] = useState(false);
   const [confirmReturn, setConfirmReturn] = useState(false);
+  const [verifyPayment] = useVerifyPaymentMutation();
+  const navigate = useNavigate()
+
 
   const { ordId: orderId } = useParams();
 
@@ -148,6 +155,83 @@ const OrderDetailsPage = () => {
     }
   };
 
+
+   const handleRazorpaySuccess = useCallback(
+     async (razorpayOrderData, response) => {
+       console.log(razorpayOrderData);
+        try {
+          const paymentId = response.razorpay_payment_id;
+          const orderId = razorpayOrderData._id;
+  
+          const verifyPaymentResponse = await verifyPayment({
+            paymentId,
+          });
+  
+          if (verifyPaymentResponse) {
+            //change status
+
+
+            await changeStatus({
+              orderId,
+              newPaymentStatus: 'Successful',
+              paymentId
+            }).unwrap();
+
+            successToast("Payment successful!");
+          } else {
+            errorToast("Payment verification failed. Please try again.");
+          }
+        } catch (error) {
+          errorToast("Error processing payment. Please try again.");
+          console.error("Payment error:", error);
+        }
+      },
+      [verifyPayment, navigate]
+    );
+
+
+  const triggerRazorpayCheckout = useCallback(
+    (razorpayOrderData) => {
+      const options = {
+        key: "rzp_test_K5otU6Q5C8lSi8",
+        amount: Math.round(razorpayOrderData.price * 100),
+        currency: "INR",
+        handler: (response) =>
+          handleRazorpaySuccess(razorpayOrderData, response),
+        prefill: {
+          name: razorpayOrderData.customerName || "",
+          email: razorpayOrderData.email || "",
+          contact: razorpayOrderData.phone || "",
+        },
+        theme: {
+          color: "#F37254",
+        },
+        modal: {
+          ondismiss: () => {
+            errorToast("Payment cancelled. Please try again.");
+          },
+        },
+      };
+
+      try {
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      } catch (error) {
+        console.error("Razorpay initialization error:", error);
+        errorToast("Failed to initialize payment. Please try again.");
+      }
+    },
+    [handleRazorpaySuccess]
+  );
+
+  const handlePayNow = async () => {
+    if (!order.price || order.price <= 0) {
+      errorToast("Invalid amount");
+      return;
+    }
+    await triggerRazorpayCheckout(order);
+  };
+
   // Determine if cancel and return buttons should be disabled
   const isCancelDisabled =
     orderCancelled ||
@@ -208,7 +292,7 @@ const OrderDetailsPage = () => {
         </div>
       )}
       <div className="container mx-auto p-6 min-h-screen">
-        <div className="max-w-4xl mx-auto bg-white dark:bg-transparent dark:text-white   ">
+        <div className="mx-auto bg-white dark:bg-transparent dark:text-white   ">
           {/* Order Header with Action Buttons */}
           <div className=" border-b-2 p-4 flex justify-between items-center">
             <div>
@@ -279,7 +363,7 @@ const OrderDetailsPage = () => {
               Order returned
             </div>
           ) : (
-            <div className="p-6  dark:bg-transparent">
+            <div className="mx-auto p-10 max-w-6xl dark:bg-transparent">
               <div className="flex items-center justify-between relative">
                 {orderStages.map((stage, index) => (
                   <div
@@ -347,16 +431,7 @@ const OrderDetailsPage = () => {
                 <p className="text-gray-600 dark:text-gray-300">
                   Model: {order.productModel}
                 </p>
-                <div className="flex items-center mt-2">
-                  <CreditCard className="mr-2 w-5 h-5 text-blue-600" />
-                  <span className="font-bold text-xl">
-                    ₹
-                    {order.price.toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                </div>
+                <PriceBreakdown order={order} />
               </div>
             </div>
 
@@ -433,13 +508,22 @@ const OrderDetailsPage = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => handleDownloadInvoice(order)}
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
-          >
-            <Download size={19} />
-            Download Invoice
-          </button>
+          <div className="flex justify-end me-8 gap-5">
+            {order.paymentStatus === "Pending" && (
+              <button
+              onClick={handlePayNow}  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 transition-transform duration-200 ease-in-out transform hover:scale-105 flex gap-2 items-center ">
+                <HandCoins size={20} />
+                Pay Now
+              </button>
+            )}
+            <button
+              onClick={() => handleDownloadInvoice(order)}
+              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
+            >
+              <Download size={19} />
+              Download Invoice
+            </button>
+          </div>
 
           {/* Order Summary */}
         </div>
