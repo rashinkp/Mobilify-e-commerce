@@ -8,6 +8,7 @@ import noImage from "../assets/noImage.png";
 import BrudCrump from "./BrudCrump";
 import { useToggleWishListMutation } from "../redux/slices/wishlistApiSlice";
 import { errorToast, successToast } from "./toast";
+import ImageZoom from "./ImageZooming";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -98,10 +99,10 @@ const ProductDetails = () => {
           {/* Left Section: Images */}
           <div className="relative ">
             <div className=" h-[500px] dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
-              <img
-                src={mainImage || noImage}
-                alt="Main Product"
-                className="max-h-full max-w-full object-contain"
+              <ImageZoom
+                mainImage={mainImage}
+                product={product}
+                onFavClick={handleFavClick}
               />
               <button
                 onClick={handleFavClick}

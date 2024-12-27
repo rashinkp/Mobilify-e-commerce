@@ -8,7 +8,7 @@ export const getSales = asyncHandler(async (req, res) => {
   if (startingDate && endingDate) {
     dateMatch.orderDate = {
       $gte: new Date(startingDate),
-      $lte: new Date(endingDate + "T23:59:59.999Z"), // Include the entire end date
+      $lte: new Date(endingDate + "T23:59:59.999Z"), 
     };
   }
 
@@ -47,8 +47,6 @@ export const getSales = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
-  console.log(orders);
 
   const OrderDetails = orders[0] || {
     orders: [],
