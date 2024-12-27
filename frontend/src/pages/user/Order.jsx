@@ -14,6 +14,7 @@ import {
   RefreshCcw,
   AlertTriangle,
   Recycle,
+  Download,
 } from "lucide-react";
 import {
   useChangeOrderStatusMutation,
@@ -24,6 +25,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { errorToast, successToast } from "../../components/toast";
 import { useGetProductQuery } from "../../redux/slices/productApiSlice";
 import CancelConfirmation from "../../components/cancelConfirmation";
+import jsPDF from "jspdf";
 
 const OrderDetailsPage = () => {
   // State for managing order actions
@@ -169,6 +171,37 @@ const OrderDetailsPage = () => {
       </div>
     );
   }
+
+  const handleDownloadInvoice = () => {
+    const doc = new jsPDF();
+
+    const orderData = {
+      offerPrice: order.offerPrice,
+      couponApplied: {
+        offerAmount: order.couponApplied.offerAmount,
+      },
+    };
+
+    doc.setFontSize(16);
+    doc.text("Invoice", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Offer Price: ₹${orderData?.offerPrice}`, 20, 40);
+    doc.text(
+      `Discount Applied: ₹${orderData?.couponApplied?.offerAmount}`,
+      20,
+      50
+    );
+    doc.text(
+      `Total: $${
+        orderData?.offerPrice - orderData?.couponApplied?.offerAmount
+      }`,
+      20,
+      70
+    );
+
+    // Download the PDF
+    doc.save("invoice.pdf");
+  };
 
   return (
     <>
@@ -427,6 +460,14 @@ const OrderDetailsPage = () => {
               )}
             </div>
           </div>
+
+          <button
+            onClick={handleDownloadInvoice}
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
+          >
+            <Download size={19} />
+            Download Invoice
+          </button>
 
           {/* Order Summary */}
         </div>

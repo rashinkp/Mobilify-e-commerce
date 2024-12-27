@@ -19,7 +19,7 @@ const ImageZoom = ({ mainImage, product, onFavClick }) => {
   return (
     <div
       ref={containerRef}
-      className="relative h-[500px] dark:bg-gray-900 rounded-lg overflow-hidden"
+      className="relative h-[500px] dark:bg-gray-900 rounded-lg overflow-hidden cursor-z"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsZoomed(true)}
       onMouseLeave={() => setIsZoomed(false)}

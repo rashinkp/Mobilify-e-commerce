@@ -31,20 +31,23 @@ export const addOrder = asyncHandler(async (req, res) => {
     } = data;
 
 
-    // Check stock availability first
-    for (const item of orderItems) {
-      const product = await Product.findById(item.productId);
-
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `Insufficient stock for product: ${product.name}`,
-        });
-      }
+    if (paymentMethod === "Cash On Delivery" && total > 120000) {
+      return res.status(400).json({message:'Cash on delivery not available for total more than 1,20,000 rs.'})
     }
+      // Check stock availability first
+      for (const item of orderItems) {
+        const product = await Product.findById(item.productId);
+
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            message: `Insufficient stock for product: ${product.name}`,
+          });
+        }
+      }
 
     // Validate payment
     const payment = await Payment.findOne({ paymentId });

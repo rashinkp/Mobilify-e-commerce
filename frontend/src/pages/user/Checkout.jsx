@@ -283,7 +283,7 @@ const CheckoutPage = () => {
       if (selectedPayment === "Razorpay") {
         await triggerRazorpayCheckout(orderData);
       } else if (selectedPayment === "Cash On Delivery") {
-        const response = await placeOrder(orderData);
+        const response = await placeOrder(orderData).unwrap();
         if (response) {
           successToast("Order placed successfully");
           navigate(`/user/orderSuccess`);

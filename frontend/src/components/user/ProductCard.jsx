@@ -10,6 +10,9 @@ const ProductCard = ({ product, refetch }) => {
   const [toggleWishlist] = useToggleWishListMutation();
   const navigate = useNavigate();
 
+
+  console.log(product);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [navigate]);
@@ -74,7 +77,7 @@ const finalPrice = () => {
               <FontAwesomeIcon
                 icon="fa-regular fa-heart"
                 className="text-white"
-                size="md"
+                size="sm"
               />
             )}
           </span>
