@@ -11,7 +11,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Orders",'Order','All Orders'],
+      invalidatesTags: ["Orders", "Order", "All Orders"],
     }),
     getOrder: builder.query({
       query: ({ orderId }) => ({
@@ -35,7 +35,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Orders"],
     }),
     getAllOrders: builder.query({
-      query: ({page = 1 , limit =3}) => ({
+      query: ({ page = 1, limit = 3 }) => ({
         url: `${ADMIN_URL}/order?page=${page}&limit=${limit}`,
         method: "GET",
       }),
@@ -54,9 +54,17 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Orders",'Order','All Orders'],
+      invalidatesTags: ["Orders", "Order", "All Orders"],
+    }),
+    failedOrder: builder.mutation({
+      query: (data) => ({
+        url: `${USER_URL}/failedOrder`,
+        method: 'POST',
+        body:data,
+      }),
+      invalidatesTags:['Orders'],
     }),
   }),
 });
 
-export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery,  useChangeOrderStatusMutation} = orderApiSlice;
+export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery,  useChangeOrderStatusMutation , useFailedOrderMutation} = orderApiSlice;

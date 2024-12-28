@@ -2,14 +2,16 @@ import jsPDF from "jspdf";
 
 export const handleDownloadInvoice = (order) => {
   const doc = new jsPDF();
-  const actualPrice =
-    order.price + order?.offerPrice + order?.couponApplied?.offerAmount;
-  
+
+
+  const actualPrice = order.price;
+
+
+  const discount = order.couponApplied?.offerAmount || 0;
+
   const subTotal = actualPrice * (order?.quantity || 1);
 
-  const totalOffer = (order.couponApplied?.offerAmount || 0) + (order?.offerPrice || 0);
-
-  const finalPrice = subTotal - totalOffer;
+  const finalPrice = subTotal - discount;
 
   // Add background color
   doc.setFillColor(247, 248, 250);
@@ -92,12 +94,8 @@ export const handleDownloadInvoice = (order) => {
 
   doc.setTextColor(0, 0, 0);
   doc.text(`${subTotal}`, 170, summaryY);
-  doc.text(
-    `-${totalOffer}`,
-    170,
-    summaryY + 10
-  );
-  doc.text(`${order.shippingCost || 0}`, 170, summaryY + 20);
+  doc.text(`-${discount}`, 170, summaryY + 10);
+  doc.text(`${order?.shippingCost || 0}`, 170, summaryY + 20);
 
   // Total
   doc.setFillColor(51, 122, 183);

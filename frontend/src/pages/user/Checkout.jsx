@@ -9,6 +9,7 @@ import {
   IndianRupee,
   Plus,
   Tag,
+  ShoppingBasketIcon,
 } from "lucide-react";
 import { RotatingLines } from "react-loader-spinner";
 import {
@@ -16,7 +17,7 @@ import {
   useGetAddressQuery,
 } from "../../redux/slices/addressApiSlice";
 import { useGetCartQuery } from "../../redux/slices/cartApiSlice";
-import { usePlaceOrderMutation } from "../../redux/slices/orderApiSlice";
+import { useFailedOrderMutation, usePlaceOrderMutation } from "../../redux/slices/orderApiSlice";
 import { errorToast, successToast } from "../../components/toast";
 import { useNavigate } from "react-router";
 import AddAddressForm from "../../components/user/AddAddressForm";
@@ -47,9 +48,10 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [applyCoupon] = useApplyCouponMutation();
    const [showCoupons, setShowCoupons] = useState(false);
-
+  const [paymentCancel, setPaymentCancel] = useState(false);
   const [placeOrder] = usePlaceOrderMutation();
   const [debitAmountFromWallet] = useDebitAmountMutation();
+  const [addToFailedPayment] = useFailedOrderMutation();
 
   //api calling
 
@@ -218,6 +220,7 @@ const CheckoutPage = () => {
         modal: {
           ondismiss: () => {
             errorToast("Payment cancelled. Please try again.");
+            setPaymentCancel(true)
           },
         },
       };
@@ -239,7 +242,9 @@ const CheckoutPage = () => {
       : product.price;
   };
 
-  const handleSubmit = async () => {
+  
+
+  const handleSubmit = async (val = false) => {
     try {
       const orderItems = products.map((product) => ({
         productId: product.productDetails?._id,
@@ -279,6 +284,13 @@ const CheckoutPage = () => {
         couponCode,
         total,
       };
+
+      if (val) {
+        await addToFailedPayment(orderData).unwrap();
+        successToast('Order moved to failedPayment')
+        navigate('/user/orders')
+        return;
+      }
 
       if (selectedPayment === "Razorpay") {
         await triggerRazorpayCheckout(orderData);
@@ -380,23 +392,31 @@ const CheckoutPage = () => {
       />
 
       {/* Complete Order Button */}
-      <button
-        className={`w-full p-3 rounded-lg text-white font-bold ${
-          selectedAddress &&
-          selectedShipping &&
-          selectedPayment &&
-          products.length > 0
-            ? "bg-blue-500 hover:bg-blue-600"
-            : "bg-gray-400 cursor-not-allowed"
-        }`}
-        disabled={
-          !(selectedAddress && selectedShipping && selectedPayment) ||
-          products.length < 1
-        }
-        onClick={handleSubmit}
-      >
-        <Check className="inline mr-2" /> Complete Order
-      </button>
+      <div className="flex gap-5">
+        <button
+          className={`w-full p-3 rounded-lg text-white font-bold ${
+            selectedAddress &&
+            selectedShipping &&
+            selectedPayment &&
+            products.length > 0
+              ? "bg-blue-500 hover:bg-blue-600"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
+          disabled={
+            !(selectedAddress && selectedShipping && selectedPayment) ||
+            products.length < 1
+          }
+          onClick={() => handleSubmit(false)}
+        >
+          <Check className="inline mr-2" /> Complete Order
+        </button>
+        {paymentCancel && (
+          <button onClick={() => handleSubmit(true)} className="px-6 py-2 bg-yellow-600 text-white font-medium rounded-lg shadow-md hover:bg-yellow-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1 flex items-center gap-3">
+            <ShoppingBasketIcon size={35} />
+            Move to Pending Orders
+          </button>
+        )}
+      </div>
     </div>
   );
 };

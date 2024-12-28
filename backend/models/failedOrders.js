@@ -19,7 +19,7 @@ const OrderSchema = new mongoose.Schema(
         offerAmount: { type: Number, default: 0 },
       },
       default: null,
-      _id: false, 
+      _id: false,
     },
 
     orderNumber: {
@@ -47,26 +47,11 @@ const OrderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "Pending",
-        "Order placed",
-        "Processing",
-        "Shipped",
-        "Out for delivery",
-        "Delivered",
-        "Cancelled",
-        "Returned",
-      ],
-      default: "Order placed",
+      default: "Pending",
     },
 
-    paymentId: {
-      type: String,
-      ref: "Payment",
-    },
     offerPrice: {
       type: Number,
-      
     },
 
     shipping: {
@@ -87,22 +72,13 @@ const OrderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: [
-        "Credit Card",
-        "PayPal",
-        "Razorpay",
-        "Google Pay",
-        "Cash On Delivery",
-        "Bank Transfer",
-        'Wallet'
-      ],
       required: true,
+      default: "Razorpay",
     },
 
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Successful", "Refunded"],
-      default: "Pending",
+      default: "Failed",
     },
 
     shippingAddress: {
@@ -117,14 +93,19 @@ const OrderSchema = new mongoose.Schema(
 
     orderDate: { type: Date, default: Date.now },
     expectedDeliveryDate: { type: Date },
+
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
   },
   {
     timestamps: true,
   }
 );
 
-OrderSchema.index({ userId: 1, orderDate: -1 });
+OrderSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-const Order = mongoose.model("Order", OrderSchema);
+const FailedOrder = mongoose.model("FailedOrder", OrderSchema);
 
-export default Order;
+export default FailedOrder;

@@ -9,6 +9,7 @@ import { savePayment, verifyPayment } from '../controllers/paymentController.js'
 import { addAllToCart, getAllWishListProducts, removeFromWishlist, toggleWishList } from '../controllers/wishListController.js';
 import { applyCoupon, getAllApplicableCoupons } from '../controllers/couponController.js';
 import { addAmountToWallet, getOrCreateWallet, processTransaction } from '../controllers/walletController.js';
+import { addToFailedOrders } from '../controllers/failedOrderController.js';
 
 const router = express.Router();
 
@@ -92,7 +93,10 @@ router
   .put(protect("user"), processTransaction);
 
 
-router.post("/allCoupon",protect("user"), getAllApplicableCoupons);
+router.post("/allCoupon", protect("user"), getAllApplicableCoupons);
+
+
+router.route("/failedOrder").post(protect("user"), addToFailedOrders);
 
 
 export default router;

@@ -168,13 +168,12 @@ const OrderDetailsPage = () => {
           });
   
           if (verifyPaymentResponse) {
-            //change status
-
-
             await changeStatus({
               orderId,
-              newPaymentStatus: 'Successful',
-              paymentId
+              newPaymentStatus: "Successful",
+              newStatus: razorpayOrderData?.status,
+              paymentId,
+              orderData:razorpayOrderData,
             }).unwrap();
 
             successToast("Payment successful!");
@@ -192,9 +191,10 @@ const OrderDetailsPage = () => {
 
   const triggerRazorpayCheckout = useCallback(
     (razorpayOrderData) => {
+      const finalPrice = razorpayOrderData.price * razorpayOrderData?.quantity;
       const options = {
         key: "rzp_test_K5otU6Q5C8lSi8",
-        amount: Math.round(razorpayOrderData.price * 100),
+        amount: Math.round(finalPrice * 100),
         currency: "INR",
         handler: (response) =>
           handleRazorpaySuccess(razorpayOrderData, response),
@@ -232,7 +232,6 @@ const OrderDetailsPage = () => {
     await triggerRazorpayCheckout(order);
   };
 
-  // Determine if cancel and return buttons should be disabled
   const isCancelDisabled =
     orderCancelled ||
     ["Delivered", "Cancelled", "Out for Delivery"].includes(order.status) ||
@@ -312,41 +311,43 @@ const OrderDetailsPage = () => {
                 </strong>
               </p>
             </div>
-            <div className="flex items-center space-x-4">
-              {/* Return/Replace Button */}
-              {order.returnPolicy && isReturnActive && (
-                <button
-                  onClick={() => setConfirmReturn(true)}
-                  className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
+            {order.status !== "Pending" && (
+              <div className="flex items-center space-x-4">
+                {/* Return/Replace Button */}
+                {order.returnPolicy && isReturnActive && (
+                  <button
+                    onClick={() => setConfirmReturn(true)}
+                    className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300 
               ${
                 isReturnDisabled
                   ? " text-gray-500 cursor-not-allowed"
                   : " text-black hover:text-green-600 dark:hover:text-green-600 dark:text-white"
               }`}
-                  disabled={isReturnDisabled}
-                  title="Return or Replace Item"
-                >
-                  <RefreshCcw className="mr-2 w-5 h-5" />
-                  Return/Replace
-                </button>
-              )}
+                    disabled={isReturnDisabled}
+                    title="Return or Replace Item"
+                  >
+                    <RefreshCcw className="mr-2 w-5 h-5" />
+                    Return/Replace
+                  </button>
+                )}
 
-              {/* Cancel Order Button */}
-              <button
-                className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300
+                {/* Cancel Order Button */}
+                <button
+                  className={`flex items-center px-3 py-2 rounded-md transition-colors duration-300
               ${
                 isCancelDisabled
                   ? "text-gray-500 cursor-not-allowed"
                   : "text-black hover:text-red-600 dark:hover:text-red-600 dark:text-white"
               }`}
-                onClick={() => setShowCancelConfirmation(true)}
-                disabled={isCancelDisabled}
-                title="Cancel Order"
-              >
-                <X className="mr-1 w-5 h-5 " />
-                Cancel Order
-              </button>
-            </div>
+                  onClick={() => setShowCancelConfirmation(true)}
+                  disabled={isCancelDisabled}
+                  title="Cancel Order"
+                >
+                  <X className="mr-1 w-5 h-5 " />
+                  Cancel Order
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Cancel Order Confirmation Modal */}
@@ -361,6 +362,10 @@ const OrderDetailsPage = () => {
           {order.status === "Returned" ? (
             <div className="flex justify-center m-5 text-yellow-600 font-bold">
               Order returned
+            </div>
+          ) : order.status === "Pending" ? (
+            <div className="flex justify-center m-5 text-red-600 font-bold">
+              Payment Failure
             </div>
           ) : (
             <div className="mx-auto p-10 max-w-6xl dark:bg-transparent">
@@ -442,11 +447,12 @@ const OrderDetailsPage = () => {
                   <MapPin className="mr-2 w-5 h-5 text-green-600" />
                   <h4 className="font-semibold">Shipping Address</h4>
                 </div>
-                <p>{order.shippingAddress.label}</p>
+                <p>{order?.shippingAddress?.label || ""}</p>
                 <p className="text-gray-600">
-                  {order.shippingAddress.street},{order.shippingAddress.city},
-                  {order.shippingAddress.postalCode},
-                  {order.shippingAddress.country}
+                  {order.shippingAddress?.street || ""},
+                  {order.shippingAddress?.city || ""},
+                  {order.shippingAddress?.postalCode || ""},
+                  {order.shippingAddress?.country || ""}
                 </p>
               </div>
 
@@ -471,19 +477,21 @@ const OrderDetailsPage = () => {
                 </div>
               </div>
 
-              <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
-                  <h4 className="font-semibold">Return</h4>
+              {order.status !== "Pending" && (
+                <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
+                    <h4 className="font-semibold">Return</h4>
+                  </div>
+                  <div>
+                    {order.returnPolicy && isReturnActive ? (
+                      <span>Available in {formattedDate} </span>
+                    ) : (
+                      <span>Not available </span>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  {order.returnPolicy && isReturnActive ? (
-                    <span>Available in {formattedDate} </span>
-                  ) : (
-                    <span>Not available </span>
-                  )}
-                </div>
-              </div>
+              )}
 
               {order.couponApplied && (
                 <div className="bg-yellow-100  dark:text-black p-4 rounded-lg">
@@ -509,20 +517,25 @@ const OrderDetailsPage = () => {
           </div>
 
           <div className="flex justify-end me-8 gap-5">
-            {order.paymentStatus === "Pending" && (
+            {(order.paymentStatus === "Pending" ||
+              order.paymentStatus === "Failed") && (
               <button
-              onClick={handlePayNow}  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 transition-transform duration-200 ease-in-out transform hover:scale-105 flex gap-2 items-center ">
+                onClick={handlePayNow}
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 transition-transform duration-200 ease-in-out transform hover:scale-105 flex gap-2 items-center "
+              >
                 <HandCoins size={20} />
                 Pay Now
               </button>
             )}
-            <button
-              onClick={() => handleDownloadInvoice(order)}
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
-            >
-              <Download size={19} />
-              Download Invoice
-            </button>
+            {order.paymentStatus !== "Failed" && (
+              <button
+                onClick={() => handleDownloadInvoice(order)}
+                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
+              >
+                <Download size={19} />
+                Download Invoice
+              </button>
+            )}
           </div>
 
           {/* Order Summary */}

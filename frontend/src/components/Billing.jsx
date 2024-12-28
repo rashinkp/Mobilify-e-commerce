@@ -6,12 +6,19 @@ const PriceBreakdown = ({ order }) => {
     maximumFractionDigits: 2,
   });
 
-  const actualPrice =
-    order.price + order.offerPrice + (order.couponApplied?.offerAmount || 0);
-  const discount =
-    (order.couponApplied?.offerAmount || 0) + (order.offerPrice || 0);
+  console.log(order)
+
   
-  const subTotal = actualPrice * (order?.quantity || 1);
+  
+  const totalOffer = order?.offerPrice;
+
+  const actualPrice = order.price + totalOffer;
+
+
+  const discount =
+    order.couponApplied?.offerAmount || 0 ;
+  
+const subTotal = order.price * (order?.quantity || 1);
 
 
   const finalPrice = subTotal - discount;
@@ -24,12 +31,22 @@ const PriceBreakdown = ({ order }) => {
       </div>
 
       <div className="flex items-center justify-between text-gray-600">
+        <span>Offer Price:</span>
+        <span>₹{formatter.format(order?.offerPrice)}</span>
+      </div>
+
+      <div className="flex items-center justify-between text-gray-600">
+        <span>Price after offer :</span>
+        <span>₹{formatter.format(order?.price  || 0)}</span>
+      </div>
+
+      <div className="flex items-center justify-between text-gray-600">
         <span>Price after quantity:</span>
         <span>₹{formatter.format(subTotal)}</span>
       </div>
 
       <div className="flex items-center justify-between text-green-600">
-        <span>Discount:</span>
+        <span>Coupon Discount:</span>
         <span>-₹{formatter.format(discount)}</span>
       </div>
 
