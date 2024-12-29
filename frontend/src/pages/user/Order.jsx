@@ -471,6 +471,10 @@ const OrderDetailsPage = () => {
                   <span className="font-medium">{order.quantity}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span>Shipping:</span>
+                  <span className="font-medium">{order.shipping?.id === 'express' ? 'Express (2-3 days)' : 'Regular(7 days)'}</span>
+                </div>
+                <div className="flex justify-between">
                   <span>Status:</span>
                   <span className="font-medium text-green-600">
                     {order.paymentStatus}
@@ -478,7 +482,7 @@ const OrderDetailsPage = () => {
                 </div>
               </div>
 
-              {(order.status !== "Pending" && order.status === "Delivered"  ) &&(
+              {order.status !== "Pending" && order.status === "Delivered" && (
                 <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
                   <div className="flex items-center mb-2">
                     <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
@@ -502,12 +506,15 @@ const OrderDetailsPage = () => {
                   </div>
                   <div>
                     <p className="text-sm">
-                      { order.status === 'Delivered' ?  'Delivery Date':  'Delivery expected Date' }{" "}
+                      {order.status === "Delivered"
+                        ? "Delivery Date"
+                        : "Delivery expected Date"}{" "}
                       <strong>
                         {new Date(
                           order?.deliveryDate ||
                             new Date(order?.orderDate).setDate(
-                              new Date(order?.orderDate).getDate() + 7
+                              new Date(order?.orderDate).getDate() +
+                                (order?.shipping?.id === "express" ? 3 : 7)
                             )
                         ).toLocaleString("en-IN", {
                           day: "2-digit",

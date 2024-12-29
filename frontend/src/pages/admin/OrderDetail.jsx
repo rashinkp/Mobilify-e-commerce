@@ -48,6 +48,9 @@ const OrderDetails = () => {
     paymentStatus: "",
   });
 
+
+  console.log(data);
+
   const updateStatus = async (orderStatus, paymentStatus) => {
     try {
       await changeStatus({
@@ -198,7 +201,7 @@ const OrderDetails = () => {
                 Order Date: {new Date(data?.orderDate).toLocaleString()}
               </span>
             </div>
-            {data.status === "Delivered" && (
+            {data.status === "Delivered" ? (
               <>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="text-green-600" />{" "}
@@ -217,7 +220,32 @@ const OrderDetails = () => {
                       {new Date(data?.returnWithinDate).toLocaleString()}
                     </span>
                   </div>
-                ) : (<span className="text-red-600">Return is not available</span>)}
+                ) : (
+                  <span className="text-red-600">Return is not available</span>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="text-green-600" />{" "}
+                  {/* Icon for Delivered Date */}
+                  <span className="font-semibold">
+                    Expected Delivery Date:{" "}
+                    {new Date(
+                      new Date(data?.orderDate).setDate(
+                        new Date(data?.orderDate).getDate() +
+                          (data?.shipping?.id === 'express' ? 3 : 7)
+                      )
+                    ).toLocaleString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </span>
+                </div>
               </>
             )}
           </div>
