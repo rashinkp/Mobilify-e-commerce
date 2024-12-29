@@ -16,6 +16,7 @@ import {
   Recycle,
   Download,
   HandCoins,
+  Calendar,
 } from "lucide-react";
 import {
   useChangeOrderStatusMutation,
@@ -477,7 +478,7 @@ const OrderDetailsPage = () => {
                 </div>
               </div>
 
-              {order.status !== "Pending" && (
+              {(order.status !== "Pending" && order.status === "Delivered"  ) &&(
                 <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
                   <div className="flex items-center mb-2">
                     <Recycle className="mr-2 w-5 h-5 text-yellow-600" />
@@ -492,6 +493,32 @@ const OrderDetailsPage = () => {
                   </div>
                 </div>
               )}
+
+              {
+                <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Calendar className="mr-2 w-5 h-5 text-yellow-600" />
+                    <h4 className="font-semibold">Date</h4>
+                  </div>
+                  <div>
+                    <p className="text-sm">
+                      { order.status === 'Delivered' ?  'Delivery Date':  'Delivery expected Date' }{" "}
+                      <strong>
+                        {new Date(
+                          order?.deliveryDate ||
+                            new Date(order?.orderDate).setDate(
+                              new Date(order?.orderDate).getDate() + 7
+                            )
+                        ).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </strong>
+                    </p>
+                  </div>
+                </div>
+              }
 
               {order.couponApplied && (
                 <div className="bg-yellow-100  dark:text-black p-4 rounded-lg">

@@ -338,15 +338,23 @@ export const updateOrderStatus = async (req, res) => {
 
     const previousPaymentStatus = order.paymentStatus;
 
-    // Update order fields
     order.status = newStatus || order.status;
     order.paymentStatus = newPaymentStatus || order.paymentStatus;
     order.paymentId = paymentId || order.paymentId;
 
-    // Auto-update payment status for delivered orders
     if (order.status === "Delivered") {
       order.paymentStatus = "Successful";
+      order.deliveryDate = new Date(); 
+      if (order.returnPolicy) {
+        let currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + 7);
+        order.returnWithinDate = currentDate; 
+      } else {
+        order.returnWithinDate = null;
+      }
     }
+
+
 
     // Handle refund process
     await handleRefund(order, previousPaymentStatus);

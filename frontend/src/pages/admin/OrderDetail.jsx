@@ -8,6 +8,8 @@ import {
   Home,
   ChevronRight,
   ShoppingCart,
+  Calendar,
+  CheckCircle,
 } from "lucide-react";
 import { Link, useParams } from "react-router";
 import {
@@ -150,7 +152,7 @@ const OrderDetails = () => {
         </div>
 
         {/* Order Details Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mt-10">
+        <div className="grid md:grid-cols-3 gap-6 mt-10">
           <div className="space-y-2">
             <h3 className="font-semibold text-gray-700 flex items-center">
               <MapPin className="mr-2 text-blue-600" /> Shipping Address
@@ -163,7 +165,6 @@ const OrderDetails = () => {
             </p>
             <p>{data.shippingAddress.country}</p>
           </div>
-
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Truck className="text-blue-600" />
@@ -189,6 +190,36 @@ const OrderDetails = () => {
                 </strong>
               </span>
             </div>
+          </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="text-blue-600" /> {/* Icon for Order Date */}
+              <span className="font-semibold">
+                Order Date: {new Date(data?.orderDate).toLocaleString()}
+              </span>
+            </div>
+            {data.status === "Delivered" && (
+              <>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="text-green-600" />{" "}
+                  {/* Icon for Delivered Date */}
+                  <span className="font-semibold">
+                    Delivery Date:{" "}
+                    {new Date(data?.deliveryDate).toLocaleString()}
+                  </span>
+                </div>
+                {data?.returnPolicy ? (
+                  <div className="flex items-center space-x-2">
+                    <Truck className="text-blue-600" />{" "}
+                    {/* Icon for Expected Delivery Date */}
+                    <span className="font-semibold">
+                      Final Date:{" "}
+                      {new Date(data?.returnWithinDate).toLocaleString()}
+                    </span>
+                  </div>
+                ) : (<span className="text-red-600">Return is not available</span>)}
+              </>
+            )}
           </div>
         </div>
 

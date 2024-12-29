@@ -19,7 +19,7 @@ const OrderSchema = new mongoose.Schema(
         offerAmount: { type: Number, default: 0 },
       },
       default: null,
-      _id: false, 
+      _id: false,
     },
 
     orderNumber: {
@@ -66,7 +66,6 @@ const OrderSchema = new mongoose.Schema(
     },
     offerPrice: {
       type: Number,
-      
     },
 
     shipping: {
@@ -94,7 +93,7 @@ const OrderSchema = new mongoose.Schema(
         "Google Pay",
         "Cash On Delivery",
         "Bank Transfer",
-        'Wallet'
+        "Wallet",
       ],
       required: true,
     },
@@ -116,7 +115,8 @@ const OrderSchema = new mongoose.Schema(
     },
 
     orderDate: { type: Date, default: Date.now },
-    expectedDeliveryDate: { type: Date },
+    deliveryDate: { type: Date },
+    returnWithinDate: { type: Date },
   },
   {
     timestamps: true,

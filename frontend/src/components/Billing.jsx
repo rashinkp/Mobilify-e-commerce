@@ -30,14 +30,14 @@ const subTotal = order.price * (order?.quantity || 1);
         <span>₹{formatter.format(actualPrice)}</span>
       </div>
 
-      <div className="flex items-center justify-between text-gray-600">
+      <div className="flex items-center justify-between  text-green-600">
         <span>Offer Price:</span>
-        <span>₹{formatter.format(order?.offerPrice)}</span>
+        <span>-₹{formatter.format(order?.offerPrice)}</span>
       </div>
 
       <div className="flex items-center justify-between text-gray-600">
         <span>Price after offer :</span>
-        <span>₹{formatter.format(order?.price  || 0)}</span>
+        <span>₹{formatter.format(order?.price || 0)}</span>
       </div>
 
       <div className="flex items-center justify-between text-gray-600">
