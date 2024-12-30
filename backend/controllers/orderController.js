@@ -410,3 +410,20 @@ export const orderDetails = asyncHandler(async (req, res) => {
     ordersToday: ordersToday[0]?.totalCount || 0, 
   });
 });
+
+
+
+export const averageOrderValue = asyncHandler(async (req, res) => {
+  const averageOrder = await Order.aggregate([
+    {
+      $group: {
+        _id: null, // Group all orders together
+        averageValue: { $avg: "$price" }, // Calculate the average of the 'totalPrice' field
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    averageOrderValue: averageOrder[0]?.averageValue || 0, // Return 0 if no orders exist
+  });
+});

@@ -26,7 +26,8 @@ import {
   useGetSalesReportQuery,
 } from "../../redux/slices/salesApiSlice";
 import { RotatingLines } from "react-loader-spinner";
-import { useGetOrderDetailsQuery } from "../../redux/slices/orderApiSlice";
+import { useAverageOrderValueQuery, useGetOrderDetailsQuery } from "../../redux/slices/orderApiSlice";
+import { useGetProductDetailsQuery } from "../../redux/slices/productApiSlice";
 
 const Dashboard = () => {
   const [salesData, setSalesData] = useState([]);
@@ -53,7 +54,21 @@ const Dashboard = () => {
   } = useGetOrderDetailsQuery();
 
 
-  console.log(orderDetails);
+  const {
+    data: productDetails = {},
+    isLoading: productDetailsLoading,
+    isError: productDetailsError,
+  } = useGetProductDetailsQuery();
+
+
+  const {
+    data: averageOrderValue = {},
+    isLoading: averageOrderValueLoading,
+    isError: averageOrderValueError,
+  } = useAverageOrderValueQuery();
+
+
+  console.log(averageOrderValue);
 
 
   
@@ -211,18 +226,14 @@ const Dashboard = () => {
     },
     {
       title: "Total Items",
-      value: data?.totalItems?.toLocaleString("en-IN") || "0",
+      value: productDetails?.productCount?.toLocaleString("en-IN") || "0",
       icon: Package,
-      trend: data?.itemGrowth
-        ? `${data.itemGrowth > 0 ? "+" : ""}${
-            data.itemGrowth
-          }% from last ${timeFilter}`
-        : "-",
+      trend: `${productDetails?.activeProducts} products are active`,
     },
     {
       title: "Average Order Value",
       value:
-        data?.averageOrderValue?.toLocaleString("en-IN", {
+        averageOrderValue?.averageOrderValue?.toLocaleString("en-IN", {
           style: "currency",
           currency: "INR",
           maximumFractionDigits: 0,
@@ -236,7 +247,13 @@ const Dashboard = () => {
     },
   ];
 
-  if (isError || orderDetailsError || salesDetailsError) {
+  if (
+    isError ||
+    orderDetailsError ||
+    salesDetailsError ||
+    productDetailsError ||
+    averageOrderValueError
+  ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -257,7 +274,13 @@ const Dashboard = () => {
     );
   }
 
-  if (isLoading || orderDetailsLoading || salesDetailsLoading) {
+  if (
+    isLoading ||
+    orderDetailsLoading ||
+    salesDetailsLoading ||
+    productDetailsLoading || averageOrderValueLoading
+
+  ) {
     return (
       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
         <RotatingLines

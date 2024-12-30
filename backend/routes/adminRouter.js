@@ -20,12 +20,14 @@ import {
   deleteProduct,
   getAllProducts,
   getProduct,
+  productDetails,
   updateImages,
   updateProduct,
 } from "../controllers/productControllers.js";
 import protect from "../middlewares/protect.js";
 import { getUser } from "../controllers/userControllers.js";
 import {
+  averageOrderValue,
   getAllOrders,
   getAOrder,
   orderDetails,
@@ -108,5 +110,7 @@ router.route("/sales").get(protect("admin"), getSales);
 router.get("/salesDashboard", protect("admin"), getSalesAnalytics);
 router.get('/salesDetails', protect('admin'), totalSalesDetails);
 router.get("/orderDetails", protect("admin"), orderDetails);
+router.get("/productDetails", protect("admin"), productDetails);
+router.get("/averageOrderValue", protect("admin"), averageOrderValue);
 
 export default router;

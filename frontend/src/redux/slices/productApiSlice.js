@@ -75,6 +75,12 @@ export const productApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products", "ProductDetail"],
     }),
+    getProductDetails: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/productDetails`,
+        method:'GET',
+      }),
+    }),
   }),
 });
 
@@ -86,5 +92,6 @@ export const {
   useDeleteProductMutation,
   useUpdateProductMutation,
   useUpdateProductImageMutation,
-  useGetProductsQuery
+  useGetProductsQuery,
+  useGetProductDetailsQuery
 } = productApiSlice;

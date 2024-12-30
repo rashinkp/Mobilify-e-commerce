@@ -266,3 +266,19 @@ export const updateImages = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+
+export const productDetails = asyncHandler(async (req, res) => {
+  const productCount = await Product.countDocuments();
+
+  const activeProducts = await Product.aggregate([
+    { $match: { isSoftDelete: false } },
+    { $group : { _id:'null' , activeCount: {$sum:1}}}
+  ]);
+
+  console.log(activeProducts[0].activeCount);
+  res
+    .status(200)
+    .json({ productCount, activeProducts: activeProducts[0].activeCount });
+})
