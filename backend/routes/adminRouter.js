@@ -28,11 +28,12 @@ import { getUser } from "../controllers/userControllers.js";
 import {
   getAllOrders,
   getAOrder,
+  orderDetails,
   updateOrderStatus,
 } from "../controllers/orderController.js";
 import optionalProtect from "../middlewares/optionalProtect.js";
 import { AddCoupon, editCoupon, getACoupon, getAllCoupon, updateApplicables } from "../controllers/couponController.js";
-import { getSales } from "../controllers/salesController.js";
+import { getSales, getSalesAnalytics, totalSalesDetails } from "../controllers/salesController.js";
 
 const router = express.Router();
 
@@ -102,5 +103,10 @@ router.get('/coupon/:id', protect('admin'), getACoupon);
 //sales related
 
 router.route("/sales").get(protect("admin"), getSales);
+
+
+router.get("/salesDashboard", protect("admin"), getSalesAnalytics);
+router.get('/salesDetails', protect('admin'), totalSalesDetails);
+router.get("/orderDetails", protect("admin"), orderDetails);
 
 export default router;

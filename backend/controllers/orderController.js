@@ -382,3 +382,31 @@ export const updateOrderStatus = async (req, res) => {
     });
   }
 };
+
+
+
+export const orderDetails = asyncHandler(async (req, res) => {
+  const orders = await Order.aggregate([
+    { $group: { _id: null, totalCount: { $sum: "$quantity" } } },
+  ]);
+
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setUTCHours(23, 59, 59, 999);
+
+  const ordersToday = await Order.aggregate([
+    {
+      $match: {
+        orderDate: { $gte: startOfDay, $lte: endOfDay },
+      },
+    },
+    { $count: "totalCount" },
+  ]);
+
+  res.status(200).json({
+    totalOrders: orders[0]?.totalCount || 0, 
+    ordersToday: ordersToday[0]?.totalCount || 0, 
+  });
+});

@@ -64,7 +64,13 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags:['Orders'],
     }),
+    getOrderDetails: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/orderDetails`,
+        method:'GET',
+      }),
+    })
   }),
 });
 
-export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery,  useChangeOrderStatusMutation , useFailedOrderMutation} = orderApiSlice;
+export const {usePlaceOrderMutation , useGetOrderQuery , useGetIndividualOrderQuery , useGetSingleOrderQuery , useGetAllOrdersQuery , useGetAOrderQuery,  useChangeOrderStatusMutation , useFailedOrderMutation , useGetOrderDetailsQuery} = orderApiSlice;
