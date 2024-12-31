@@ -78,6 +78,12 @@ export const productApiSlice = apiSlice.injectEndpoints({
     getProductDetails: builder.query({
       query: () => ({
         url: `${ADMIN_URL}/productDetails`,
+        method: "GET",
+      }),
+    }),
+    getTopSellingProducts: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/topSellingProducts`,
         method:'GET',
       }),
     }),
@@ -93,5 +99,6 @@ export const {
   useUpdateProductMutation,
   useUpdateProductImageMutation,
   useGetProductsQuery,
-  useGetProductDetailsQuery
+  useGetProductDetailsQuery,
+  useGetTopSellingProductsQuery
 } = productApiSlice;

@@ -4,6 +4,7 @@ import cloudinary from "../config/cloudinary.js";
 import mongoose from "mongoose";
 import WishList from "../models/wishListSchema.js";
 import Category from "../models/categorySchema.js";
+import Order from "../models/orderSchema.js";
 
 export const addProduct = asyncHandler(async (req, res) => {
   const product = req.body;
@@ -267,18 +268,43 @@ export const updateImages = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 export const productDetails = asyncHandler(async (req, res) => {
   const productCount = await Product.countDocuments();
 
   const activeProducts = await Product.aggregate([
     { $match: { isSoftDelete: false } },
-    { $group : { _id:'null' , activeCount: {$sum:1}}}
+    { $group: { _id: "null", activeCount: { $sum: 1 } } },
   ]);
 
   console.log(activeProducts[0].activeCount);
   res
     .status(200)
     .json({ productCount, activeProducts: activeProducts[0].activeCount });
-})
+});
+
+export const topSellingProducts = asyncHandler(async (req, res) => {
+  const mostSoled = await Order.aggregate([
+    {
+      $group: {
+        _id: "$name",
+        sales: { $sum: 1 },
+        totalRevenue: { $sum: "$price" },
+      },
+    },
+
+    { $sort: { sales: -1 } },
+    { $limit: 5 },
+    {
+      $project: {
+        name: "$_id",
+        _id:0,
+        sales: 1,
+        totalRevenue: 1,
+      },
+    },
+  ]);
+
+  console.log(mostSoled);
+
+  res.status(200).json(mostSoled);
+});

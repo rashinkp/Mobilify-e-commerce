@@ -26,23 +26,54 @@ import {
   useGetSalesReportQuery,
 } from "../../redux/slices/salesApiSlice";
 import { RotatingLines } from "react-loader-spinner";
-import { useAverageOrderValueQuery, useGetOrderDetailsQuery } from "../../redux/slices/orderApiSlice";
-import { useGetProductDetailsQuery } from "../../redux/slices/productApiSlice";
+import {
+  useAverageOrderValueQuery,
+  useGetOrderDetailsQuery,
+} from "../../redux/slices/orderApiSlice";
+import {
+  useGetProductDetailsQuery,
+  useGetTopSellingProductsQuery,
+} from "../../redux/slices/productApiSlice";
+import TableComponent from "../../components/admin/BestSellerTable";
+import { useBestSellingCategoryQuery } from "../../redux/slices/categoryApiSlices";
+
+const products = [
+  { name: "iPhone 13 Pro", sales: "1,234", revenue: "$1,234,567", rank: "#1" },
+  { name: "Samsung S21", sales: "987", revenue: "$987,654", rank: "#2" },
+  // Add more products...
+];
+
+const categories = [
+  {
+    category: "Smartphones",
+    sales: "5,432",
+    revenue: "$5,432,100",
+    rank: "#1",
+  },
+  { category: "Laptops", sales: "4,321", revenue: "$4,321,000", rank: "#2" },
+  // Add more categories...
+];
+
+const brands = [
+  { brand: "Apple", sales: "8,765", revenue: "$8,765,432", rank: "#1" },
+  { brand: "Samsung", sales: "7,654", revenue: "$7,654,321", rank: "#2" },
+  // Add more brands...
+];
 
 const Dashboard = () => {
   const [salesData, setSalesData] = useState([]);
   const [timeFilter, setTimeFilter] = useState("daily");
 
-    const {
-      data = {},
-      isLoading,
-      isError,
-      error,
-      refetch,
+  const {
+    data = {},
+    isLoading,
+    isError,
+    error,
+    refetch,
   } = useGetSalesForDashboardQuery({ timeFilter });
 
   const {
-    data:salesDetails = {},
+    data: salesDetails = {},
     isLoading: salesDetailsLoading,
     isError: salesDetailsError,
   } = useGetSalesDetailsQuery();
@@ -53,13 +84,11 @@ const Dashboard = () => {
     isError: orderDetailsError,
   } = useGetOrderDetailsQuery();
 
-
   const {
     data: productDetails = {},
     isLoading: productDetailsLoading,
     isError: productDetailsError,
   } = useGetProductDetailsQuery();
-
 
   const {
     data: averageOrderValue = {},
@@ -67,11 +96,19 @@ const Dashboard = () => {
     isError: averageOrderValueError,
   } = useAverageOrderValueQuery();
 
+  const {
+    data: topProducts = {},
+    isLoading: topProductsLoading,
+    isError: topProductsError,
+  } = useGetTopSellingProductsQuery();
 
-  console.log(averageOrderValue);
+  const {
+    data: topCategory = {},
+    isLoading: topCategoryLoading,
+    isError: topCategoryError,
+  } = useBestSellingCategoryQuery();
 
-
-  
+  // console.log(topCategory);
 
   const transformTimeSeriesData = (data, timeframe = "monthly", count = 6) => {
     const currentDate = new Date();
@@ -202,9 +239,8 @@ const Dashboard = () => {
       setSalesData(transformedData);
     } else {
       setSalesData([]);
-    } 
+    }
   }, [data]);
-
 
   const stats = [
     {
@@ -216,13 +252,13 @@ const Dashboard = () => {
           maximumFractionDigits: 0,
         }) || "₹0",
       icon: DollarSign,
-      trend: `Total Sales Count ${salesDetails?.totalCount}`
+      trend: `Total Sales Count ${salesDetails?.totalCount}`,
     },
     {
       title: "Total Orders",
       value: orderDetails?.totalOrders?.toLocaleString("en-IN") || "0",
       icon: ShoppingBag,
-      trend: `Today ${orderDetails?.ordersToday} orders recieved`
+      trend: `Today ${orderDetails?.ordersToday} orders recieved`,
     },
     {
       title: "Total Items",
@@ -252,7 +288,9 @@ const Dashboard = () => {
     orderDetailsError ||
     salesDetailsError ||
     productDetailsError ||
-    averageOrderValueError
+    averageOrderValueError ||
+    topProductsError ||
+    topCategoryError
   ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -278,8 +316,10 @@ const Dashboard = () => {
     isLoading ||
     orderDetailsLoading ||
     salesDetailsLoading ||
-    productDetailsLoading || averageOrderValueLoading
-
+    productDetailsLoading ||
+    averageOrderValueLoading ||
+    topProductsLoading ||
+    topCategoryLoading
   ) {
     return (
       <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -395,85 +435,24 @@ const Dashboard = () => {
       </div>
 
       {/* Three Column Grid */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
-        {/* Top Products */}
-        {/* <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b">
-            <div className="flex items-center gap-2">
-              <Award className="w-5 h-5 text-blue-600" />
-              <h2 className="text-xl font-semibold">Best Selling Products</h2>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {topProducts.slice(0, 5).map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-600">
-                      #{index + 1}
-                    </span>
-                    <span className="text-sm font-medium">{product.name}</span>
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {product.revenue}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div> */}
-
-        {/* Top Categories */}
-        {/* <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b">
-            <div className="flex items-center gap-2">
-              <Tags className="w-5 h-5 text-blue-600" />
-              <h2 className="text-xl font-semibold">Best Selling Categories</h2>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {topCategories.slice(0, 5).map((category, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-600">
-                      #{index + 1}
-                    </span>
-                    <span className="text-sm font-medium">{category.name}</span>
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {category.revenue}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div> */}
-
-        {/* Top Brands */}
-        {/* <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b">
-            <div className="flex items-center gap-2">
-              <Store className="w-5 h-5 text-blue-600" />
-              <h2 className="text-xl font-semibold">Best Selling Brands</h2>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {topBrands.slice(0, 5).map((brand, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-600">
-                      #{index + 1}
-                    </span>
-                    <span className="text-sm font-medium">{brand.name}</span>
-                  </div>
-                  <span className="text-sm text-gray-600">{brand.revenue}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div> */}
+      <div className="container mx-auto py-8">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+          <TableComponent
+            title="Top 5 Best Selling Products"
+            headers={["Product Name", "Sales", "Revenue", "Rank"]}
+            data={topProducts}
+          />
+          <TableComponent
+            title="Top Best Selling Categories"
+            headers={["Category", "Sales", "Revenue"]}
+            data={topCategory}
+          />
+          {/* <TableComponent
+            title="Top 10 Best Selling Brands"
+            headers={["Brand", "Sales", "Revenue", "Rank"]}
+            data={brands}
+          /> */}
+        </div>
       </div>
     </div>
   );

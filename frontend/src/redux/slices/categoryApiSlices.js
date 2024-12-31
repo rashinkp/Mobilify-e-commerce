@@ -14,14 +14,14 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Category"],
     }),
     getAllCategory: builder.query({
-      query: ({filterBy='Active'}) => ({
+      query: ({ filterBy = "Active" }) => ({
         url: `${ADMIN_URL}/category?filterBy=${filterBy}`,
         method: "GET",
       }),
       providesTags: ["Category"],
     }),
     editCategory: builder.mutation({
-      query: ({categoryId, data}) => ({
+      query: ({ categoryId, data }) => ({
         url: `${ADMIN_URL}/category/${categoryId}`,
         method: "PUT",
         body: data,
@@ -35,7 +35,13 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Category"],
     }),
+    bestSellingCategory: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/bestSellingCategory`,
+        method:'GET',
+      }),
+    }),
   }),
 });
 
-export const {useAddCategoryMutation, useGetAllCategoryQuery, useDeleteCategoryMutation , useEditCategoryMutation } = categoryApiSlice;
+export const {useAddCategoryMutation, useGetAllCategoryQuery, useDeleteCategoryMutation , useEditCategoryMutation, useBestSellingCategoryQuery } = categoryApiSlice;

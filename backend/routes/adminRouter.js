@@ -11,6 +11,7 @@ import {
 } from "../controllers/adminControllers.js";
 import {
   addCategory,
+  bestSellingCategory,
   deleteCategory,
   getAllCategory,
   updateCategory,
@@ -21,6 +22,7 @@ import {
   getAllProducts,
   getProduct,
   productDetails,
+  topSellingProducts,
   updateImages,
   updateProduct,
 } from "../controllers/productControllers.js";
@@ -113,4 +115,9 @@ router.get("/orderDetails", protect("admin"), orderDetails);
 router.get("/productDetails", protect("admin"), productDetails);
 router.get("/averageOrderValue", protect("admin"), averageOrderValue);
 
+
+
+// top list related
+router.get("/topSellingProducts", protect("admin"), topSellingProducts);
+router.get("/bestSellingCategory", protect("admin"), bestSellingCategory);
 export default router;

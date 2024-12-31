@@ -1,8 +1,10 @@
 import asyncHandler from "express-async-handler";
 import Category from "../models/categorySchema.js";
+import Product from "../models/productSchema.js";
+import Order from "../models/orderSchema.js";
 
 export const addCategory = asyncHandler(async (req, res) => {
-  const { name, description,offer } = req.body;
+  const { name, description, offer } = req.body;
   const categoryExists = await Category.findOne({ name });
 
   if (offer && (offer > 100 || offer < 0)) {
@@ -26,7 +28,7 @@ export const addCategory = asyncHandler(async (req, res) => {
       _id: category._id,
       name: category.name,
       description: category.description,
-      offer:category.offer,
+      offer: category.offer,
     });
   } else {
     res.status(400);
@@ -105,4 +107,49 @@ export const updateCategory = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Category not found");
   }
+});
+
+export const bestSellingCategory = asyncHandler(async (req, res) => {
+  const bestSeller = await Order.aggregate([
+    {
+      $lookup: {
+        from: "products",
+        localField: "productId",
+        foreignField: "_id",
+        as: "productDetails",
+      },
+    },
+    { $unwind: "$productDetails" },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "productDetails.categoryId",
+        foreignField: "_id",
+        as: "categoryDetails",
+      },
+    },
+    { $unwind: "$categoryDetails" },
+    {
+      $group: {
+        _id: "$categoryDetails.name",
+        sales: { $sum: 1 },
+        totalRevenue: { $sum: "$price" },
+      },
+    },
+
+    { $sort: { sales: -1 } },
+    { $limit: 5 },
+    {
+      $project: {
+        name: "$_id",
+        sales: 1,
+        totalRevenue: 1,
+        _id: 0,
+      },
+    },
+  ]);
+
+  // console.log(bestSeller);
+
+  res.status(200).json(bestSeller);
 });
