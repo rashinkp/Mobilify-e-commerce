@@ -13,7 +13,7 @@ import {
   List,
   Sun,
   Moon,
-  Copyright
+  Copyright,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -32,11 +32,7 @@ const SidebarLink = ({ icon: Icon, label, path }) => {
         group flex items-center 
         px-4 py-3 
         transition-colors duration-200 
-        ${
-          isActive
-            ? "  text-blue-600"
-            : "  text-gray-600 dark:text-gray-300"
-        }
+        ${isActive ? "  text-blue-600" : "  text-gray-600 dark:text-gray-300"}
         rounded-lg
         cursor-pointer
       `}
@@ -59,8 +55,6 @@ const SidebarLink = ({ icon: Icon, label, path }) => {
     </div>
   );
 };
-
-
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -91,6 +85,11 @@ const Sidebar = () => {
       path: "/admin",
     },
     {
+      icon: BarChart3,
+      label: "Sales",
+      path: "/admin/manage-sales",
+    },
+    {
       icon: Users,
       label: "User Management",
       path: "/admin/manage-users",
@@ -116,15 +115,11 @@ const Sidebar = () => {
       path: "/admin/manage-brands",
     },
     {
-      icon: BarChart3,
-      label: "Sales",
-      path: "/admin/manage-sales",
-    },
-    {
       icon: Tags,
-      label: "Coupons",
+      label: "Coupon Management",
       path: "/admin/manage-coupon",
     },
+
     {
       icon: User,
       label: "Admin Profile",
