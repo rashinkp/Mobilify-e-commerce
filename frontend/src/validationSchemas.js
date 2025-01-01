@@ -318,3 +318,20 @@ export const couponValidation = Yup.object().shape({
     .required("Expiry date is required")
     .min(new Date(), "Expiry date must be in the future"),
 });
+
+//review related validations
+
+export const reviewSchema = Yup.object().shape({
+  rating: Yup.number()
+    .min(1, "Please select a rating")
+    .max(5, "Invalid rating")
+    .required("Rating is required"),
+  title: Yup.string()
+    .min(5, "Title must be at least 5 characters")
+    .max(50, "Title must not exceed 50 characters")
+    .required("Title is required"),
+  description: Yup.string()
+    .min(20, "Description must be at least 20 characters")
+    .max(500, "Description must not exceed 500 characters")
+    .required("Description is required"),
+});

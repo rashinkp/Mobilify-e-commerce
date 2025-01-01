@@ -104,7 +104,7 @@ const ProductDetails = () => {
                 product={product}
                 onFavClick={handleFavClick}
               />
-              <button
+              {/* <button
                 onClick={handleFavClick}
                 className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-red-500 transition"
                 aria-label="Add to Wishlist"
@@ -118,7 +118,7 @@ const ProductDetails = () => {
                 ) : (
                   <FontAwesomeIcon icon="fa-regular fa-heart" size="xl" />
                 )}
-              </button>
+              </button> */}
             </div>
 
             <div className="flex justify-center mt-4 space-x-3">

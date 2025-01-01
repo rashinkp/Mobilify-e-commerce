@@ -31,7 +31,7 @@ import jsPDF from "jspdf";
 import { handleDownloadInvoice } from "../../components/downloadInvoice";
 import PriceBreakdown from "../../components/Billing";
 import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice";
-
+import ProductReviewForm from "../../components/reviews/ProductReviewForm";
 
 const OrderDetailsPage = () => {
   // State for managing order actions
@@ -39,8 +39,7 @@ const OrderDetailsPage = () => {
   const [orderCancelled, setOrderCancelled] = useState(false);
   const [confirmReturn, setConfirmReturn] = useState(false);
   const [verifyPayment] = useVerifyPaymentMutation();
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
 
   const { ordId: orderId } = useParams();
 
@@ -156,39 +155,37 @@ const OrderDetailsPage = () => {
     }
   };
 
+  const handleRazorpaySuccess = useCallback(
+    async (razorpayOrderData, response) => {
+      console.log(razorpayOrderData);
+      try {
+        const paymentId = response.razorpay_payment_id;
+        const orderId = razorpayOrderData._id;
 
-   const handleRazorpaySuccess = useCallback(
-     async (razorpayOrderData, response) => {
-       console.log(razorpayOrderData);
-        try {
-          const paymentId = response.razorpay_payment_id;
-          const orderId = razorpayOrderData._id;
-  
-          const verifyPaymentResponse = await verifyPayment({
+        const verifyPaymentResponse = await verifyPayment({
+          paymentId,
+        });
+
+        if (verifyPaymentResponse) {
+          await changeStatus({
+            orderId,
+            newPaymentStatus: "Successful",
+            newStatus: razorpayOrderData?.status,
             paymentId,
-          });
-  
-          if (verifyPaymentResponse) {
-            await changeStatus({
-              orderId,
-              newPaymentStatus: "Successful",
-              newStatus: razorpayOrderData?.status,
-              paymentId,
-              orderData:razorpayOrderData,
-            }).unwrap();
+            orderData: razorpayOrderData,
+          }).unwrap();
 
-            successToast("Payment successful!");
-          } else {
-            errorToast("Payment verification failed. Please try again.");
-          }
-        } catch (error) {
-          errorToast("Error processing payment. Please try again.");
-          console.error("Payment error:", error);
+          successToast("Payment successful!");
+        } else {
+          errorToast("Payment verification failed. Please try again.");
         }
-      },
-      [verifyPayment, navigate]
-    );
-
+      } catch (error) {
+        errorToast("Error processing payment. Please try again.");
+        console.error("Payment error:", error);
+      }
+    },
+    [verifyPayment, navigate]
+  );
 
   const triggerRazorpayCheckout = useCallback(
     (razorpayOrderData) => {
@@ -256,8 +253,6 @@ const OrderDetailsPage = () => {
       </div>
     );
   }
-
-  
 
   return (
     <>
@@ -472,7 +467,11 @@ const OrderDetailsPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping:</span>
-                  <span className="font-medium">{order.shipping?.id === 'express' ? 'Express (2-3 days)' : 'Regular(7 days)'}</span>
+                  <span className="font-medium">
+                    {order.shipping?.id === "express"
+                      ? "Express (2-3 days)"
+                      : "Regular(7 days)"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Status:</span>
@@ -574,7 +573,11 @@ const OrderDetailsPage = () => {
 
           {/* Order Summary */}
         </div>
-        <div></div>
+        {order.status === "Delivered" && (
+          <div>
+            <ProductReviewForm order={order} />
+          </div>
+        )}
       </div>
     </>
   );

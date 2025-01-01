@@ -11,6 +11,7 @@ import { applyCoupon, getAllApplicableCoupons } from '../controllers/couponContr
 import { addAmountToWallet, getOrCreateWallet, processTransaction } from '../controllers/walletController.js';
 import { addToFailedOrders } from '../controllers/failedOrderController.js';
 import { getSalesAnalytics } from '../controllers/salesController.js';
+import { addReview, getAReview, productReview } from '../controllers/reviewController.js';
 
 const router = express.Router();
 
@@ -99,7 +100,9 @@ router.post("/allCoupon", protect("user"), getAllApplicableCoupons);
 
 router.route("/failedOrder").post(protect("user"), addToFailedOrders);
 
-
-
+//review section
+router.route("/review").post(protect("user"), addReview);
+router.get("/getAReview/:id", protect("user"), getAReview);
+router.get("/productReview/:id", protect("user"), productReview);
 
 export default router;
