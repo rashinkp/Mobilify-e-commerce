@@ -4,6 +4,7 @@ import {
   authAdmin,
   blockUser,
   deleteBrand,
+  getAdminData,
   getAllBrand,
   getAllUsers,
   logoutAdmin,
@@ -120,4 +121,9 @@ router.get("/averageOrderValue", protect("admin"), averageOrderValue);
 // top list related
 router.get("/topSellingProducts", protect("admin"), topSellingProducts);
 router.get("/bestSellingCategory", protect("admin"), bestSellingCategory);
+
+
+//admin profile
+
+router.route("/profile").get( protect("admin"), getAdminData);
 export default router;

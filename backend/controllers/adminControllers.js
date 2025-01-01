@@ -173,3 +173,16 @@ export const deleteBrand = asyncHandler(async (req, res) => {
     res.status(404).json({message:'Brand not found'})
   }
 })
+
+
+export const getAdminData = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+  
+  const admin = await Admin.findById(userId);
+
+  if (!admin) {
+    return res.status(404).json({ message: 'No such admin found' });
+  }
+
+  res.status(200).json(admin);
+})
