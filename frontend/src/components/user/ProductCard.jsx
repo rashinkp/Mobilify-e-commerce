@@ -114,14 +114,33 @@ const finalPrice = () => {
           </div>
           <p className="text-darkGray mb-2">{description}</p>
           <div onClick={handleClick} className="flex items-center mb-4">
-            <span className="text-green-500 text-sm flex gap-1">
-              <FontAwesomeIcon icon="fa-solid fa-star" />
-              <FontAwesomeIcon icon="fa-solid fa-star" />
-              <FontAwesomeIcon icon="fa-solid fa-star" />
-              <FontAwesomeIcon icon="fa-solid fa-star" />
-              <FontAwesomeIcon icon="fa-solid fa-star" />
+            {[...Array(5)].map((_, i) => {
+                                const averageRating = product?.reviewStats?.avgRating || 0;
+                                const fullStars = Math.floor(averageRating);
+                                const hasHalfStar =
+                                  averageRating % 1 !== 0 && i === fullStars;
+            
+                                return (
+                                  <FontAwesomeIcon
+                                    key={i}
+                                    icon={
+                                      i < fullStars
+                                        ? "fa-solid fa-star"
+                                        : hasHalfStar
+                                        ? "fa-solid fa-star-half-alt"
+                                        : "fa-regular fa-star"
+                                    }
+                                    className={
+                                      i < fullStars || hasHalfStar
+                                        ? "text-yellow-500"
+                                        : "text-gray-300 dark:text-gray-600"
+                                    }
+                                  />
+                                );
+                              })}
+            <span className="text-darkGray ml-2">
+              ({product?.reviewStats?.reviewCount || 0})
             </span>
-            <span className="text-darkGray ml-2">(156)</span>
           </div>
           <div className="cart-btn">
             <AddCartButton

@@ -58,9 +58,9 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
       {
         $lookup: {
-          from: "categories", // Name of the category collection
-          localField: "categoryId", // Field in Product
-          foreignField: "_id", // Field in Category
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
           as: "categoryDetails",
         },
       },
@@ -81,6 +81,32 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
 
+      // Add lookup for reviews
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "productId",
+          as: "reviews",
+        },
+      },
+
+      // Add review statistics
+      {
+        $addFields: {
+          reviewStats: {
+            avgRating: {
+              $cond: {
+                if: { $gt: [{ $size: "$reviews" }, 0] },
+                then: { $avg: "$reviews.rating" },
+                else: 0,
+              },
+            },
+            reviewCount: { $size: "$reviews" },
+          },
+        },
+      },
+
       {
         $sort: {
           [sortBy]: order === "desc" ? -1 : 1,
@@ -88,12 +114,14 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
 
-      // Step 6: Add pagination
       { $skip: Number(skip) },
       { $limit: Number(limit) },
     ];
 
     const products = await Product.aggregate(pipeline);
+
+
+    console.log(products);
 
 
     const totalCountPipeline = [
