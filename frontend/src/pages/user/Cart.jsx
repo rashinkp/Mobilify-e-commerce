@@ -8,12 +8,16 @@ import {
 import { RotatingLines } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router";
 import { errorToast, successToast } from "../../components/toast";
+import { useDispatch } from "react-redux";
+import { decrementCartCount, incrementCartCount } from "../../redux/slices/cartCount";
 
 const ShoppingCart = () => {
   const { data = {}, isLoading, isError, error, refetch } = useGetCartQuery();
   const [deletItem] = useDeleteFromCartMutation();
   const [updateCartQuantity] = useUpdateProductQuantityMutation();
+  const dispatch = useDispatch()
   const cartItems = data?.cartItems || [];
+
 
   const [products, setProducts] = useState([]);
 
@@ -43,7 +47,9 @@ const ShoppingCart = () => {
     }, null);
 
     try {
+      dispatch(incrementCartCount());
       await updateCartQuantity({ productId, updatedQuantity }).unwrap();
+      
     } catch (error) {
       errorToast(
         error?.message ||
@@ -73,7 +79,9 @@ const ShoppingCart = () => {
     const updatedQuantity = product.quantity - 1;
 
     try {
+      
       await updateCartQuantity({ productId, updatedQuantity }).unwrap();
+      dispatch(decrementCartCount());
     } catch (error) {
       errorToast(
         error?.message || error?.data || "Could not update cart quantity"
@@ -82,9 +90,11 @@ const ShoppingCart = () => {
     }
   };
 
-  const removeProduct = async (productId) => {
+
+  const removeProduct = async ({productId , quantity}) => {
     try {
       await deletItem({ productId });
+      dispatch(decrementCartCount(quantity))
       successToast("Product removed from cart");
     } catch (error) {
       errorToast(
@@ -188,7 +198,7 @@ const ShoppingCart = () => {
                       Out of Stock
                     </span>
                     <button
-                      onClick={() => removeProduct(product.productId)}
+                      onClick={() => removeProduct(product)}
                       className="bg-red-100 text-red-600 px-4 py-2 rounded-full hover:bg-red-200 transition-colors flex items-center space-x-2"
                     >
                       <Trash2 size={16} />
@@ -253,7 +263,7 @@ const ShoppingCart = () => {
                     onClick={() => incrementQuantity(product.productId)}
                     disabled={
                       product?.productDetails?.stock < 1 ||
-                      product.quantity >= 10
+                      product.quantity >= 3
                     }
                     className={`p-2 rounded-full disabled:cursor-not-allowed disabled: dark:bg-slate-700 ${
                       product?.productDetails?.stock < 1
@@ -265,7 +275,7 @@ const ShoppingCart = () => {
                   </button>
 
                   <button
-                    onClick={() => removeProduct(product.productId)}
+                    onClick={() => removeProduct(product)}
                     className="p-2 text-red-500 hover:bg-red-50 rounded-full"
                   >
                     <Trash2 size={20} />

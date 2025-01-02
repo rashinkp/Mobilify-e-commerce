@@ -96,6 +96,7 @@ export const productReview = asyncHandler(async (req, res) => {
           rating: 1, 
           title: 1,
           description: 1, 
+          updatedAt:1,
           userInfo: {
             name: "$userDetails.name", 
             profilePicture: "$userDetails.picture.secure_url", 

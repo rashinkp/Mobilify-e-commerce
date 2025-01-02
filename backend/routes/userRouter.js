@@ -3,7 +3,7 @@ import { changePassword, forgotPassword, getUser, logoutUser, registerUser, sign
 import {resendOTP, resendOtpEamil, sendOTP, sendOTPToEmail, verifyOtp} from "../controllers/otpController.js";
 import protect from '../middlewares/protect.js';
 import { addAddress, deleteAddress, getAddress, updateAddress } from '../controllers/addressController.js';
-import { addToCart, deleteFromCart, getCart, updateCartQuantity } from '../controllers/cartController.js';
+import { addToCart, cartCount, deleteFromCart, getCart, updateCartQuantity } from '../controllers/cartController.js';
 import { addOrder, getAllOrdersWithEachProducts, getOrder, getOrdersWithSingleProducts, updateOrderStatus } from '../controllers/orderController.js';
 import { savePayment, verifyPayment } from '../controllers/paymentController.js';
 import { addAllToCart, getAllWishListProducts, removeFromWishlist, toggleWishList } from '../controllers/wishListController.js';
@@ -104,5 +104,9 @@ router.route("/failedOrder").post(protect("user"), addToFailedOrders);
 router.route("/review").post(protect("user"), addReview);
 router.get("/getAReview/:id", protect("user"), getAReview);
 router.get("/productReview/:id", protect("user"), productReview);
+
+
+
+router.get("/cartCount", protect("user"), cartCount);
 
 export default router;

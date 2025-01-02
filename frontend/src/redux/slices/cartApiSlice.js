@@ -36,7 +36,14 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Cart"],
     }),
+    getCartCount: builder.query({
+      query: () => ({
+        url: `${USER_URL}/cartCount`,
+        method:'GET'
+      }),
+      providesTags: ['cartCount']
+    }),
   }),
 });
 
-export const {useAddToCartMutation , useGetCartQuery, useDeleteFromCartMutation, useUpdateProductQuantityMutation} = cartApiSlice;
+export const {useAddToCartMutation , useGetCartQuery, useDeleteFromCartMutation, useUpdateProductQuantityMutation , useGetCartCountQuery} = cartApiSlice;

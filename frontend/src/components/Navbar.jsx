@@ -23,15 +23,18 @@ const Navbar = () => {
   const location = useLocation();
 
   const { userInfo } = useSelector((state) => state.userAuth);
-
+  const cartCount = useSelector((state) => state.cart.count);
   //skips api calling if the userinfo does not exist
-  const { data, isLoading, isError, error, refetch } =
-    useGetUserQuery(undefined,{ skip: !userInfo });
-  
+  const { data, isLoading, isError, error, refetch } = useGetUserQuery(
+    undefined,
+    { skip: !userInfo }
+  );
+
+
+  console.log(cartCount);
+
   const { user } = data || {};
   const { picture } = user || {};
-
-  
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.theme);
@@ -95,24 +98,6 @@ const Navbar = () => {
     {
       text: "about us",
       path: "/user/about",
-    },
-  ];
-
-  const rightSection = [
-    {
-      text: "Wish List",
-      icon: <Heart className="text-black dark:text-white" />,
-      path: "/user/wishlist",
-    },
-    {
-      text: "My Cart",
-      icon: <ShoppingCart className="text-black dark:text-white" />,
-      path: "/user/cart",
-    },
-    {
-      text: "Toggle Theme",
-      icon: <SunMoon className="text-black dark:text-white" />,
-      onClick: () => dispatch(toggleTheme()),
     },
   ];
 
@@ -204,12 +189,33 @@ const Navbar = () => {
         {userInfo ? (
           <div className="hidden lg:flex items-center gap-4 lg:gap-6">
             {/* Updated icons to prevent errors and ensure they appear */}
-            {rightSection &&
-              rightSection.map((link, index) => (
-                <Link key={index} to={link.path} onClick={link.onClick}>
-                  {link.icon}
-                </Link>
-              ))}
+
+            <div className="flex space-x-4 items-center">
+              {/* Wishlist Link */}
+              <Link to="/user/wishlist" className="relative">
+                <Heart className="text-black dark:text-white" size={30} />
+                {/* Count Badge */}
+                <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {0}
+                </div>
+              </Link>
+
+              {/* Cart Link */}
+              <Link to="/user/cart" className="relative">
+                <ShoppingCart
+                  className="text-black dark:text-white"
+                  size={30}
+                />
+                {/* Count Badge */}
+                <div className="absolute -top-2 -right-2 w-5 h-5 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount || 0}
+                </div>
+              </Link>
+            </div>
+
+            <Link onClick={() => dispatch(toggleTheme())}>
+              <SunMoon className="text-black dark:text-white" size={30} />
+            </Link>
 
             <div className="flex items-center gap-2 cursor-pointer relative">
               <div className="w-8 h-8 bg-lightBackground rounded-full overflow-hidden">
@@ -304,7 +310,6 @@ const Navbar = () => {
               ))}
               {userInfo ? (
                 <div className="flex items-center gap-3 mt-2">
-
                   {rightSection.map((link, index) => (
                     <Link to={link.path} onClick={link.onClick} key={index}>
                       <li>{link.icon}</li>

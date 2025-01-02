@@ -1,89 +1,129 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useProductReviewQuery } from "../../redux/slices/reviewApiSlice";
-import noImage from "../../assets/noImage.png";
 import { RotatingLines } from "react-loader-spinner";
-import { Star } from "lucide-react";
+import { Star, ThumbsUp, MessageSquare, Calendar } from "lucide-react";
 
 const Review = () => {
   const { id } = useParams();
   const [reviews, setReviews] = useState(null);
-
-  const {
-    data = {},
-    isError,
-    isLoading,
-    refetch,
-  } = useProductReviewQuery({ productId: id });
+  const { data = {}, isLoading } = useProductReviewQuery({ productId: id });
 
   useEffect(() => {
-    if (data) {
-      setReviews(data);
-    }
+    if (data) setReviews(data);
   }, [data]);
 
-  // Star Rating Component
-  const StarRating = ({ rating }) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-5 h-5 ${
-              star <= rating
-                ? "fill-yellow-400 text-yellow-400"
-                : "fill-gray-200 text-gray-200"
-            }`}
-          />
-        ))}
-      </div>
-    );
-  };
+  const StarRating = ({ rating }) => (
+    <div className="flex">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={18}
+          className={`${
+            star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-10 backdrop-blur-sm bg-black/30 flex justify-center items-center">
+      <div className="fixed inset-0 z-10 bg-black/30 backdrop-blur-sm flex items-center justify-center">
         <RotatingLines
           visible={true}
           height="50"
           width="50"
-          color="grey"
           strokeColor="#fff"
           strokeWidth="2"
-          animationDuration="8"
-          ariaLabel="rotating-lines-loading"
         />
       </div>
     );
   }
 
   return (
-    <>
-      {reviews?.length > 0 &&
-        reviews?.map((review, index) => (
-          <div key={index} className="p-6 m-5 mx-auto bg-white border-b">
-            <div className="flex items-center mb-4">
-              <img
-                className="w-12 h-12 rounded-full object-cover border border-gray-300 mr-4"
-                src={review?.userInfo?.profilePicture || noImage}
-                alt="User profile"
-              />
-              <div className="flex-1">
-                <div className="text-lg font-semibold text-gray-800 dark:text-white">
-                  {review?.userInfo?.name || "Not available"}
-                </div>
-                <div className="ml-2">
-                  <StarRating rating={review?.rating} />
-                </div>
-              </div>
-            </div>
-            <p className="font-bold">{review?.title}</p>
-            <p className="text-gray-700 dark:text-lightText">
-              {review?.description}
-            </p>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {reviews?.length > 0 ? (
+        <>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Customer Reviews
+            </h2>
+            <p className="text-gray-600">{reviews.length} reviews</p>
           </div>
-        ))}
-    </>
+
+          <div className="space-y-6">
+            {reviews.map((review, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-sm p-6 border border-gray-100"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
+                      <img
+                        src={
+                          review?.userInfo?.profilePicture ||
+                          "/api/placeholder/48/48"
+                        }
+                        alt={review?.userInfo?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        {review?.userInfo?.name || "Anonymous"}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <StarRating rating={review.rating} />
+                        <span className="text-sm text-gray-600">
+                          {review.rating}/5
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <time className="text-sm text-gray-500">
+                    {new Date(review.updatedAt).toLocaleDateString()}
+                  </time>
+                </div>
+
+                <div className="mt-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    {review.title}
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed">
+                    {review.description}
+                  </p>
+                </div>
+
+                {/* <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-6">
+                  <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700">
+                    <ThumbsUp size={16} />
+                    <span className="text-sm">Helpful</span>
+                  </button>
+                  <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700">
+                    <MessageSquare size={16} />
+                    <span className="text-sm">Reply</span>
+                  </button>
+                </div> */}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="text-center py-12">
+          <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-4 text-lg font-semibold text-gray-900">
+            No reviews yet
+          </h3>
+          <p className="mt-2 text-gray-500">
+            Be the first to review this product
+          </p>
+        </div>
+      )}
+    </div>
   );
 };
 

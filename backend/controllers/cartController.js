@@ -45,7 +45,7 @@ export const addToCart = asyncHandler(async (req, res) => {
     );
 
     if (itemIndex > -1) {
-      if (cart.cartItems[itemIndex].quantity >= 10) {
+      if (cart.cartItems[itemIndex].quantity >= 3) {
         return res
           .status(400)
           .json({ message: "Maximum limit to cart reached" });
@@ -137,8 +137,6 @@ export const getCart = asyncHandler(async (req, res) => {
   ]);
 
 
-  console.log(cart[0]);
-
   res.status(200).json(cart[0]);
 });
 
@@ -214,4 +212,40 @@ export const updateCartQuantity = asyncHandler(async (req, res) => {
   await cart.save();
 
   res.status(200).json(cart);
+});
+
+
+
+
+
+export const cartCount = asyncHandler(async (req, res) => {
+  const { userId } = req.user;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    const cartCount = await Cart.aggregate([
+      { $match: { userId: userObjectId } }, // Match the user's cart
+      { $unwind: "$cartItems" }, // Break down cartItems array
+      { $group: { _id: null, totalQuantity: { $sum: "$cartItems.quantity" } } }, // Sum up quantities
+    ]);
+
+    // Extract totalQuantity or set it to 0 if no items found
+    const totalQuantity = cartCount.length > 0 ? cartCount[0].totalQuantity : 0;
+
+    console.log(totalQuantity, 'total Quantity');
+
+    // Send the response
+    res.status(200).json({ totalQuantity });
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({
+      message: "Error calculating cart count",
+      error: error.message,
+    });
+  }
 });

@@ -1,151 +1,156 @@
-import React, { useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AddCartButton from "./AddCartButton";
+import React from "react";
 import { useNavigate } from "react-router";
-import noImage from "../../assets/noImage.png";
+import { Heart, Star, StarHalf } from "lucide-react";
+import AddCartButton from "./AddCartButton";
 import { useToggleWishListMutation } from "../../redux/slices/wishlistApiSlice";
 
 const ProductCard = ({ product, refetch }) => {
-  const { name, price, description, _id } = product;
-  const [toggleWishlist] = useToggleWishListMutation();
   const navigate = useNavigate();
-
-
-  console.log(product);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [navigate]);
+  const [toggleWishlist] = useToggleWishListMutation();
 
   const handleClick = (e) => {
-    // Prevent navigation if clicking on the heart icon or add to cart button
     if (!e.target.closest(".wishlist-btn") && !e.target.closest(".cart-btn")) {
-      navigate(`/user/product/${_id}`);
+      navigate(`/user/product/${product._id}`);
+      window.scrollTo(0, 0);
     }
   };
 
   const handleFavClick = async (e) => {
     e.stopPropagation();
     try {
-      await toggleWishlist({ productId: _id });
+      await toggleWishlist({ productId: product._id });
       refetch();
     } catch (error) {
-      console.error("Error toggling wishlist:", error); 
+      console.error("Error toggling wishlist:", error);
     }
   };
 
-const finalPrice = () => {
-  let effectiveOfferPercent =
-    (product?.offerPercent || 0) + (product?.categoryDetails?.offer || 0);
-
-  effectiveOfferPercent = Math.min(effectiveOfferPercent, 100);
-
-  return effectiveOfferPercent > 0
-    ? (
-        product.price -
-        (product.price * effectiveOfferPercent) / 100
-      ).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    : product.price.toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-};
-
+  const finalPrice = () => {
+    let effectiveOfferPercent =
+      (product?.offerPercent || 0) + (product?.categoryDetails?.offer || 0);
+    effectiveOfferPercent = Math.min(effectiveOfferPercent, 100);
+    return effectiveOfferPercent > 0
+      ? (
+          product.price -
+          (product.price * effectiveOfferPercent) / 100
+        ).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : product.price.toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+  };
 
   return (
-    <div className="cursor-pointer">
-      <div
-        onClick={handleClick}
-        className="border rounded-lg shadow-lg overflow-hidden w-80 bg-lightBackground h-72 flex justify-center items-center dark:bg-darkBackground"
-      >
-        {/* Upper part: Love icon and product image */}
-        <div className="relative px-2">
-          <span
-            className="wishlist-btn absolute top-3 right-4 text-xl cursor-pointer flex justify-center rounded-3xl w-10 h-10 items-center bg-darkText dark:bg-darkBackground"
-            onClick={handleFavClick}
-          >
-            {product.isInWishList ? (
-              <FontAwesomeIcon
-                icon="fa-solid fa-heart"
-                className="text-red-600"
-                size="md"
-              />
-            ) : (
-              <FontAwesomeIcon
-                icon="fa-regular fa-heart"
-                className="text-white"
-                size="sm"
-              />
-            )}
-          </span>
+    <div className="group relative w-80 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300">
+      <div onClick={handleClick} className="cursor-pointer">
+        {/* Image Container */}
+        <div className="relative h-72 overflow-hidden rounded-t-xl">
           <img
-            className="w-64 h-60 object-cover rounded-md"
-            src={product?.images[0]?.secure_url || noImage}
-            alt="Product"
+            src={product?.images[0]?.secure_url || "/api/placeholder/320/288"}
+            alt={product.name}
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
           />
-        </div>
-      </div>
-
-      <div className="overflow-hidden w-80">
-        {/* Lower part: Name, price, description, and rating */}
-        <div className="p-4">
-          <div
-            onClick={handleClick}
-            className="flex justify-between items-center mb-2"
+          <button
+            onClick={handleFavClick}
+            className="wishlist-btn absolute top-4 right-4 p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg 
+              hover:scale-110 transition-transform duration-200"
           >
-            <h3 className="text-lg font-semibold dark:text-lightText">
-              {name}
+            <Heart
+              className={`w-5 h-5 ${
+                product.isInWishList
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-600 dark:text-gray-400"
+              }`}
+            />
+          </button>
+
+          {/* Offer Badge */}
+          {(product?.offerPercent || product?.categoryDetails?.offer) > 0 && (
+            <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+              {Math.min(
+                (product?.offerPercent || 0) +
+                  (product?.categoryDetails?.offer || 0),
+                100
+              )}
+              % OFF
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          {/* Title and Price */}
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
+              {product.name}
             </h3>
-            <div className="flex flex-col">
-              {/* Original Price */}
-              <span className="text-darkGray line-through mr-2">
-                {"\u20B9"}
-                {price.toFixed(2)}
+            <div className="flex flex-col items-end">
+              <span className="text-sm text-gray-500 line-through">
+                ₹{product.price.toFixed(2)}
               </span>
-              {/* Offer Price */}
-              <span className="text-darkText font-extrabold text-lg dark:text-lightText">
-                {"\u20B9"}
-                {finalPrice()}
+              <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                ₹{finalPrice()}
               </span>
             </div>
           </div>
-          <p className="text-darkGray mb-2">{description}</p>
-          <div onClick={handleClick} className="flex items-center mb-4">
-            {[...Array(5)].map((_, i) => {
-                                const averageRating = product?.reviewStats?.avgRating || 0;
-                                const fullStars = Math.floor(averageRating);
-                                const hasHalfStar =
-                                  averageRating % 1 !== 0 && i === fullStars;
-            
-                                return (
-                                  <FontAwesomeIcon
-                                    key={i}
-                                    icon={
-                                      i < fullStars
-                                        ? "fa-solid fa-star"
-                                        : hasHalfStar
-                                        ? "fa-solid fa-star-half-alt"
-                                        : "fa-regular fa-star"
-                                    }
-                                    className={
-                                      i < fullStars || hasHalfStar
-                                        ? "text-primary"
-                                        : "text-gray-300 dark:text-gray-600"
-                                    }
-                                  />
-                                );
-                              })}
-            <span className="text-darkGray ml-2">
+
+          {/* Description */}
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+            {product.description}
+          </p>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1 mb-4">
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => {
+                const rating = product?.reviewStats?.avgRating || 0;
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 !== 0 && i === fullStars;
+
+                if (i < fullStars) {
+                  return (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  );
+                } else if (hasHalfStar) {
+                  return (
+                    <StarHalf
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  );
+                }
+                return (
+                  <Star
+                    key={i}
+                    className="w-4 h-4 text-gray-300 dark:text-gray-600"
+                  />
+                );
+              })}
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               ({product?.reviewStats?.reviewCount || 0})
             </span>
           </div>
+
+          {/* Stock Status */}
+          {product.stock === 0 && (
+            <div className="text-red-500 text-sm font-medium mb-2">
+              Out of Stock
+            </div>
+          )}
+
+          {/* Add to Cart Button */}
           <div className="cart-btn">
             <AddCartButton
               productId={product._id}
               disabled={product.stock === 0}
+              initialIsInCart={product?.isInCart}
             />
           </div>
         </div>

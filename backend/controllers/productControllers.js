@@ -52,10 +52,14 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     matchFilter.name = { $regex: searchTerm, $options: "i" };
   }
 
+
+  const userIdObjectId = new mongoose.Types.ObjectId(userId);
+
   try {
     const pipeline = [
       { $match: matchFilter },
 
+      // Lookup category details
       {
         $lookup: {
           from: "categories",
@@ -65,6 +69,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
 
+      // Unwind category details
       {
         $unwind: {
           path: "$categoryDetails",
@@ -72,6 +77,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
 
+      // Filter out soft-deleted or non-existent categories
       {
         $match: {
           $or: [
@@ -107,6 +113,38 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
 
+      // Lookup to check if product exists in a specific user's cart
+      {
+        $lookup: {
+          from: "carts",
+          let: { productId: "$_id" },
+          pipeline: [
+            { $match: { userId: userIdObjectId } },
+            { $unwind: "$cartItems" },
+            {
+              $match: {
+                $expr: { $eq: ["$cartItems.productId", "$$productId"] },
+              },
+            },
+          ],
+          as: "cartDetails",
+        },
+      },
+
+      // Add isInCart field
+      {
+        $addFields: {
+          isInCart: {
+            $cond: {
+              if: { $gt: [{ $size: "$cartDetails" }, 0] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+
+      // Sort based on input
       {
         $sort: {
           [sortBy]: order === "desc" ? -1 : 1,
@@ -114,14 +152,12 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
 
+      // Pagination
       { $skip: Number(skip) },
       { $limit: Number(limit) },
     ];
 
     const products = await Product.aggregate(pipeline);
-
-
-    console.log(products);
 
 
     const totalCountPipeline = [
@@ -197,21 +233,27 @@ export const getProduct = asyncHandler(async (req, res) => {
 
   const review = await Review.aggregate([
     { $match: { productId: product._id } },
-    { $group: { _id: 'null', averageRating: { $avg: '$rating' }, count: { $sum: 1 } } },
+    {
+      $group: {
+        _id: "null",
+        averageRating: { $avg: "$rating" },
+        count: { $sum: 1 },
+      },
+    },
     {
       $project: {
         averageRating: 1,
         count: 1,
         _id: 0,
-    }}
+      },
+    },
   ]);
-
 
   res.status(200).json({
     ...product.toObject(),
     category,
     isInWishList,
-    review:review[0],
+    review: review[0],
   });
 });
 

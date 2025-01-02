@@ -1,12 +1,24 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { successToast, errorToast } from "../toast";
+import React, { useState } from "react";
 import { useAddToCartMutation } from "../../redux/slices/cartApiSlice";
+import { successToast, errorToast } from "../toast";
 import { RotatingLines } from "react-loader-spinner";
-import { Ban } from "lucide-react";
+import { ShoppingCart, AlertCircle, ArrowBigRightDash } from "lucide-react";
+import { useNavigate } from "react-router";
+import { incrementCartCount } from "../../redux/slices/cartCount";
+import { useDispatch } from "react-redux";
 
-const AddCartButton = ({ disabled = false, productId, quantity }) => {
+const AddCartButton = ({
+  disabled = false,
+  productId,
+  quantity,
+  initialIsInCart,
+}) => {
   const [addToCart, { isLoading }] = useAddToCartMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Local state to manage cart status
+  const [isInCart, setIsInCart] = useState(initialIsInCart);
 
   const handleAddButton = async () => {
     if (!productId) {
@@ -15,64 +27,89 @@ const AddCartButton = ({ disabled = false, productId, quantity }) => {
     }
 
     try {
-      // Trigger the add to cart mutation
-      const response = await addToCart({ productId, quantity: 1 }).unwrap();
+      await addToCart({ productId, quantity: 1 }).unwrap();
+      dispatch(incrementCartCount());
       successToast("Product added to cart");
+      setIsInCart(true); // Update local state on success
     } catch (error) {
-      console.error("Add to cart error:", error);
-      errorToast(error?.message || error?.data?.message||"Failed to add product to cart");
+      errorToast(
+        error?.message ||
+          error?.data?.message ||
+          "Failed to add product to cart"
+      );
     }
   };
 
   return (
     <div className="relative w-full">
-      <button
-        onClick={handleAddButton}
-        className={`flex items-center justify-center border rounded-full py-2 px-4 w-full transition-all duration-300 
+      {isInCart ? (
+        <button
+          onClick={() => navigate("/user/cart")}
+          disabled={disabled || isLoading}
+          className={`group w-full px-6 py-3 rounded-lg 
+          flex items-center justify-center gap-3
+          font-medium transition-all duration-300
           ${
             disabled || isLoading
-              ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
-              : "border-darkText text-darkText dark:text-lightText dark:border-lightText"
+              ? "bg-gray-100 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700 active:scale-98 hover:shadow-lg"
           }`}
-        disabled={disabled || isLoading}
-      >
-        <span className="mr-2">
-          <FontAwesomeIcon
-            icon={["fas", "cart-shopping"]}
-            size="lg"
-            className={`
-              ${
-                disabled || isLoading
-                  ? "text-gray-400"
-                  : "dark:text-lightText  text-black"
-              }`}
+        >
+          <span
+            className={`${
+              disabled || isLoading ? "text-gray-400" : "text-white"
+            }`}
+          >
+            Go to Cart
+          </span>
+
+          <ArrowBigRightDash
+            className={`w-5 h-5 transition-transform group-hover:scale-110
+            ${disabled || isLoading ? "text-gray-400" : "text-white"}
+          `}
           />
-        </span>
-        {disabled ? "Out of Stock" : "Add to Cart"}
-      </button>
+        </button>
+      ) : (
+        <button
+          onClick={handleAddButton}
+          disabled={disabled || isLoading}
+          className={`group w-full px-6 py-3 rounded-lg 
+          flex items-center justify-center gap-3
+          font-medium transition-all duration-300
+          ${
+            disabled || isLoading
+              ? "bg-gray-100 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700 active:scale-98 hover:shadow-lg"
+          }`}
+        >
+          <ShoppingCart
+            className={`w-5 h-5 transition-transform group-hover:scale-110
+            ${disabled || isLoading ? "text-gray-400" : "text-white"}
+          `}
+          />
+          <span
+            className={`${
+              disabled || isLoading ? "text-gray-400" : "text-white"
+            }`}
+          >
+            Add to Cart
+          </span>
+        </button>
+      )}
 
       {disabled && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="absolute inset-0 bg-white/70 dark:bg-black/70 rounded-full"></div>
-          <div className="relative z-2 flex items-center space-x-2 text-red-600">
-            <Ban className="w-5 h-5" />
-            <span className="font-semibold text-sm">Out of Stock</span>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 rounded-lg backdrop-blur-sm" />
+          <div className="relative z-10 flex items-center gap-2 text-red-500">
+            <AlertCircle className="w-5 h-5" />
+            <span className="font-medium">Out of Stock</span>
           </div>
         </div>
       )}
 
       {isLoading && (
-        <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-          <RotatingLines
-            visible={true}
-            height="50"
-            width="50"
-            color="grey"
-            strokeColor="#fff"
-            strokeWidth="2"
-            animationDuration="8"
-            ariaLabel="rotating-lines-loading"
-          />
+        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-indigo-600/10 backdrop-blur-sm">
+          <RotatingLines width="32" strokeColor="#4f46e5" strokeWidth="3" />
         </div>
       )}
     </div>
