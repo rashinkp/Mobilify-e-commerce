@@ -14,10 +14,18 @@ export const addReview = asyncHandler(async (req, res) => {
   }
 
   const existingReview = await Review.findOne({ userId, productId });
+
   if (existingReview) {
-    return res
-      .status(400)
-      .json({ message: "You have already reviewed this product" });
+    const updatedReview = await Review.findOneAndUpdate(
+      { userId, productId },
+      {
+        rating: data?.rating,
+        title: data?.title,
+        description: data?.description,
+      },
+      { new: true }
+    );
+    return res.status(200).json({ message: "Review updated successfully" });
   }
 
   const review = await Review.create({

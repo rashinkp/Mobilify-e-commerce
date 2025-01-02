@@ -132,7 +132,7 @@ const finalPrice = () => {
                                     }
                                     className={
                                       i < fullStars || hasHalfStar
-                                        ? "text-yellow-500"
+                                        ? "text-primary"
                                         : "text-gray-300 dark:text-gray-600"
                                     }
                                   />

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import { Star } from "lucide-react";
 import { reviewSchema } from "../../validationSchemas";
 import {
@@ -14,6 +13,7 @@ import { RotatingLines } from "react-loader-spinner";
 const ProductReviewForm = ({ order }) => {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [review, setReview] = useState(null);
+  const [isFormChanged, setIsFormChanged] = useState(false);
   const [postReview] = usePostReviewMutation();
 
   const {
@@ -21,10 +21,12 @@ const ProductReviewForm = ({ order }) => {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({
     resolver: yupResolver(reviewSchema),
   });
+
+  const watchedFields = watch(["rating", "title", "description"]);
 
   const {
     data = {},
@@ -41,16 +43,29 @@ const ProductReviewForm = ({ order }) => {
 
   useEffect(() => {
     if (review) {
-      setValue("rating", review.rating || 0); // Prepopulate rating
-      setValue("title", review.title || ""); // Prepopulate title
-      setValue("description", review.description || ""); // Prepopulate description
+      setValue("rating", review.rating || 0);
+      setValue("title", review.title || "");
+      setValue("description", review.description || "");
     }
   }, [review, setValue]);
+
+  // Check for changes in form values
+  useEffect(() => {
+    if (!review) return;
+
+    const hasChanged =
+      watchedFields[0] !== review.rating ||
+      watchedFields[1] !== review.title ||
+      watchedFields[2] !== review.description;
+
+    setIsFormChanged(hasChanged);
+  }, [watchedFields, review]);
 
   const onSubmit = async (data) => {
     try {
       await postReview({ data, order }).unwrap();
       successToast("Review posted successfully");
+      setIsFormChanged(false);
     } catch (error) {
       errorToast(
         error?.message || error?.data?.message || "Error while posting review"
@@ -94,7 +109,6 @@ const ProductReviewForm = ({ order }) => {
                 type="button"
                 className="focus:outline-none"
                 onClick={() => setValue("rating", star)}
-                disabled={review}
               >
                 <Star
                   className={`w-8 h-8 ${
@@ -163,7 +177,7 @@ const ProductReviewForm = ({ order }) => {
         <button
           type="submit"
           className="max-w-lg bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed"
-          disabled={!!review} // Disable if review already exists
+          disabled={!isFormChanged}
         >
           Submit Review
         </button>
