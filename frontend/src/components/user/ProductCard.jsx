@@ -30,7 +30,7 @@ const ProductCard = ({ product, refetch }) => {
       await toggleWishlist({ productId: _id });
       refetch();
     } catch (error) {
-      console.error("Error toggling wishlist:", error);
+      console.error("Error toggling wishlist:", error); 
     }
   };
 

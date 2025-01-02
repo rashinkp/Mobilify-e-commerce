@@ -167,7 +167,8 @@ const ShoppingCart = () => {
         {/* Left Column: Cart Items */}
         <div className="md:col-span-2">
           <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
-            Shopping Cart <span>({data?.totalProducts || cartItems?.length || 0})</span>
+            Shopping Cart{" "}
+            <span>({data?.totalProducts || cartItems?.length || 0})</span>
           </h1>
 
           {cartItems.length < 1 ? (
@@ -275,7 +276,7 @@ const ShoppingCart = () => {
           )}
 
           <Link to="/user/products" className="mt-6">
-            <button className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
+            <button className="bg-purple-800 text-white px-6 py-2 rounded hover:bg-purple-600 transition">
               Continue Shopping
             </button>
           </Link>
@@ -290,7 +291,10 @@ const ShoppingCart = () => {
               <span>Subtotal</span>
               <span>
                 {`${"\u20B9"}`}
-                {subtotal.toFixed(2)}
+                {subtotal.toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
 
@@ -299,14 +303,23 @@ const ShoppingCart = () => {
               <span>
                 {deliveryCharge === 0
                   ? "Free"
-                  : `${"\u20B9"}${deliveryCharge.toFixed(2)}`}
+                  : `${"\u20B9"}${deliveryCharge.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`}
               </span>
             </div>
 
             {discount > 0 && (
               <div className="flex justify-between mb-2 text-green-600">
                 <span>Coupon Discount</span>
-                <span>-&#x20b9;{discount.toFixed(2)}</span>
+                <span>
+                  -&#x20b9;
+                  {discount.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
             )}
 
@@ -316,12 +329,15 @@ const ShoppingCart = () => {
               <span>Total</span>
               <span>
                 {"\u20B9"}
-                {total.toFixed(2)}
+                {total.toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
 
             <button
-              className={`w-full mt-6 bg-green-500 text-white py-3 rounded hover:bg-green-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`}
+              className={`w-full mt-6 bg-purple-800 text-white py-3 rounded hover:bg-purple-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`}
               disabled={products.length < 1 || isAnyProductOutOfStock}
               onClick={handleProceed}
             >

@@ -9,9 +9,9 @@ module.exports = {
         darkBackground: "#111827",
         darkText: "#000000",
         secondary: "#a6a6a6",
-        primary: "#A855F7",
+        primary: "#6B21A8",
         darkGray: "#828282",
-        skyBlue:'#0867d2'
+        skyBlue: "#0867d2",
       },
       screens: {
         "5xl": "1800px",

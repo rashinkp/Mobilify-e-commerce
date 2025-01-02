@@ -19,7 +19,7 @@ const CouponSection = ({
         />
         <button
           onClick={handleCouponApply}
-          className="bg-blue-500 text-white p-2 rounded flex items-center"
+          className="bg-purple-800 text-white p-2 rounded flex items-center"
         >
           <PercentIcon className="mr-2" /> Apply
         </button>
