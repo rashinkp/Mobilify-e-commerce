@@ -104,21 +104,6 @@ const ProductDetails = () => {
                 product={product}
                 onFavClick={handleFavClick}
               />
-              {/* <button
-                onClick={handleFavClick}
-                className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-red-500 transition"
-                aria-label="Add to Wishlist"
-              >
-                {product.isInWishList ? (
-                  <FontAwesomeIcon
-                    icon="fa-solid fa-heart"
-                    className="text-red-600"
-                    size="xl"
-                  />
-                ) : (
-                  <FontAwesomeIcon icon="fa-regular fa-heart" size="xl" />
-                )}
-              </button> */}
             </div>
 
             <div className="flex justify-center mt-4 space-x-3">
@@ -155,20 +140,34 @@ const ProductDetails = () => {
 
               <div className="flex items-center mt-3">
                 <div className="flex text-yellow-500 space-x-1 mr-2">
-                  {[...Array(5)].map((_, i) => (
-                    <FontAwesomeIcon
-                      key={i}
-                      icon="fa-solid fa-star"
-                      className={
-                        i < Math.floor(product.stars)
-                          ? "text-yellow-500"
-                          : "text-gray-300 dark:text-gray-600"
-                      }
-                    />
-                  ))}
+                  {[...Array(5)].map((_, i) => {
+                    const averageRating = product?.review?.averageRating || 0;
+                    const fullStars = Math.floor(averageRating);
+                    const hasHalfStar =
+                      averageRating % 1 !== 0 && i === fullStars;
+
+                    return (
+                      <FontAwesomeIcon
+                        key={i}
+                        icon={
+                          i < fullStars
+                            ? "fa-solid fa-star"
+                            : hasHalfStar
+                            ? "fa-solid fa-star-half-alt"
+                            : "fa-regular fa-star"
+                        }
+                        className={
+                          i < fullStars || hasHalfStar
+                            ? "text-yellow-500"
+                            : "text-gray-300 dark:text-gray-600"
+                        }
+                      />
+                    );
+                  })}
                 </div>
+
                 <span className="text-gray-600 dark:text-gray-400">
-                  ({product.reviewCount} Reviews)
+                  ({product?.review?.count || 0})
                 </span>
               </div>
             </div>

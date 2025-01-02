@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import WishList from "../models/wishListSchema.js";
 import Category from "../models/categorySchema.js";
 import Order from "../models/orderSchema.js";
-
+import Review from "../models/reviewSchema.js";
 export const addProduct = asyncHandler(async (req, res) => {
   const product = req.body;
   const addedProduct = await Product.create(product);
@@ -95,6 +95,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
     const products = await Product.aggregate(pipeline);
 
+
     const totalCountPipeline = [
       ...pipeline.slice(0, -2),
       { $count: "totalCount" },
@@ -166,10 +167,23 @@ export const getProduct = asyncHandler(async (req, res) => {
 
   const isInWishList = wishList ? true : false;
 
+  const review = await Review.aggregate([
+    { $match: { productId: product._id } },
+    { $group: { _id: 'null', averageRating: { $avg: '$rating' }, count: { $sum: 1 } } },
+    {
+      $project: {
+        averageRating: 1,
+        count: 1,
+        _id: 0,
+    }}
+  ]);
+
+
   res.status(200).json({
     ...product.toObject(),
     category,
     isInWishList,
+    review:review[0],
   });
 });
 
@@ -297,7 +311,7 @@ export const topSellingProducts = asyncHandler(async (req, res) => {
     {
       $project: {
         name: "$_id",
-        _id:0,
+        _id: 0,
         sales: 1,
         totalRevenue: 1,
       },

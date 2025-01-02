@@ -42,6 +42,8 @@ const Products = () => {
 
   const { products = [], totalCount = 0 } = data || {};
 
+  console.log(products);
+
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
