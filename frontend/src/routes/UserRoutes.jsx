@@ -29,7 +29,7 @@ const UserRoutes = () => {
   
   return (
     <>
-      <div className="mb-28">
+      <div className="mb-20">
         <Navbar />
       </div>
       <Routes>
