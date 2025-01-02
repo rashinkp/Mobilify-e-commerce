@@ -1,24 +1,25 @@
 import React from "react";
-import ProductDetailsCard from '../../components/ProductDetailsCard.jsx'
+import ProductDetailsCard from "../../components/ProductDetailsCard.jsx";
 import Review from "../../components/user/Review.jsx";
-import Footer from '../../components/user/Footer.jsx'
-import ProductCard from '../../components/user/ProductCard.jsx'
+import Footer from "../../components/user/Footer.jsx";
+import ProductCard from "../../components/user/ProductCard.jsx";
 import useProductApi from "../../hooks/useProductApi.jsx";
 import { RotatingLines } from "react-loader-spinner";
 import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
+import { Link } from "react-router";
+import { Box, ChevronRight, Home } from "lucide-react";
 
 const ProductDetails = () => {
-  
-  const { data,isLoading , isError, error} = useGetAllProductsQuery({
+  const { data, isLoading, isError, error } = useGetAllProductsQuery({
     limit: 8,
-    sortBy: 'createAt',
-    order:'desc',
-  })
+    sortBy: "createAt",
+    order: "desc",
+  });
 
   const { products = [] } = data || {};
 
   if (isError) return <div>Error: {error.message}</div>;
-  
+
   if (isLoading) {
     return (
       <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
@@ -36,9 +37,9 @@ const ProductDetails = () => {
     );
   }
 
-  
   return (
-    <div className="mx-5">
+    <div className="">
+      
       <ProductDetailsCard />
 
       <div className="flex flex-col justify-center my-20">

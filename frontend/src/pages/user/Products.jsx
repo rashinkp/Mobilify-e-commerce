@@ -74,7 +74,7 @@ const Products = () => {
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Enhanced Breadcrumb */}
-        <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-40">
+        <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center text-sm text-white">
               <Link

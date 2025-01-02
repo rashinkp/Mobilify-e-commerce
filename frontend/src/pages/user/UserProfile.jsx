@@ -9,6 +9,9 @@ import {
   Camera,
   MapPinHouse,
   Mail,
+  ChevronRight,
+  Box,
+  Home,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,7 +22,7 @@ import {
 import { userLogout } from "../../redux/slices/authUser";
 import { googleLogout } from "@react-oauth/google";
 import { errorToast, successToast } from "../../components/toast";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import MyProfile from "../../components/MyProfile";
 import MyAddress from "../../components/user/MyAddress";
 import { RotatingLines } from "react-loader-spinner";
@@ -75,7 +78,7 @@ const UserProfileDashboard = () => {
       onClick={() => setActiveSection(section)}
       className={`flex items-center w-full p-3 rounded-lg transition-colors ${
         activeSection === section
-          ? "bg-blue-100 text-blue-600"
+          ? "bg-indigo-100 text-indigo-600"
           : "hover:bg-gray-100 dark:hover:text-black text-gray-700 dark:text-white"
       }`}
     >
@@ -137,11 +140,23 @@ const UserProfileDashboard = () => {
 
   return (
     <>
-      <div className="min-h-screen dark:bg-darkBackground  p-4 md:p-8">
-        <div className="ms-10">
-          <BrudCrump list={brudCrumpList} />
+      <div className="min-h-screen bg-gray-100 dark:bg-darkBackground">
+        <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center text-sm text-white">
+              <Link
+                to="/user"
+                className="text-white hover:text-white/80 transition-colors flex items-center"
+              >
+                <Home className="w-4 h-4 mr-1" />
+                Home
+              </Link>
+              <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+              <span className="font-medium">Profile</span>
+            </div>
+          </div>
         </div>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="max-w-6xl pt-20 mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Sidebar Menu */}
           <div className="bg-gray dark:bg-black bg-white dark:text-white rounded-xl shadow-lg p-6 h-fit">
             <div className="flex flex-col items-center mb-6">
@@ -153,7 +168,7 @@ const UserProfileDashboard = () => {
                 />
                 <button
                   onClick={handleImageChange}
-                  className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors"
+                  className="absolute bottom-0 right-0 bg-indigo-500 text-white rounded-full p-2 hover:bg-indigo-600 transition-colors"
                 >
                   <Camera size={16} />
                 </button>

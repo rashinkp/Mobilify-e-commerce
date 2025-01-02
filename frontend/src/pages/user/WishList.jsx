@@ -1,36 +1,37 @@
-import React, { useState } from "react";
-import { ShoppingCart, Plus, CreditCard, Trash2, Heart } from "lucide-react";
+import React from "react";
+import {
+  ShoppingCart,
+  CreditCard,
+  Trash2,
+  Home,
+  ChevronRight,
+  User,
+} from "lucide-react";
+import { Link } from "react-router";
 import {
   useAddAllToCartMutation,
   useGetAllWishListQuery,
   useRemoveFromWishlistMutation,
 } from "../../redux/slices/wishlistApiSlice";
-import { RotatingLines } from "react-loader-spinner";
 import { useAddToCartMutation } from "../../redux/slices/cartApiSlice";
-import { successToast } from "../../components/toast";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import BrudCrump from "../../components/BrudCrump";
+import { incrementCartCount } from "../../redux/slices/cartCount";
+import { useDispatch } from "react-redux";
 
 const WishList = () => {
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    refetch,
-    error,
-  } = useGetAllWishListQuery();
+  const { data: products = [], isLoading, refetch } = useGetAllWishListQuery();
 
-  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [addToCart] = useAddToCartMutation();
   const [remove] = useRemoveFromWishlistMutation();
   const [addAllToCart] = useAddAllToCartMutation();
+  const dispatch = useDispatch();
 
   const handleAddToCart = async (productId) => {
     try {
       await addToCart({ productId }).unwrap();
-      successToast("Product moved to cart");
+      dispatch(incrementCartCount());
       refetch();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -41,8 +42,9 @@ const WishList = () => {
   const handleAddAllToCart = async () => {
     try {
       await addAllToCart();
+      dispatch(incrementCartCount(products.length));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -50,125 +52,132 @@ const WishList = () => {
     try {
       await remove({ productId });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  const brudCrumpList = [
-    {
-      name: "Home",
-      icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
-      path: "/user",
-    },
-    {
-      name: "Profile",
-      icon: <FontAwesomeIcon icon="fa-solid fa-user" />,
-      path: "/user/profile",
-    },
-    {
-      name: "Wishlist",
-      icon: <FontAwesomeIcon icon="fa-solid fa-user" />,
-      path: "/user/wishlist",
-    },
-  ];
-
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-        <RotatingLines
-          visible={true}
-          height="50"
-          width="50"
-          color="grey"
-          strokeColor="#fff"
-          strokeWidth="2"
-          animationDuration="8"
-          ariaLabel="rotating-lines-loading"
-        />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="px-5 sm:px-20 mx-auto">
-      <div className="ms-10">
-        <BrudCrump list={brudCrumpList} />
-      </div>
-      {/* Global Actions */}
-      <div className="mb-6 flex justify-end gap-3">
-        <button
-          onClick={handleAddAllToCart}
-          disabled={products.length === 0 || isAddingToCart}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          Add All to Cart
-        </button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center text-sm text-white">
+            <Link
+              to="/user"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <Link
+              to="/user/profile"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <User className="w-4 h-4 mr-1" />
+              Profile
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <span className="font-medium">My Wishlist</span>
+          </div>
+        </div>
       </div>
 
-      {/* Product List */}
-      <div className="">
-        {products.length < 1 ? (
-          <div className="text-center py-8 text-gray-500">
-            No products in wish list
+      <div className="max-w-7xl pt-20 mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            My Wishlist
+          </h1>
+          <button
+            onClick={handleAddAllToCart}
+            disabled={products.length === 0}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Add All to Cart
+          </button>
+        </div>
+
+        {products.length === 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingCart className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 dark:text-gray-400">
+              Your wishlist is empty
+            </p>
+            <Link
+              to="/user/products"
+              className="text-indigo-600 hover:text-indigo-700 mt-4 inline-block"
+            >
+              Continue Shopping
+            </Link>
           </div>
         ) : (
-          products.map((product) => (
-            <div
-              key={product.productId}
-              className="bg-white dark:bg-inherit dark:text-white overflow-hidden border-b-2 border-gray-300 p-4"
-            >
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                {/* Product Image */}
-                <div className="w-20 h-20 flex-shrink-0">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
-
-                {/* Product Details */}
-                <div className="flex-1 flex flex-col sm:flex-row items-center gap-5 justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1 dark:text-white">
-                      {product.description}
-                    </p>
-                    <p className="text-lg font-bold text-gray-900 mt-2">
-                      ${product.price}
-                    </p>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-4 ml-6">
-                    <button
-                      onClick={() => handleAddToCart(product.productId)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 transition-colors hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ShoppingCart size={22} />
-                      Add to Cart
-                    </button>
-                    <button
-                      onClick={() => handleBuyNow(product.productId)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 transition-colors hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <CreditCard size={22} />
-                      Buy Now
-                    </button>
-                    <button
-                      onClick={() => handleRemove(product.productId)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 transition-colors hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Trash2 size={22} />
-                    </button>
+          <div className="space-y-6">
+            {products.map((product) => (
+              <div
+                key={product.productId}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="flex gap-6">
+                    <div className="w-32 h-32 rounded-lg overflow-hidden flex-shrink-0">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            {product.name}
+                          </h3>
+                          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            {product.description}
+                          </p>
+                        </div>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                          ₹{product.price.toLocaleString("en-In")}
+                        </span>
+                      </div>
+                      <div className="mt-6 flex gap-3">
+                        <button
+                          onClick={() => handleAddToCart(product.productId)}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                        >
+                          <ShoppingCart className="w-4 h-4" />
+                          Add to Cart
+                        </button>
+                        <button
+                          onClick={() => handleBuyNow(product.productId)}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-indigo-700 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                        >
+                          <CreditCard className="w-4 h-4" />
+                          Buy Now
+                        </button>
+                        <button
+                          onClick={() => handleRemove(product.productId)}
+                          className="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>

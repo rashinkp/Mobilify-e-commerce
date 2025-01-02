@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, Plus, Minus, AlertOctagon } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  AlertOctagon,
+  Home,
+  ChevronRight,
+  Box,
+  User,
+} from "lucide-react";
 import {
   useDeleteFromCartMutation,
   useGetCartQuery,
@@ -9,15 +18,17 @@ import { RotatingLines } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router";
 import { errorToast, successToast } from "../../components/toast";
 import { useDispatch } from "react-redux";
-import { decrementCartCount, incrementCartCount } from "../../redux/slices/cartCount";
+import {
+  decrementCartCount,
+  incrementCartCount,
+} from "../../redux/slices/cartCount";
 
 const ShoppingCart = () => {
   const { data = {}, isLoading, isError, error, refetch } = useGetCartQuery();
   const [deletItem] = useDeleteFromCartMutation();
   const [updateCartQuantity] = useUpdateProductQuantityMutation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const cartItems = data?.cartItems || [];
-
 
   const [products, setProducts] = useState([]);
 
@@ -49,7 +60,6 @@ const ShoppingCart = () => {
     try {
       dispatch(incrementCartCount());
       await updateCartQuantity({ productId, updatedQuantity }).unwrap();
-      
     } catch (error) {
       errorToast(
         error?.message ||
@@ -59,7 +69,6 @@ const ShoppingCart = () => {
       console.log(error);
     }
   };
-
 
   const decrementQuantity = async (productId) => {
     const product = data?.cartItems?.find(
@@ -79,7 +88,6 @@ const ShoppingCart = () => {
     const updatedQuantity = product.quantity - 1;
 
     try {
-      
       await updateCartQuantity({ productId, updatedQuantity }).unwrap();
       dispatch(decrementCartCount());
     } catch (error) {
@@ -90,11 +98,10 @@ const ShoppingCart = () => {
     }
   };
 
-
-  const removeProduct = async ({productId , quantity}) => {
+  const removeProduct = async ({ productId, quantity }) => {
     try {
       await deletItem({ productId });
-      dispatch(decrementCartCount(quantity))
+      dispatch(decrementCartCount(quantity));
       successToast("Product removed from cart");
     } catch (error) {
       errorToast(
@@ -153,7 +160,31 @@ const ShoppingCart = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-gray-50 dark:bg-darkBackground min-h-screen">
+    <div className="container mx-auto bg-gray-50 dark:bg-darkBackground min-h-screen">
+      <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center text-sm text-white">
+            <Link
+              to="/user"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+
+            <Link
+              to="/user/profile"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <User className="w-4 h-4 mr-1" />
+              Profile
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <span className="font-medium">My Cart</span>
+          </div>
+        </div>
+      </div>
       {isLoading && (
         <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
           <RotatingLines
@@ -173,7 +204,7 @@ const ShoppingCart = () => {
           Failed to load cart: {error?.data?.message || error?.message}
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="p-6 pt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Column: Cart Items */}
         <div className="md:col-span-2">
           <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
@@ -286,7 +317,7 @@ const ShoppingCart = () => {
           )}
 
           <Link to="/user/products" className="mt-6">
-            <button className="bg-purple-800 text-white px-6 py-2 rounded hover:bg-purple-600 transition">
+            <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-800 transition">
               Continue Shopping
             </button>
           </Link>
@@ -347,7 +378,7 @@ const ShoppingCart = () => {
             </div>
 
             <button
-              className={`w-full mt-6 bg-purple-800 text-white py-3 rounded hover:bg-purple-600 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`}
+              className={`w-full mt-6 bg-indigo-600 text-white py-3 rounded hover:bg-indigo-800 transition text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed`}
               disabled={products.length < 1 || isAnyProductOutOfStock}
               onClick={handleProceed}
             >
