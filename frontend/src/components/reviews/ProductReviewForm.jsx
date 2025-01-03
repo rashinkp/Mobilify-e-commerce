@@ -113,7 +113,7 @@ const ProductReviewForm = ({ order }) => {
                 <Star
                   className={`w-8 h-8 ${
                     star <= (hoveredRating || watch("rating"))
-                      ? "fill-primary text-primary"
+                      ? "fill-yellow-400 text-yellow-400"
                       : "text-gray-300"
                   }`}
                 />

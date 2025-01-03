@@ -376,7 +376,7 @@ const OrderDetailsPage = () => {
                       <div
                         className={`absolute top-6 left-0 right-1/2 h-1 -translate-y-1/2 ${
                           stage.completed
-                            ? "bg-green-500"
+                            ? "bg-indigo-500"
                             : "bg-gray-300 dark:bg-white"
                         }`}
                         style={{ zIndex: 0 }}
@@ -387,7 +387,7 @@ const OrderDetailsPage = () => {
                     <div
                       className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
                         stage.completed
-                          ? "bg-green-500 text-white"
+                          ? "bg-indigo-500 text-white"
                           : "bg-gray-300 dark:bg-white text-gray-600"
                       }`}
                     >
@@ -404,7 +404,7 @@ const OrderDetailsPage = () => {
                       <div
                         className={`absolute top-6 left-1/2 right-0 h-1 -translate-y-1/2 ${
                           stage.completed
-                            ? "bg-green-500"
+                            ? "bg-indigo-500"
                             : "bg-gray-300 dark:bg-white"
                         }`}
                         style={{ zIndex: 0 }}
@@ -440,7 +440,7 @@ const OrderDetailsPage = () => {
             <div className="space-y-4">
               <div className="bg-gray-100 dark:text-black p-4 rounded-lg">
                 <div className="flex items-center mb-2">
-                  <MapPin className="mr-2 w-5 h-5 text-green-600" />
+                  <MapPin className="mr-2 w-5 h-5 text-indigo-600" />
                   <h4 className="font-semibold">Shipping Address</h4>
                 </div>
                 <p>{order?.shippingAddress?.label || ""}</p>
@@ -454,7 +454,7 @@ const OrderDetailsPage = () => {
 
               <div className="bg-gray-100  dark:text-black p-4 rounded-lg">
                 <div className="flex items-center mb-2">
-                  <CreditCard className="mr-2 w-5 h-5 text-purple-600" />
+                  <CreditCard className="mr-2 w-5 h-5 text-indigo-600" />
                   <h4 className="font-semibold">Payment Details</h4>
                 </div>
                 <div className="flex justify-between">
@@ -563,7 +563,7 @@ const OrderDetailsPage = () => {
             {order.paymentStatus !== "Failed" && (
               <button
                 onClick={() => handleDownloadInvoice(order)}
-                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
+                className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-200 flex gap-2 items-center"
               >
                 <Download size={19} />
                 Download Invoice
