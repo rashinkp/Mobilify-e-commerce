@@ -7,7 +7,7 @@ const SignGoogle = () => {
       <FontAwesomeIcon
         icon="fa-brands fa-google"
         size="xl"
-        className="text-skyBlue"
+        className="text-indigo-600"
       />
       <span>Sign with Google</span>
     </div>

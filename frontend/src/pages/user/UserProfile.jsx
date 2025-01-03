@@ -104,18 +104,7 @@ const UserProfileDashboard = () => {
     }
   };
 
-  const brudCrumpList = [
-    {
-      name: "Home",
-      icon: <FontAwesomeIcon icon="fa-solid fa-house" />,
-      path: "/user",
-    },
-    {
-      name: "Profile",
-      icon: <FontAwesomeIcon icon="fa-solid fa-user" />,
-      path: "/user/profile",
-    },
-  ];
+
 
   if (isError) return <div>Error: {error.message}</div>;
 

@@ -3,6 +3,8 @@ import Footer from "../../components/user/Footer";
 import ContactForm from "../../components/user/ContactForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BrudCrump from "../../components/BrudCrump";
+import { Link } from "react-router";
+import { ChevronRight, Home } from "lucide-react";
 
 const ContactUs = () => {
 
@@ -23,10 +25,22 @@ const ContactUs = () => {
 
   return (
     <div className="">
-      <div className="ms-10">
-        <BrudCrump list={brudCrumpList} />
+      <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center text-sm text-white">
+            <Link
+              to="/user"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <span className="font-medium">Contact Us</span>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-wrap justify-between items-center">
+      <div className="pt-20 flex flex-wrap justify-between items-center">
         {/* Left section: Text */}
         <div className="w-full md:w-1/2 text-center md:text-center mb-10 md:mb-0">
           <p className="font-extrabold text-4xl dark:text-lightText">

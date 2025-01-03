@@ -2,6 +2,8 @@ import React from "react";
 import Footer from "../../components/user/Footer";
 import BrudCrump from "../../components/BrudCrump";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router";
+import { ChevronRight, Home } from "lucide-react";
 
 const AboutUs = () => {
     const brudCrumpList = [
@@ -19,10 +21,22 @@ const AboutUs = () => {
       
   return (
     <>
-      <div className="ms-10">
-        <BrudCrump list={brudCrumpList} />
+      <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center text-sm text-white">
+            <Link
+              to="/user"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <span className="font-medium">About Us</span>
+          </div>
+        </div>
       </div>
-      <div className="bg-lightBackground dark:bg-darkBackground min-h-screen">
+      <div className="pt-20 bg-lightBackground dark:bg-darkBackground min-h-screen">
         {/* Header Section */}
         <div className="text-center mb-16 px-6">
           <p className="font-extrabold text-4xl dark:text-lightText mb-4">

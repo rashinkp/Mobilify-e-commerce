@@ -7,7 +7,6 @@ import AboutUs from "../pages/user/AboutUs.jsx";
 import Cart from "../pages/user/Cart.jsx";
 import Login from "../pages/user/Login.jsx";
 import SignUp from "../pages/user/SignUp.jsx";
-import Orders from "../pages/user/Orders.jsx";
 import ProductDetails from "../pages/user/ProductDetails.jsx";
 import Checkout from "../pages/user/Checkout.jsx";
 import ContactUs from "../pages/user/ContactUs.jsx";

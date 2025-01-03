@@ -276,7 +276,7 @@ const Navbar = () => {
               </Link>
 
               <li className="cursor-pointer hover:text-purple-700 ">
-                <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+                <div className="bg-indigo-600 text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
                   <Link to="/user/signup">
                     <button className="">SIGN UP</button>
                   </Link>
@@ -343,7 +343,7 @@ const Navbar = () => {
                     </Link>
 
                     <li className="cursor-pointer hover:text-purple-700 ">
-                      <div className="bg-darkText text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
+                      <div className="bg-indigo-600 text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
                         <Link to="/user/signup">
                           <button className="">SIGN UP</button>
                         </Link>

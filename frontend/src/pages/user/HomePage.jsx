@@ -8,20 +8,42 @@ import useProductApi from "../../hooks/useProductApi.jsx";
 import { useGetAllCategoryQuery } from "../../redux/slices/categoryApiSlices.js";
 import { useGetAllProductsQuery } from "../../redux/slices/productApiSlice.js";
 const HomePage = () => {
- 
-  
-  const {data,isLoading , isError, error , refetch } = useGetAllProductsQuery({
+  const {
+    data: productsData,
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+    error: productsError,
+    refetch,
+  } = useGetAllProductsQuery({
     limit: 8,
-    sortBy: 'createdAt',
-    order:'desc',
-  })
+    sortBy: "createdAt",
+    order: "desc",
+  });
 
+  const {
+    data: bestSellingData,
+    isLoading: isBestSellingLoading,
+    isError: isBestSellingError,
+    error: bestSellingError,
+  } = useGetAllProductsQuery({
+    limit: 8,
+    sortBy: "salesCount",
+    order: "desc",
+  });
 
-  const { products = [] } = data || {};
+  const products = productsData?.products || [];
+  const bestSelling = bestSellingData?.products || [];
 
-  if (isError) return <div>Error: {error.message}</div>;
+  if (isProductsError || isBestSellingError) {
+    return (
+      <div>
+        Error:{" "}
+        {isProductsError ? productsError.message : bestSellingError.message}
+      </div>
+    );
+  }
 
-  if (isLoading) {
+  if (isProductsLoading || isBestSellingLoading) {
     return (
       <div className="h-screen w-full absolute top-0 z-50 left-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
         <RotatingLines
@@ -38,10 +60,8 @@ const HomePage = () => {
     );
   }
 
-  
-
   return (
-    <div className="">
+    <div>
       <img src={Banner1} className="w-full mb-20 object-fill" alt="" />
       <div className="px-16">
         <p className="font-extrabold text-4xl dark:text-lightText">
@@ -63,7 +83,7 @@ const HomePage = () => {
           Flash sale for <span className="text-primary">best</span> sellers
         </p>
         <div className="mt-14 grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 5xl:grid-cols-5 justify-center px-4">
-          {products.map((product) => (
+          {bestSelling.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

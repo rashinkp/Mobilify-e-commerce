@@ -9,7 +9,7 @@ import { useGetCartCountQuery } from "./redux/slices/cartApiSlice";
 const App = () => {
   const theme = useSelector((state) => state.theme.theme);
 
-  const { data = {}, isLoading, isError, refetch } = useGetCartCountQuery()
+  const { data = {}, isLoading, isError, refetch,error } = useGetCartCountQuery()
   
 
   const dispatch = useDispatch();
