@@ -78,10 +78,11 @@ const SalesReport = () => {
   const salesData = data?.orders || [];
 
   console.log(salesData);
-  // Calculate summary statistics
+
   const totalSales = data?.totalCount;
   const totalDiscount = salesData.reduce(
-    (sum, item) => sum + item?.couponApplied?.offerAmount + item?.offerPrice || 0,
+    (sum, item) =>
+      sum + item?.couponApplied?.offerAmount + item?.offerPrice || 0,
     0
   );
 
@@ -130,39 +131,100 @@ const SalesReport = () => {
     );
   };
 
-  // Function to download PDF
   const downloadPDF = () => {
     const doc = new jsPDF();
 
-    // Add title
-    doc.setFontSize(16);
-    doc.text("Sales Report", 14, 15);
+    // Colors and theme
+    const indigo600 = [79, 70, 229]; // RGB for indigo-600
+    const gray200 = [245, 245, 245]; // Light gray for alternate rows
+
+    // Dummy data for dates
+    const fromDate = new Date(startingDate).toLocaleDateString("en-IN");
+    const toDate = new Date(endingDate).toLocaleDateString("en-IN");
+
+    // Add project name and title
+    doc.setFontSize(18);
+    doc.setTextColor(...indigo600);
+    doc.setFont("helvetica", "bold");
+    doc.text("Mobilify", 14, 15); // Project Name
+    doc.setFontSize(14);
+    doc.text("Sales Report", 14, 25); // Report Title
+
+    // Add horizontal line under the title
+    doc.setDrawColor(indigo600[0], indigo600[1], indigo600[2]);
+    doc.setLineWidth(0.5);
+    doc.line(14, 28, 196, 28); // x1, y1, x2, y2
 
     // Add summary section
     doc.setFontSize(12);
-    doc.text(`Total Sales: ${totalSales}`, 14, 25);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0); // Black text
+    doc.text(`From Date: ${fromDate}`, 14, 35); // From Date
+    doc.text(`To Date: ${toDate}`, 100, 35); // To Date
+    doc.text(`Total Sales: Rs. ${totalSales.toLocaleString("en-IN")}`, 14, 42); // Total Sales
     doc.text(
-      `Total Amount: ₹${data?.totalPrice?.toLocaleString("en-IN")}`,
+      `Total Amount: Rs. ${data?.totalPrice.toLocaleString("en-IN")}`,
       14,
-      32
-    );
-    doc.text(`Total Discount: ₹${totalDiscount.toLocaleString()}`, 14, 39);
+      49
+    ); // Total Amount
+    doc.text(
+      `Total Discount: Rs. ${totalDiscount.toLocaleString("en-IN")}`,
+      14,
+      56
+    ); // Total Discount
+
+    // Add another horizontal line below summary
+    doc.line(14, 59, 196, 59);
 
     // Add table
-    const formattedData = formatDataForExport(salesData);
+    const formattedData = salesData.map((row) => ({
+      date: new Date(row.orderDate).toLocaleDateString("en-IN"),
+      product: row?.name || "Not Available",
+      quantity: row?.quantity || 0,
+      amount: row?.price.toLocaleString("en-IN"),
+      discount: row?.offerPrice.toLocaleString("en-IN"),
+      couponCode: row?.couponApplied?.couponCode || "Not Applied",
+    }));
+
     doc.autoTable({
+      startY: 64,
       head: [
-        ["Date", "Product", "Quantity", "Amount", "Discount", "Coupon Code"],
+        [
+          "Date",
+          "Product",
+          "Quantity",
+          "Amount (Rs.)",
+          "Discount (Rs.)",
+          "Coupon Code",
+        ], 
       ],
       body: formattedData.map((row) => Object.values(row)),
-      startY: 45,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [71, 85, 105] },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
+      styles: { fontSize: 10 },
+      headStyles: {
+        fillColor: indigo600,
+        textColor: [255, 255, 255], 
+        fontStyle: "bold",
+      },
+      alternateRowStyles: { fillColor: gray200 },
+      bodyStyles: { textColor: [0, 0, 0] }, 
+      theme: "grid", 
+      margin: { top: 10 },
     });
 
-    // Save PDF
-    doc.save(`Sales_Report_${new Date().toLocaleDateString()}.pdf`);
+    // Footer with page number
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.setTextColor(...indigo600);
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        196 - 20,
+        doc.internal.pageSize.height - 10
+      ); 
+    }
+
+    doc.save(`Mobilify_Sales_Report_${new Date().toLocaleDateString()}.pdf`);
   };
 
   //
@@ -331,7 +393,10 @@ const SalesReport = () => {
                 <td className="px-6 py-4">{sale.quantity}</td>
                 <td className="px-6 py-4">₹{sale.price.toLocaleString()}</td>
                 <td className="px-6 py-4">
-                  ₹{(sale.couponApplied?.offerAmount + sale?.offerPrice || 0)?.toLocaleString()}
+                  ₹
+                  {(
+                    sale.couponApplied?.offerAmount + sale?.offerPrice || 0
+                  )?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4">
                   {sale?.couponApplied?.couponCode || "Not applied"}
