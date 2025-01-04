@@ -195,9 +195,6 @@ const Navbar = () => {
               <Link to="/user/wishlist" className="relative">
                 <Heart className="text-black dark:text-white" size={30} />
                 {/* Count Badge */}
-                <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {0}
-                </div>
               </Link>
 
               {/* Cart Link */}
@@ -208,7 +205,7 @@ const Navbar = () => {
                 />
                 {/* Count Badge */}
                 <div className="absolute -top-2 -right-2 w-5 h-5 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {cartCount || 0}
+                  {cartCount}
                 </div>
               </Link>
             </div>
@@ -311,18 +308,14 @@ const Navbar = () => {
               {userInfo ? (
                 <div className="flex items-center gap-3 mt-2">
                   <div className="flex items-center gap-2 cursor-pointer">
-                    <div className="w-6 h-6 bg-secondary rounded-full overflow-hidden">
-                      <img
-                        src="https://via.placeholder.com/150"
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    <Link to='/user/profile'>
+                      <li>PROFILE</li>
+                    </Link>
                   </div>
                 </div>
               ) : (
                 <div>
-                  <ul className="flex flex-row gap-7 items-center px-4 dark:text-lightText">
+                  <ul className="flex flex-col gap-7  dark:text-lightText">
                     <li className="cursor-pointer hover:text-purple-700">
                       <FontAwesomeIcon
                         size="xl"
