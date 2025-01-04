@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const SignGoogle = () => {
   return (
-    <div className="max-w-lg mx-auto bg-gray-200 py-7 px-5 flex items-center justify-center gap-3 rounded-xl cursor-pointer dark:bg-black dark:text-lightText">
+    <div className="max-w-lg mx-auto  py-7 px-5 flex items-center justify-center gap-3 rounded-xl cursor-pointer dark:bg-black dark:text-lightText shadow-md rounded-md">
       <FontAwesomeIcon
         icon="fa-brands fa-google"
         size="xl"

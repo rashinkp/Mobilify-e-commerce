@@ -77,7 +77,7 @@ const Login = () => {
     
     
   return (
-    <div className="pt-14">
+    <div className="pt-14 ">
       <Form
         title="Login"
         fields={loginFields}

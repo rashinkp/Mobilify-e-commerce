@@ -164,8 +164,15 @@ export const getAOrder = asyncHandler(async (req, res) => {
 
 export const getAllOrdersWithEachProducts = async (req, res) => {
   const { userId } = req.user;
+  const { page = 1, limit = 10 } = req.query;
+
   const convertedUserId = new mongoose.Types.ObjectId(userId);
+
   try {
+    // First, get total count
+    const totalCount = await Order.countDocuments({ userId: convertedUserId });
+
+    // Then get paginated orders
     const orders = await Order.aggregate([
       {
         $match: { userId: convertedUserId },
@@ -179,15 +186,21 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
       {
         $sort: { createdAt: -1 },
       },
+      {
+        $skip: (parseInt(page) - 1) * parseInt(limit),
+      },
+      {
+        $limit: parseInt(limit),
+      },
     ]);
 
-    console.log(orders);
+    const hasMore = page * limit < totalCount;
 
-    if (!orders || orders.length === 0) {
-      return res.status(404).json({ message: "No orders found" });
-    }
-
-    return res.status(200).json(orders);
+    return res.status(200).json({
+      orders,
+      hasMore,
+      totalCount,
+    });
   } catch (error) {
     console.error("Error fetching all orders:", error);
     return res
@@ -196,12 +209,12 @@ export const getAllOrdersWithEachProducts = async (req, res) => {
   }
 };
 
+
 export const getOrdersWithSingleProducts = async (req, res) => {
   const { userId } = req.user;
   const { ordId: orderId } = req.params;
 
   const convertedUserId = new mongoose.Types.ObjectId(userId);
-  const convertedProductId = new mongoose.Types.ObjectId(productId);
   const convertedOrderId = new mongoose.Types.ObjectId(orderId);
 
   try {

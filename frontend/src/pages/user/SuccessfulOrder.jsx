@@ -25,7 +25,7 @@ const OrderSuccessPage = () => {
           }`}
         >
           <div
-            className={`w-48 h-48 bg-green-500 rounded-full flex items-center justify-center transform transition-all duration-700 ${
+            className={`w-48 h-48 bg-indigo-500 rounded-full flex items-center justify-center transform transition-all duration-700 ${
               isAnimating
                 ? "scale-100 rotate-0 opacity-100"
                 : "scale-0 rotate-180 opacity-0"
@@ -44,7 +44,7 @@ const OrderSuccessPage = () => {
             isAnimating ? "opacity-0" : "opacity-100"
           }`}
         >
-          <h1 className="text-3xl font-bold text-green-600 mb-6">
+          <h1 className="text-3xl font-bold text-indigo-600 mb-6">
             Order Placed Successfully!
           </h1>
 
@@ -52,7 +52,7 @@ const OrderSuccessPage = () => {
           <div className="mt-6 flex space-x-4">
             <button
               onClick={() => navigate("/user/orders")}
-              className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition"
+              className="flex-1 bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600 transition"
             >
               View Orders
             </button>

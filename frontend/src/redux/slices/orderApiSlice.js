@@ -21,11 +21,10 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Order"],
     }),
     getIndividualOrder: builder.query({
-      query: () => ({
-        url: `${USER_URL}/order`,
+      query: ({page,limit}) => ({
+        url: `${USER_URL}/order?page=${page}&limit=${limit}`, 
         method: "GET",
       }),
-      providesTags: ["Orders"],
     }),
     getSingleOrder: builder.query({
       query: ({ orderId }) => ({
@@ -36,7 +35,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
     }),
     getAllOrders: builder.query({
       query: ({ page = 1, limit = 3 }) => ({
-        url: `${ADMIN_URL}/order?page=${page}&limit=${limit}`,
+        url: `${ADMIN_URL}/order?page=${page}&limit=${limit}`, 
         method: "GET",
       }),
       providesTags: ["All Orders"],
@@ -73,7 +72,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
     averageOrderValue: builder.query({
       query: () => ({
         url: `${ADMIN_URL}/averageOrderValue`,
-        method:'GET'
+        method: "GET",
       }),
     }),
   }),

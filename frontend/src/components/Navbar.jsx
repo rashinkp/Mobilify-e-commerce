@@ -299,7 +299,7 @@ const Navbar = () => {
           <div className="absolute flex top-full right-0 bg-lightBackground shadow-lg rounded-md w-full py-7 z-50 justify-center dark:bg-darkBackground dark:border dark:border-lightText dark:text-lightText">
             <ul className="flex flex-col gap-6 px-4">
               {links.map((link, i) => (
-                <Link key={i} to={link.path}>
+                <Link key={i} to={link.path} onClick={() => setMenuOpen(false)}>
                   <li className="cursor-pointer hover:text-primary">
                     {link.text.toUpperCase()}
                   </li>
@@ -308,7 +308,7 @@ const Navbar = () => {
               {userInfo ? (
                 <div className="flex items-center gap-3 mt-2">
                   <div className="flex items-center gap-2 cursor-pointer">
-                    <Link to='/user/profile'>
+                    <Link to="/user/profile">
                       <li>PROFILE</li>
                     </Link>
                   </div>
@@ -319,12 +319,15 @@ const Navbar = () => {
                     <li className="cursor-pointer hover:text-purple-700">
                       <FontAwesomeIcon
                         size="xl"
-                        onClick={() => dispatch(toggleTheme())}
+                        onClick={() => {
+                          dispatch(toggleTheme());
+                          setMenuOpen(false);
+                        }}
                         icon="fa-solid fa-moon"
                         className="cursor-pointer hover:text-primary  dark:hover:text-primary"
                       />
                     </li>
-                    <Link to="/user/login">
+                    <Link to="/user/login" onClick={() => setMenuOpen(false)}>
                       <li className="cursor-pointer hover:text-purple-700 ">
                         LOGIN
                       </li>
@@ -332,7 +335,10 @@ const Navbar = () => {
 
                     <li className="cursor-pointer hover:text-purple-700 ">
                       <div className="bg-indigo-600 text-lightText py-2 px-5 rounded-full flex gap-4 items-center dark:bg-inherit dark:border dark:border-lightBackground ">
-                        <Link to="/user/signup">
+                        <Link
+                          to="/user/signup"
+                          onClick={() => setMenuOpen(false)}
+                        >
                           <button className="">SIGN UP</button>
                         </Link>
                         <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
