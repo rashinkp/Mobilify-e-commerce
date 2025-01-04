@@ -60,7 +60,7 @@ const ListCoupons = ({ products }) => {
               <div className="font-medium">{coupon.couponId}</div>
               <div className="text-sm text-gray-600">{coupon.description}</div>
             </div>
-            <div className="text-blue-500 font-medium">{coupon.discount}</div>
+            <div className="text-indigo-500 font-medium">{coupon.discount}</div>
           </button>
         ))}
       </div>

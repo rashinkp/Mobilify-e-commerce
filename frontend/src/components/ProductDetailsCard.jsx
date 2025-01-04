@@ -247,7 +247,7 @@ const ProductDetails = () => {
 
                   {/* Action Buttons */}
                   <div className="grid grid-cols-2 gap-4">
-                    <button
+                    {/* <button
                       onClick={handleBuyNow}
                       disabled={product.stock === 0}
                       className="w-full px-6 py-3 text-white bg-indigo-600 hover:bg-indigo-700 
@@ -255,7 +255,7 @@ const ProductDetails = () => {
                     >
                       <CreditCard className="w-5 h-5" />
                       Buy Now
-                    </button>
+                    </button> */}
                     <AddCartButton
                       productId={product._id}
                       disabled={product.stock === 0}

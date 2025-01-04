@@ -13,13 +13,13 @@ const CouponSection = ({
         <input
           type="text"
           placeholder="Enter coupon code"
-          className="flex-grow p-2 border rounded dark:bg-black dark:border-blue-500"
+          className="flex-grow p-2 border rounded dark:bg-black dark:border-indigo-500"
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value)}
         />
         <button
           onClick={handleCouponApply}
-          className="bg-purple-800 text-white p-2 rounded flex items-center"
+          className="bg-indigo-600 text-white p-2 rounded flex items-center"
         >
           <PercentIcon className="mr-2" /> Apply
         </button>

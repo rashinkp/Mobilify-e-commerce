@@ -10,6 +10,9 @@ import {
   Plus,
   Tag,
   ShoppingBasketIcon,
+  Home,
+  ChevronRight,
+  User,
 } from "lucide-react";
 import { RotatingLines } from "react-loader-spinner";
 import {
@@ -17,9 +20,12 @@ import {
   useGetAddressQuery,
 } from "../../redux/slices/addressApiSlice";
 import { useGetCartQuery } from "../../redux/slices/cartApiSlice";
-import { useFailedOrderMutation, usePlaceOrderMutation } from "../../redux/slices/orderApiSlice";
+import {
+  useFailedOrderMutation,
+  usePlaceOrderMutation,
+} from "../../redux/slices/orderApiSlice";
 import { errorToast, successToast } from "../../components/toast";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import AddAddressForm from "../../components/user/AddAddressForm";
 import { addressValidationSchema } from "../../validationSchemas";
 import { useVerifyPaymentMutation } from "../../redux/slices/paymentApiSlice.js";
@@ -33,9 +39,6 @@ import OrderSummery from "../../components/checkout/OrderSummery.jsx";
 import { useDebitAmountMutation } from "../../redux/slices/walletApiSlice.js";
 import ListCoupons from "../../components/checkout/ListCoupons.jsx";
 
- 
-
-
 const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedShipping, setSelectedShipping] = useState(null);
@@ -47,11 +50,12 @@ const CheckoutPage = () => {
   const [addAddress] = useAddAddressMutation();
   const navigate = useNavigate();
   const [applyCoupon] = useApplyCouponMutation();
-   const [showCoupons, setShowCoupons] = useState(false);
+  const [showCoupons, setShowCoupons] = useState(false);
   const [paymentCancel, setPaymentCancel] = useState(false);
   const [placeOrder] = usePlaceOrderMutation();
   const [debitAmountFromWallet] = useDebitAmountMutation();
   const [addToFailedPayment] = useFailedOrderMutation();
+  const [hasInsufficientStock, setHasInsufficientStock] = useState(false);
 
   //api calling
 
@@ -76,9 +80,17 @@ const CheckoutPage = () => {
 
   const products = cartData.cartItems || [];
 
-  
-
-
+  useEffect(() => {
+    if (products && products.length > 0) {
+      const insufficientStock = products.some(
+        (product) => product.productDetails?.stock < product.quantity
+      );
+      setHasInsufficientStock(insufficientStock > 0 ? true : false);
+      console.log(hasInsufficientStock, "hasddjfsdlfdsaf");
+    } else {
+      setHasInsufficientStock(false);
+    }
+  }, [products]);
 
   useEffect(() => {
     if (addresses && addresses.length > 0) {
@@ -220,7 +232,7 @@ const CheckoutPage = () => {
         modal: {
           ondismiss: () => {
             errorToast("Payment cancelled. Please try again.");
-            setPaymentCancel(true)
+            setPaymentCancel(true);
           },
         },
       };
@@ -241,8 +253,6 @@ const CheckoutPage = () => {
       ? product.price - (product.price * effectiveOfferPercent) / 100
       : product.price;
   };
-
-  
 
   const handleSubmit = async (val = false) => {
     try {
@@ -287,8 +297,8 @@ const CheckoutPage = () => {
 
       if (val) {
         await addToFailedPayment(orderData).unwrap();
-        successToast('Order moved to failedPayment')
-        navigate('/user/orders')
+        successToast("Order moved to failedPayment");
+        navigate("/user/orders");
         return;
       }
 
@@ -344,80 +354,120 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 dark:text-white max-w-4xl">
-      <AddressSection
-        addresses={addresses}
-        selectedAddress={selectedAddress}
-        setSelectedAddress={setSelectedAddress}
-        isAddingAddress={isAddingAddress}
-        setIsAddingAddress={setIsAddingAddress}
-        handleAddAddress={handleAddAddress}
-      />
+    <>
+      <div className="bg-gradient-to-r bg-indigo-500 shadow-md fixed w-full z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center text-sm text-white">
+            <Link
+              to="/user"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
 
-      <OrderSummery products={products} />
-
-      <CouponSelection
-        couponCode={couponCode}
-        setCouponCode={setCouponCode}
-        handleCouponApply={handleCouponApply}
-        appliedCoupon={appliedCoupon}
-      />
-
-      <button
-        onClick={() => setShowCoupons(!showCoupons)}
-        className="text-blue-500 text-sm flex items-center gap-1 mb-2"
-      >
-        <Tag size={16} />
-        View available coupons
-      </button>
-
-      {showCoupons && <ListCoupons products={products} />}
-
-      <ShippingSection
-        shippingMethods={shippingMethods}
-        selectedShipping={selectedShipping}
-        setSelectedShipping={setSelectedShipping}
-      />
-
-      <PaymentSection
-        selectedPayment={selectedPayment}
-        setSelectedPayment={setSelectedPayment}
-      />
-
-      <OrderTotal
-        calculateSubtotal={calculateSubtotal}
-        selectedShipping={selectedShipping}
-        appliedCoupon={appliedCoupon}
-        calculateTotal={calculateTotal}
-      />
-
-      {/* Complete Order Button */}
-      <div className="flex gap-5">
-        <button
-          className={`w-full p-3 rounded-lg text-white font-bold ${
-            selectedAddress &&
-            selectedShipping &&
-            selectedPayment &&
-            products.length > 0
-              ? "bg-blue-500 hover:bg-blue-600"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
-          disabled={
-            !(selectedAddress && selectedShipping && selectedPayment) ||
-            products.length < 1
-          }
-          onClick={() => handleSubmit(false)}
-        >
-          <Check className="inline mr-2" /> Complete Order
-        </button>
-        {paymentCancel && (
-          <button onClick={() => handleSubmit(true)} className="px-6 py-2 bg-yellow-600 text-white font-medium rounded-lg shadow-md hover:bg-yellow-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1 flex items-center gap-3">
-            <ShoppingBasketIcon size={35} />
-            Move to Pending Orders
-          </button>
-        )}
+            <Link
+              to="/user/profile"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <User className="w-4 h-4 mr-1" />
+              Profile
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <Link
+              to="/user/cart"
+              className="text-white hover:text-white/80 transition-colors flex items-center"
+            >
+              <ShoppingCart className="w-4 h-4 mr-1" />
+              My Cart
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-white/60" />
+            <span className="font-medium">Checkout</span>
+          </div>
+        </div>
       </div>
-    </div>
+      <div className="pt-20 container mx-auto p-4 dark:text-white max-w-4xl">
+        <AddressSection
+          addresses={addresses}
+          selectedAddress={selectedAddress}
+          setSelectedAddress={setSelectedAddress}
+          isAddingAddress={isAddingAddress}
+          setIsAddingAddress={setIsAddingAddress}
+          handleAddAddress={handleAddAddress}
+        />
+
+        <OrderSummery products={products} />
+
+        <CouponSelection
+          couponCode={couponCode}
+          setCouponCode={setCouponCode}
+          handleCouponApply={handleCouponApply}
+          appliedCoupon={appliedCoupon}
+        />
+
+        <button
+          onClick={() => setShowCoupons(!showCoupons)}
+          className="text-indigo-500 text-sm flex items-center gap-1 mb-2"
+        >
+          <Tag size={16} />
+          View available coupons
+        </button>
+
+        {showCoupons && <ListCoupons products={products} />}
+
+        <ShippingSection
+          shippingMethods={shippingMethods}
+          selectedShipping={selectedShipping}
+          setSelectedShipping={setSelectedShipping}
+        />
+
+        <PaymentSection
+          selectedPayment={selectedPayment}
+          setSelectedPayment={setSelectedPayment}
+        />
+
+        <OrderTotal
+          calculateSubtotal={calculateSubtotal}
+          selectedShipping={selectedShipping}
+          appliedCoupon={appliedCoupon}
+          calculateTotal={calculateTotal}
+        />
+
+        {/* Complete Order Button */}
+        <div className="flex gap-5">
+          <button
+            className={`w-full p-3 rounded-lg text-white font-bold ${
+              selectedAddress &&
+              selectedShipping &&
+              selectedPayment &&
+              products.length > 0 &&
+              !hasInsufficientStock
+                ? "bg-indigo-500 hover:bg-indigo-600"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={
+              !(selectedAddress && selectedShipping && selectedPayment) ||
+              products.length < 1 ||
+              hasInsufficientStock
+            }
+            onClick={() => handleSubmit(false)}
+          >
+            <Check className="inline mr-2" /> Complete Order
+          </button>
+
+          {paymentCancel && (
+            <button
+              onClick={() => handleSubmit(true)}
+              className="px-6 py-2 bg-yellow-600 text-white font-medium rounded-lg shadow-md hover:bg-yellow-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1 flex items-center gap-3"
+            >
+              <ShoppingBasketIcon size={35} />
+              Move to Pending Orders
+            </button>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 

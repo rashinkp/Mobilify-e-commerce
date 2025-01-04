@@ -17,7 +17,7 @@ const  PaymentSection = ({ selectedPayment, setSelectedPayment }) => {
             key={method}
             className={`p-4 border rounded-lg cursor-pointer ${
               selectedPayment === method
-                ? "border-blue-500 bg-blue-50 dark:bg-black"
+                ? "border-indigo-500 bg-indigo-50 dark:bg-black"
                 : "hover:bg-gray-100 hover:dark:bg-gray-500"
             }`}
             onClick={() => setSelectedPayment(method)}

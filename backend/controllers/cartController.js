@@ -84,7 +84,6 @@ export const getCart = asyncHandler(async (req, res) => {
 
   // If cart exists but empty, return it directly
   if (existingCart.cartItems.length === 0) {
-    console.log(existingCart);
     return res.status(200).json(existingCart);
   }
 

@@ -16,7 +16,7 @@ import { Truck } from "lucide-react";
           key={method.id}
           className={`p-4 border rounded-lg cursor-pointer mb-2 ${
             selectedShipping?.id === method.id
-              ? "border-blue-500 bg-blue-50 dark:bg-black"
+              ? "border-indigo-500 bg-indigo-50 dark:bg-black"
               : "hover:bg-gray-100 hover:dark:bg-gray-500"
           }`}
           onClick={() => setSelectedShipping(method)}

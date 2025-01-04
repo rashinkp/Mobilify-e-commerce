@@ -310,11 +310,6 @@ const Navbar = () => {
               ))}
               {userInfo ? (
                 <div className="flex items-center gap-3 mt-2">
-                  {rightSection.map((link, index) => (
-                    <Link to={link.path} onClick={link.onClick} key={index}>
-                      <li>{link.icon}</li>
-                    </Link>
-                  ))}
                   <div className="flex items-center gap-2 cursor-pointer">
                     <div className="w-6 h-6 bg-secondary rounded-full overflow-hidden">
                       <img
