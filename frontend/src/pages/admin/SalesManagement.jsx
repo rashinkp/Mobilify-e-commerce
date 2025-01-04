@@ -77,7 +77,6 @@ const SalesReport = () => {
 
   const salesData = data?.orders || [];
 
-  console.log(salesData);
 
   const totalSales = data?.totalCount;
   const totalDiscount = salesData.reduce(
@@ -97,8 +96,8 @@ const SalesReport = () => {
       }),
       Product: sale.name,
       Quantity: sale.quantity,
-      Amount: `₹${sale.price.toLocaleString()}`,
-      Discount: `₹${sale.couponApplied?.offerAmount?.toLocaleString() || "0"}`,
+      Amount: `₹${sale.price.toLocaleString("en-IN")}`,
+      Discount: `₹${sale.offerPrice?.toLocaleString("en-IN") || "0"}`,
       "Coupon Code": sale.couponApplied?.couponCode || "Not applied",
     }));
   };
@@ -113,14 +112,54 @@ const SalesReport = () => {
       {
         Date: "Summary",
         Product: "",
-        Quantity: `Total Sales: ${totalSales}`,
+        Quantity: `Total Sales: ${totalSales.toLocaleString("en-IN")}`,
         Amount: `Total Amount: ₹${data?.totalPrice?.toLocaleString("en-IN")}`,
-        Discount: `Total Discount: ₹${totalDiscount.toLocaleString()}`,
+        Discount: `Total Discount: ₹${totalDiscount.toLocaleString("en-IN")}`,
         "Coupon Code": "",
       }
     );
 
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    // Convert data to worksheet format
+    const worksheet = XLSX.utils.json_to_sheet(formattedData, {
+      header: [
+        "Date",
+        "Product",
+        "Quantity",
+        "Coupon Code",
+      ],
+    });
+
+    // Adjust column widths based on data length
+    const colWidth = [
+      { wch: 15 }, // Date column width
+      { wch: 25 }, // Product column width
+      { wch: 15 }, // Quantity column width
+      { wch: 20 }, // Amount column width
+      { wch: 20 }, // Discount column width
+      { wch: 20 }, // Coupon Code column width
+    ];
+    worksheet["!cols"] = colWidth;
+
+    // Add summary row at the bottom for totals
+    const summaryRow = worksheet["!ref"].split(":")[1].replace(/[A-Z]/, "A");
+    const totalRow = `A${parseInt(summaryRow) + 1}:F${
+      parseInt(summaryRow) + 1
+    }`;
+
+    worksheet[totalRow] = {
+      A: { v: "Summary", t: "s" },
+      C: { v: `Total Sales: ₹${totalSales.toLocaleString("en-IN")}`, t: "s" },
+      D: {
+        v: `Total Amount: ₹${data?.totalPrice?.toLocaleString("en-IN")}`,
+        t: "s",
+      },
+      E: {
+        v: `Total Discount: ₹${totalDiscount.toLocaleString("en-IN")}`,
+        t: "s",
+      },
+    };
+
+    // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
 
@@ -130,6 +169,7 @@ const SalesReport = () => {
       `Sales_Report_${new Date().toLocaleDateString()}.xlsx`
     );
   };
+
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -347,7 +387,7 @@ const SalesReport = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-sm font-medium text-gray-600">Total Discount</h3>
           <p className="text-2xl font-bold mt-2">
-            ₹{totalDiscount.toLocaleString()}
+            ₹{totalDiscount?.toLocaleString('en-IN')}
           </p>
         </div>
       </div>
