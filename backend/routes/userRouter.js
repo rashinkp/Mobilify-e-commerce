@@ -12,6 +12,7 @@ import { addAmountToWallet, getOrCreateWallet, processTransaction } from '../con
 import { addToFailedOrders } from '../controllers/failedOrderController.js';
 import { getSalesAnalytics } from '../controllers/salesController.js';
 import { addReview, getAReview, productReview } from '../controllers/reviewController.js';
+import { createReferralCode, getUserReferrals } from '../controllers/referralController.js';
 
 const router = express.Router();
 
@@ -108,5 +109,12 @@ router.get("/productReview/:id", protect("user"), productReview);
 
 
 router.get("/cartCount", protect("user"), cartCount);
+
+
+//referral related
+router
+  .route("/referral")
+  .post(protect("user"), createReferralCode)
+  .get(protect("user"), getUserReferrals);
 
 export default router;

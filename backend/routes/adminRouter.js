@@ -39,6 +39,7 @@ import {
 import optionalProtect from "../middlewares/optionalProtect.js";
 import { AddCoupon, editCoupon, getACoupon, getAllCoupon, updateApplicables } from "../controllers/couponController.js";
 import { getSales, getSalesAnalytics, totalSalesDetails } from "../controllers/salesController.js";
+import { getAllReferralData } from "../controllers/referralController.js";
 
 const router = express.Router();
 
@@ -125,5 +126,10 @@ router.get("/bestSellingCategory", protect("admin"), bestSellingCategory);
 
 //admin profile
 
-router.route("/profile").get( protect("admin"), getAdminData);
+router.route("/profile").get(protect("admin"), getAdminData);
+
+
+//referral related
+
+router.get("/referral", protect("admin"), getAllReferralData);
 export default router;

@@ -19,6 +19,7 @@ import OrderDetail from "../pages/admin/OrderDetail.jsx";
 import ManageCouponDetail from "../pages/admin/ManageCouponDetail.jsx";
 import SalesReport from "../pages/admin/SalesManagement.jsx";
 import ErrorPage from "../pages/Error.jsx";
+import AdminReferralManagement from "../pages/admin/ReferralManagement.jsx";
 
 // Admin Layout component
 const AdminLayout = ({ children }) => {
@@ -147,6 +148,15 @@ const AdminRoutes = () => {
             element={
               <AdminLayout>
                 <ManageCouponDetail />
+              </AdminLayout>
+            }
+          />
+
+          <Route
+            path="/referral"
+            element={
+              <AdminLayout>
+                <AdminReferralManagement />
               </AdminLayout>
             }
           />

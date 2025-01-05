@@ -42,6 +42,12 @@ const VerifyOtp = () => {
       type: "text",
       required: true,
     },
+    {
+      name: "referral",
+      label: "Referral",
+      placeholder: "Enter referral code (optional)",
+      type: "text",
+    },
   ];
 
  

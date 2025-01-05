@@ -14,6 +14,7 @@ import {
   Sun,
   Moon,
   Copyright,
+  Tag,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -118,6 +119,11 @@ const Sidebar = () => {
       icon: Tags,
       label: "Coupon Management",
       path: "/admin/manage-coupon",
+    },
+    {
+      icon: Tag,
+      label: "Referral Management",
+      path: "/admin/referral",
     },
 
     {

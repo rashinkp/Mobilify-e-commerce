@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import bcrypt from 'bcrypt'
 const userSchema = new mongoose.Schema(
   {
+    referralCode: {
+        type: String,
+        unique: true, 
+    },
     name: {
       type: String,
       trim: true,
@@ -24,7 +28,6 @@ const userSchema = new mongoose.Schema(
     bio: {
       type: String,
     },
-
     password: {
       type: String,
     },

@@ -3,11 +3,15 @@ import User from "../models/userSchema.js";
 import generateToken from "../utils/generateToken.js";
 import { OTP } from "../models/otpSchema.js";
 import bcrypt from 'bcrypt';
+import Referral from "../models/referralsSchema.js";
+import Wallet from "../models/walletSchema.js";
+import Transaction from "../models/walletTransactionSchema.js";
+import { getRandomAmount } from "../utils/referralAmount.js";
 
 
 
 export const registerUser = asyncHandler(async (req, res) => {
-  const { otp } = req.body.data;
+  const { otp , referral } = req.body.data;
   const { id } = req.body;
 
   const { otpId } = await User.findById(id);
@@ -33,21 +37,92 @@ export const registerUser = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  if (user) {
-    const updatedUser = await User.findById(id);
-    generateToken(res, updatedUser._id, "user");
-    await OTP.findByIdAndDelete(otpId);
-    await User.findByIdAndUpdate(id, { $unset: { otpId: "" } });
-    res.status(201).json({
-      id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
+  if (referral) {
+    const referredUser = await User.findOne({ referralCode: referral });
+
+    if (!referredUser) {
+      return res.status(400).json({ message: "Invalid referral code" });
+    }
+
+
+    const reward = getRandomAmount();
+    
+
+    const referralData = await Referral.create({
+      referrer: referredUser._id ,
+      referee: id ,
+      reward,
     });
-  } else {
-    res.status(400);
-    console.log("Invalid user data");
-    throw new Error("Invalid user data");
+
+    if (!referralData) {
+      return res.status(400).json({ message: "Couldn't apply the coupon." });
+    }
+
+    if (referralData) {
+      let refereeWallet = await Wallet.findOne({ userId: id });
+
+      if (!refereeWallet) {
+        refereeWallet = new Wallet({
+          userId: id,
+          balance: reward,
+          currency: "INR",
+        });
+
+
+
+        await refereeWallet.save();
+      } else {
+        refereeWallet.balance += reward;
+      }
+
+      const refereeTransaction = await Transaction.create({
+        walletId: refereeWallet._id,
+        type: "Credit",
+        userId: id,
+        amount: reward,
+        description: "Referral reward",
+        status: "Successful",
+      });
+
+      let referrerWallet = await Wallet.findOne({ userId: referredUser._id });
+      if (!referrerWallet) {
+        referrerWallet = new Wallet({
+          userId: referredUser._id,
+          balance: 0,
+          currency: "INR",
+        });
+
+        await referrerWallet.save();
+      } else {
+        referrerWallet.balance += reward;
+      }
+
+      const referrerTransaction = await Transaction.create({
+        walletId: referrerWallet._id,
+        type: "Credit",
+        userId: referredUser._id,
+        amount: reward,
+        description: "Referral reward",
+        status: "Successful",
+      });
+    }
   }
+  
+    if (user) {
+      const updatedUser = await User.findById(id);
+      generateToken(res, updatedUser._id, "user");
+      await OTP.findByIdAndDelete(otpId);
+      await User.findByIdAndUpdate(id, { $unset: { otpId: "" } });
+      res.status(201).json({
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+      });
+    } else {
+      res.status(400);
+      console.log("Invalid user data");
+      throw new Error("Invalid user data");
+    }
 });
 
 export const userLogin = asyncHandler(async (req, res) => {

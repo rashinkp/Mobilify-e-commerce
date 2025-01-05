@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Box,
   Home,
+  DiamondPercent,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -36,6 +37,7 @@ import WishList from "./WishList";
 import WalletDashboard from "../../pages/user/Wallet.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BrudCrump from "../../components/BrudCrump.jsx";
+import ReferralManagement from "./Referral.jsx";
 
 const UserProfileDashboard = () => {
   const { data, isLoading, isError, error, refetch } = useGetUserQuery();
@@ -181,6 +183,12 @@ const UserProfileDashboard = () => {
               <MenuSection icon={Wallet} title="My Wallet" section="wallet" />
 
               <MenuSection
+                icon={DiamondPercent}
+                title="Referral"
+                section="referral management"
+              />
+
+              <MenuSection
                 icon={MapPinHouse}
                 title="My Address"
                 section="address"
@@ -208,6 +216,7 @@ const UserProfileDashboard = () => {
             {activeSection === "changePassword" && <ChangePassword />}
             {activeSection === "orders" && <OrderListingPage />}
             {activeSection === "wallet" && <WalletDashboard />}
+            {activeSection === "referral management" && <ReferralManagement />}
           </div>
         </div>
         <input
