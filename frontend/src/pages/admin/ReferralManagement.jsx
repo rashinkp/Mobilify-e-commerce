@@ -22,6 +22,20 @@ const AdminReferralManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   // const [filter, setFilter] = useState("all");
 
+
+  const filteredReferralData = referralData.filter((referral) => {
+    const {
+      referrerEmail = "",
+      refereeEmail = "",
+      referralCode = "",
+    } = referral;
+    return (
+      referrerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      refereeEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      referralCode.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
  
 
   if (isLoading) {
@@ -83,7 +97,9 @@ const AdminReferralManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm">Total Rewards Paid</p>
-              <h3 className="text-2xl font-bold mt-1">₹{data.totalRewardAmount}</h3>
+              <h3 className="text-2xl font-bold mt-1">
+                ₹{data.totalRewardAmount}
+              </h3>
             </div>
             <div className="bg-yellow-100 p-3 rounded-full">
               <IndianRupee className="w-6 h-6 text-yellow-600" />
@@ -175,7 +191,7 @@ const AdminReferralManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {referralData.map((referral, i) => (
+                {filteredReferralData.map((referral, i) => (
                   <tr key={referral.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">{i + 1}</td>
                     <td className="py-3 px-4">{referral.referrerEmail}</td>
@@ -199,7 +215,7 @@ const AdminReferralManagement = () => {
           </div>
 
           {/* Pagination */}
-          <div className="mt-6 flex justify-between items-center">
+          {/* <div className="mt-6 flex justify-between items-center">
             <p className="text-sm text-gray-600">
               Showing 1 to 10 of {referralData.length} results
             </p>
@@ -211,7 +227,7 @@ const AdminReferralManagement = () => {
                 Next
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
