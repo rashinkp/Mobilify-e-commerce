@@ -5,7 +5,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { ShoppingCart, AlertCircle, ArrowBigRightDash } from "lucide-react";
 import { useNavigate } from "react-router";
 import { incrementCartCount } from "../../redux/slices/cartCount";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const AddCartButton = ({
   disabled = false,
@@ -17,6 +17,9 @@ const AddCartButton = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { userInfo } = useSelector((state) => state.userAuth);
+
+
   // Local state to manage cart status
   const [isInCart, setIsInCart] = useState(initialIsInCart);
 
@@ -26,11 +29,16 @@ const AddCartButton = ({
       return;
     }
 
+    if (!userInfo) {
+      return navigate('/user/login')
+    }
+
+
     try {
       await addToCart({ productId, quantity: 1 }).unwrap();
       dispatch(incrementCartCount());
       successToast("Product added to cart");
-      setIsInCart(true); // Update local state on success
+      setIsInCart(true); 
     } catch (error) {
       errorToast(
         error?.message ||
